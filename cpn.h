@@ -22,67 +22,18 @@
 
 using namespace std;
 
-struct str_type
-{
-    char *s_str;
-    int s_size;
 
-    void operator =(str_type s)
-    {
-        s_size = s.s_size;
-        s_str = new char[s_size];//remenber to release ,cause it doesn't has deconstructor
-        s_str = strncpy(s_str,s.s_str,s_size);
-    }
-    void release(){
-        if(s_size>0&&s_str!=NULL)
-            delete s_str;
-    }
-};
 typedef unsigned short VARID;
 typedef unsigned short SORTID;
 //typedef unsigned short COLORID;
 typedef unsigned short NUM_t;
 typedef int Integer_t;
 typedef double Real_t;
-typedef str_type String_t;
+typedef string String_t;
 typedef unsigned short MS_size_t;
 typedef unsigned short token_count_t;
 typedef unsigned short index_t;
 
-enum color_type_set{INTEGER,REAL,STRING};
-class color_type
-{
-private:
-    color_type_set color_type;
-public:
-    Integer_t get_value();
-    void set_value(Integer_t v);
-};
-
-class int_type:public color_type
-{
-private:
-    Integer_t value;
-public:
-    Integer_t  get_value(){return value;}
-    void set_value(Integer_t v){value = v;}
-};
-class real_type:public color_type
-{
-private:
-    Real_t value;
-public:
-    Real_t  get_value(){return value;}
-    void set_value(Real_t v){value = v;}
-};
-class String_type:public color_type
-{
-private:
-    String_t value;
-public:
-    String_t  get_value(){return value;}
-    void set_value(String_t v){value = v;}
-};
 
 class CPN;
 class SortTable;
@@ -94,13 +45,7 @@ extern SortTable sorttable;
 extern CPN *cpnet;
 
 enum type{dot,finiteintrange,productsort,usersort,Integer,Real,String};
-
-union type_union{
-//    COLORID cid;
-    Integer_t integer;
-    Real_t real;
-    str_type str;
-};
+enum Arc_Type{executed,control,call_enter,call_exit,data};
 
 
 /*========================Sort==========================*/
@@ -180,11 +125,11 @@ public:
     virtual ~SortValue(){};
 //    virtual void setColor(COLORID cid)=0;
 //    virtual void getColor(COLORID &cid)=0;
-    virtual void setColor(type_union *cid,int size)=0;
+    virtual void setColor(SortValue **cid,int size)=0;
     virtual void setColor(Integer_t cid)=0;
     virtual void setColor(Real_t cid)=0;
     virtual void setColor(String_t cid)=0;
-    virtual void getColor(type_union *cid,int size)=0;
+    virtual void getColor(SortValue **cid,int size)=0;
     virtual void getColor(Integer_t &cid)=0;
     virtual void getColor(Real_t &cid)=0;
     virtual void getColor(String_t &cid)=0;
@@ -195,10 +140,10 @@ class ProductSortValue:public SortValue
 {
 private:
     //this is a index;
-    type_union *valueindex;
+    SortValue **valueindex;
 public:
     ProductSortValue(int sortnum) {
-        valueindex = new type_union[sortnum];
+        valueindex = new SortValue*[sortnum];
     }
     ~ProductSortValue() {
         delete [] valueindex;
@@ -206,11 +151,11 @@ public:
 
 //    void setColor(COLORID cid){};
 //    void getColor(COLORID &cid){};
-    void setColor(type_union *cid,int size) {
-        memcpy(valueindex,cid,sizeof(type_union)*size);
+    void setColor(SortValue **cid,int size) {
+        memcpy(valueindex,cid,sizeof(SortValue*)*size);
     }
-    void getColor(type_union *cid,int size) {
-        memcpy(cid,valueindex,sizeof(type_union)*size);
+    void getColor(SortValue **cid,int size) {
+        memcpy(cid,valueindex,sizeof(SortValue*)*size);
     }
     virtual void setColor(Integer_t cid){};
     virtual void setColor(Real_t cid){};
@@ -278,8 +223,8 @@ private:
 public:
 //    virtual void setColor(COLORID cid){};
 //    virtual void getColor(COLORID &cid){};
-    virtual void setColor(type_union *cid,int size){};
-    virtual void getColor(type_union *cid,int size){};
+    virtual void setColor(SortValue **cid,int size){};
+    virtual void getColor(SortValue **cid,int size){};
     virtual void setColor(Integer_t cid){value = cid;};
     virtual void setColor(Real_t cid){};
     virtual void setColor(String_t cid){};
@@ -296,8 +241,8 @@ private:
 public:
 //    virtual void setColor(COLORID cid){};
 //    virtual void getColor(COLORID &cid){};
-    virtual void setColor(type_union *cid,int size){};
-    virtual void getColor(type_union *cid,int size){};
+    virtual void setColor(SortValue **cid,int size){};
+    virtual void getColor(SortValue **cid,int size){};
     virtual void setColor(Integer_t cid){};
     virtual void setColor(Real_t cid){value = cid;};
     virtual void setColor(String_t cid){};
@@ -314,15 +259,15 @@ private:
 public:
 //    virtual void setColor(COLORID cid){};
 //    virtual void getColor(COLORID &cid){};
-    virtual void setColor(type_union *cid,int size){};
-    virtual void getColor(type_union *cid,int size){};
+    virtual void setColor(SortValue **cid,int size){};
+    virtual void getColor(SortValue **cid,int size){};
     virtual void setColor(Integer_t cid){};
     virtual void setColor(Real_t cid){};
     virtual void setColor(String_t cid){value = cid;};
     virtual void getColor(Integer_t &cid){};
     virtual void getColor(Real_t &cid){};
     virtual void getColor(String_t &cid){cid = value;};
-    ~StringSortValue(){value.release();};
+    ~StringSortValue(){};
 };
 
 
@@ -339,6 +284,9 @@ public:
             delete color;
     }
     void initiate(token_count_t tc,type sort,int PSnum=0);
+    void init_a_token(type tid,Integer_t value);
+    void init_a_token(type tid,Real_t value);
+    void init_a_token(type tid,String_t value);
 };
 
 //**Multiset contains tokens with the same type**//
@@ -349,6 +297,7 @@ public:
     SORTID sid;
     Tokens *tokenQ;//queue contains head node
     MS_size_t color_count;
+    index_t hash_value;
 
     MultiSet(){tokenQ = new Tokens;tokenQ->next=NULL;color_count = 0;}
     ~MultiSet(){
@@ -360,11 +309,14 @@ public:
             delete temp;
         }
     }
-
+    index_t Hash();
     void clear();
     void insert(Tokens *token);
-
-    bool operator>=(MultiSet ms1);
+    bool operator>=(const MultiSet ms1);
+    bool operator==(const MultiSet ms);
+    void operator=(const MultiSet ms);
+    void MINUS(MultiSet &ms);
+    void PLUS(MultiSet &ms);
 
 };
 
@@ -391,7 +343,7 @@ public:
     bool hasdot;
 
     static SORTID psptr;
-    static SORTID usptr;
+
 public:
     SortTable(){hasdot = false;}
     //first string is the sortname,the second MSI is this sort's information;
@@ -408,7 +360,7 @@ struct Variable
 {
     string id;
     SORTID sid;
-    type_union value;//assume variable is not a productsort
+    SortValue *value;//assume variable is not a productsort
     type tid;
 
     bool operator == (const Variable &var) const {
@@ -427,6 +379,7 @@ typedef struct CPN_Small_Arc
 {
     index_t idx;
     condition_tree arc_exp;
+    Arc_Type arcType;
 
 } CSArc;
 
@@ -436,13 +389,19 @@ typedef struct CPN_Place
 //    type tid;
 //    SORTID sid;
     MultiSet initMarking;
-//    vector<CSArc>producer;
-//    vector<CSArc>consumer;
+    vector<CSArc>producer;
+    vector<CSArc>consumer;
 
     //***PDNet added start***/
     bool control_P;
     string expression;
+    vector<string> enter;
+    vector<string> exit;
+    vector<string> false_exit;
+    vector<string> enter_P;
     //***PDNet added end***/
+
+    CPN_Place(){expression="";}
 
     void printTokens(string &str);
 //    ~CPN_Place(){
@@ -460,11 +419,10 @@ typedef struct CPN_Transition
     vector<CSArc> producer;
     vector<CSArc> consumer;
     //set<Variable> relvars;
-    vector<Variable> relvararray;
+    //vector<Variable> relvararray;
 
     //***PDNet added start***/
-    bool control_T;
-    string exp;
+
     //***PDNet added end***/
 } CTransition;
 
@@ -475,6 +433,8 @@ typedef struct CPN_Arc
     string source_id;
     string target_id;
     condition_tree arc_exp;
+    Arc_Type arcType;
+    bool onlydot;
 //    MultiSet arc_MS;
 //    ~CPN_Arc() {
 //        arc_exp.destructor(arc_exp.root);
@@ -497,13 +457,14 @@ public:
     map<string,index_t> mapPlace;
     map<string,index_t> mapTransition;
     map<string,VARID> mapVariable;
+    map<string,string> mapFunction;
 
     //***PDNet added start***/
     void CTN_cal(condition_tree_node *CTN);
     void CT2MS(condition_tree ct,MultiSet &ms);
     void CTN2MS(condition_tree_node *ctn,MultiSet &ms);
     void CTN2COLOR(condition_tree_node *ctn,MultiSet &ms);
-    void get_tuplecolor(condition_tree_node *ctn,vector<type_union*> &color,vector<mapsort_info> sortid);
+    void get_tuplecolor(condition_tree_node *ctn,vector<SortValue *> &color,vector<mapsort_info> sortid);
     //***PDNet added end***/
 
     CPN();
@@ -512,14 +473,27 @@ public:
     //***PDNet added start***//
     void getDecl(gtree *tree);
     void initDecl();
+    void init();
     void Add_Place(string id,string Type_name,int size,bool control_P,string exp);
+    void Add_Transition(string id,string guard,string exp);
+    void Add_Arc(string source,string target,string exp,bool sourceP,Arc_Type arcType);
     void init_Place(string id,Tokens *token);
     void process_declaration(gtree *declaration,string base);
     void process_declarator(gtree *declarator, string tag, string base, bool para);
-    void init();
+    void process_para_type_list(gtree *para_type_list, string base_Vname);
+    void set_producer_consumer();
+    void set_enter_P(string p_name,vector<string> enter_P);
+    vector<string> get_enter_P(string p_name);
+    void set_exit_T(string p_name,vector<string> exit_T);
+    vector<string> get_exit_T(string p_name);
+    void set_falseexit_T(string p_name,vector<string> exit_T);
+    vector<string> get_falseexit_T(string p_name);
+    void set_enter_T(string p_name,vector<string> enter_T);
+    vector<string> get_enter_T(string p_name);
 
     //***PDNet added end***//
     ~CPN();
+    void print_CPN(string filename);
 
     void create_PDNet(gtree *tree);
 private:

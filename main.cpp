@@ -4,6 +4,7 @@
 #include "cpn.h"
 #include<string.h>
 
+
 string rg_dirname = "../rg/";
 string rg_sliceOnly_dirname = "../rg_sliceOnly/";
 string origin_dirname = "../test/";
@@ -56,38 +57,23 @@ int main() {
     condition_tree CT;
     CT.construct("(2,x)++(3,x)");
 
+
+
+    gtree * tree = create_tree("1.c",true);
+    intofile_tree(tree);
+    makeGraph("tree.dot","tree.png");
+
     CPN *cpnet = new CPN;
     cpnet->init();
     cpnet->initDecl();
+    cpnet->getDecl(tree);
+    cpnet->create_PDNet(tree);
 
-    string t = "int_arr";
-    map<string,MSI>::iterator iter = sorttable.mapSort.find(t);
-    MultiSet ms;
-    ms.tid = iter->second.tid;
-    ms.sid = iter->second.sid;
-    Variable *var = &cpnet->vartable[0];
-    var->tid = Integer;
-    var->sid = 0;
-    var->id = "x";
-    var->value.integer = 7;
-    cpnet->mapVariable.insert(make_pair("x",0));
-    cpnet->CT2MS(CT,ms);
+    string filename_prefix = "1";
 
-//    gtree * tree = create_tree("1.c",true);
-//    intofile_tree(tree);
-//    makeGraph("tree.dot","tree.png");
-//
-//    CPN *cpnet = new CPN;
-//    cpnet->init();
-//    cpnet->initDecl();
-//    cpnet->getDecl(tree);
-//
-//    cpnet->Add_Place("P1","int",1,false,"x");
-//    Tokens *token = new Tokens;
-//    token->tokencount = 1;
-//    token->initiate(1,Integer,0);
-//    token->color->setColor(6);
-//    cpnet->init_Place("P1",token);
+    cpnet->print_CPN(filename_prefix + ".txt");
+    readGraph(filename_prefix + ".txt",filename_prefix + ".dot");
+    makeGraph(filename_prefix + ".dot",filename_prefix + ".png");
 
     return 0;
 }

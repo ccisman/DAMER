@@ -7,8 +7,11 @@ CMakeFiles/PDNet_checker.dir/AST.cpp.o: ../y.tab.h
 
 CMakeFiles/PDNet_checker.dir/base.cpp.o: ../base.cpp
 
+CMakeFiles/PDNet_checker.dir/condition_tree.cpp.o: ../AST.h
 CMakeFiles/PDNet_checker.dir/condition_tree.cpp.o: ../condition_tree.cpp
 CMakeFiles/PDNet_checker.dir/condition_tree.cpp.o: ../condition_tree.h
+CMakeFiles/PDNet_checker.dir/condition_tree.cpp.o: ../cpn.h
+CMakeFiles/PDNet_checker.dir/condition_tree.cpp.o: ../y.tab.h
 
 CMakeFiles/PDNet_checker.dir/cpn.cpp.o: ../AST.h
 CMakeFiles/PDNet_checker.dir/cpn.cpp.o: ../condition_tree.h

@@ -8,8 +8,11 @@ CMakeFiles/PDNet_checker.dir/AST.cpp.o
 CMakeFiles/PDNet_checker.dir/base.cpp.o
  /home/cc/CLionProjects/PDNet_checker/base.cpp
 CMakeFiles/PDNet_checker.dir/condition_tree.cpp.o
+ /home/cc/CLionProjects/PDNet_checker/AST.h
  /home/cc/CLionProjects/PDNet_checker/condition_tree.cpp
  /home/cc/CLionProjects/PDNet_checker/condition_tree.h
+ /home/cc/CLionProjects/PDNet_checker/cpn.h
+ /home/cc/CLionProjects/PDNet_checker/y.tab.h
 CMakeFiles/PDNet_checker.dir/cpn.cpp.o
  /home/cc/CLionProjects/PDNet_checker/AST.h
  /home/cc/CLionProjects/PDNet_checker/condition_tree.h

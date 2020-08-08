@@ -108,6 +108,12 @@
 		<Unit filename="/home/cc/CLionProjects/PDNet_checker/cpn.h">
 			<Option target="PDNet_checker"/>
 		</Unit>
+		<Unit filename="/home/cc/CLionProjects/PDNet_checker/cpn_rg.cpp">
+			<Option target="PDNet_checker"/>
+		</Unit>
+		<Unit filename="/home/cc/CLionProjects/PDNet_checker/cpn_rg.h">
+			<Option target="PDNet_checker"/>
+		</Unit>
 		<Unit filename="/home/cc/CLionProjects/PDNet_checker/lex.y.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>

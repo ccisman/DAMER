@@ -2,7 +2,7 @@
 // Created by cc on 2020/8/5.
 //
 
-#include "condition_tree.h"
+#include "cpn.h"
 #include<stack>
 #include<iostream>
 
@@ -202,3 +202,27 @@ void condition_tree::construct(string s) {
     }
 }
 
+void copy_condition_tree(condition_tree_node *des,condition_tree_node *src)
+{
+    if(src)
+    {
+        des = new condition_tree_node;
+        des->node_name = src->node_name;
+        des->node_type = src->node_type;
+        des->value = src->value;
+        if(src->left) {
+            des->left = new condition_tree_node;
+            copy_condition_tree(des->left,src->left);
+        }
+        if(src->right) {
+            des->right = new condition_tree_node;
+            copy_condition_tree(des->right,src->right);
+        }
+    }
+}
+
+void condition_tree::operator=(condition_tree ct) {
+    if(ct.root!=NULL)
+        copy_condition_tree(root,ct.root);
+    exp = ct.exp;
+}

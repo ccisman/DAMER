@@ -3,6 +3,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/PDNet_checker.dir/base.cpp.o"
   "CMakeFiles/PDNet_checker.dir/condition_tree.cpp.o"
   "CMakeFiles/PDNet_checker.dir/cpn.cpp.o"
+  "CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o"
   "CMakeFiles/PDNet_checker.dir/lex.y.cpp.o"
   "CMakeFiles/PDNet_checker.dir/main.cpp.o"
   "CMakeFiles/PDNet_checker.dir/pre_process.cpp.o"

@@ -39,6 +39,8 @@ public:
     int record_P_num;
     string label_P;//记录前向的label库所，用于goto语句的连接
     vector<pair<string,string>> para;//for compound node:para places' name
+    string matched_P;//for sentence node
+    string enter_P;
 
     gtree()
     {
@@ -78,4 +80,4 @@ void pre_process(string &s);
 bool judge_inside_compound_statement(gtree *statement1);
 bool judge_statement(gtree *p);
 
-extern set<string> build_in_type;
+

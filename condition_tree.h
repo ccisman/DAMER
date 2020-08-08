@@ -29,7 +29,6 @@ public:
     string value;
     condition_tree_node *left;
     condition_tree_node *right;
-
 };
 
 class condition_tree
@@ -38,4 +37,6 @@ public:
     condition_tree_node *root;
     string exp;
     void construct(string s);
+    void deconstruct();
+    void operator=(condition_tree ct);
 };

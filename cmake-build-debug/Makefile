@@ -251,6 +251,33 @@ cpn.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/cpn.cpp.s
 .PHONY : cpn.cpp.s
 
+cpn_rg.o: cpn_rg.cpp.o
+
+.PHONY : cpn_rg.o
+
+# target to build an object file
+cpn_rg.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o
+.PHONY : cpn_rg.cpp.o
+
+cpn_rg.i: cpn_rg.cpp.i
+
+.PHONY : cpn_rg.i
+
+# target to preprocess a source file
+cpn_rg.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.i
+.PHONY : cpn_rg.cpp.i
+
+cpn_rg.s: cpn_rg.cpp.s
+
+.PHONY : cpn_rg.s
+
+# target to generate assembly for a file
+cpn_rg.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.s
+.PHONY : cpn_rg.cpp.s
+
 lex.y.o: lex.y.cpp.o
 
 .PHONY : lex.y.o
@@ -380,6 +407,9 @@ help:
 	@echo "... cpn.o"
 	@echo "... cpn.i"
 	@echo "... cpn.s"
+	@echo "... cpn_rg.o"
+	@echo "... cpn_rg.i"
+	@echo "... cpn_rg.s"
 	@echo "... lex.y.o"
 	@echo "... lex.y.i"
 	@echo "... lex.y.s"

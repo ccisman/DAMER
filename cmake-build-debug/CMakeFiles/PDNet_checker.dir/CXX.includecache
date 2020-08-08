@@ -16,20 +16,6 @@ vector
 set
 -
 
-/home/cc/CLionProjects/PDNet_checker/base.h
-string
--
-fstream
--
-
-/home/cc/CLionProjects/PDNet_checker/condition_tree.cpp
-condition_tree.h
-/home/cc/CLionProjects/PDNet_checker/condition_tree.h
-stack
--
-iostream
--
-
 /home/cc/CLionProjects/PDNet_checker/condition_tree.h
 string
 -
@@ -66,18 +52,6 @@ condition_tree.h
 gperftools/tcmalloc.h
 -
 gperftools/malloc_extension.h
--
-
-/home/cc/CLionProjects/PDNet_checker/main.cpp
-iostream
--
-AST.h
-/home/cc/CLionProjects/PDNet_checker/AST.h
-base.h
-/home/cc/CLionProjects/PDNet_checker/base.h
-cpn.h
-/home/cc/CLionProjects/PDNet_checker/cpn.h
-string.h
 -
 
 /home/cc/CLionProjects/PDNet_checker/v_table.h
