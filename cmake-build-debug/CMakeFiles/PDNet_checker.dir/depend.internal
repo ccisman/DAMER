@@ -20,6 +20,13 @@ CMakeFiles/PDNet_checker.dir/cpn.cpp.o
  /home/cc/CLionProjects/PDNet_checker/cpn.h
  /home/cc/CLionProjects/PDNet_checker/v_table.h
  /home/cc/CLionProjects/PDNet_checker/y.tab.h
+CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o
+ /home/cc/CLionProjects/PDNet_checker/AST.h
+ /home/cc/CLionProjects/PDNet_checker/condition_tree.h
+ /home/cc/CLionProjects/PDNet_checker/cpn.h
+ /home/cc/CLionProjects/PDNet_checker/cpn_rg.cpp
+ /home/cc/CLionProjects/PDNet_checker/cpn_rg.h
+ /home/cc/CLionProjects/PDNet_checker/y.tab.h
 CMakeFiles/PDNet_checker.dir/lex.y.cpp.o
  /home/cc/CLionProjects/PDNet_checker/AST.h
  /home/cc/CLionProjects/PDNet_checker/lex.y.cpp
@@ -29,6 +36,7 @@ CMakeFiles/PDNet_checker.dir/main.cpp.o
  /home/cc/CLionProjects/PDNet_checker/base.h
  /home/cc/CLionProjects/PDNet_checker/condition_tree.h
  /home/cc/CLionProjects/PDNet_checker/cpn.h
+ /home/cc/CLionProjects/PDNet_checker/cpn_rg.h
  /home/cc/CLionProjects/PDNet_checker/main.cpp
  /home/cc/CLionProjects/PDNet_checker/y.tab.h
 CMakeFiles/PDNet_checker.dir/pre_process.cpp.o

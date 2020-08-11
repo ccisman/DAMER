@@ -17,7 +17,7 @@ enum CTN_type{TokenOperator,RelationOperator,Operator,color,variable};
 // Operator{"Addition","Subtraction","Multiplication","Division","Module"};
 
 //**  'value' stands for the color value                           **//
-//**  operator_name stands for different thing for different node  **//
+//**  node_name stands for different thing for different node  **//
 //**  1.For a variable node,it stands for variable name            **//
 //**  2.For a color node,it stands for color name                  **//
 //**  3.For TokenOperator and Operator,it stands for operation     **//

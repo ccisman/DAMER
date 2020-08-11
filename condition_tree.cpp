@@ -202,7 +202,7 @@ void condition_tree::construct(string s) {
     }
 }
 
-void copy_condition_tree(condition_tree_node *des,condition_tree_node *src)
+void copy_condition_tree(condition_tree_node *&des,condition_tree_node *src)
 {
     if(src)
     {
@@ -224,5 +224,20 @@ void copy_condition_tree(condition_tree_node *des,condition_tree_node *src)
 void condition_tree::operator=(condition_tree ct) {
     if(ct.root!=NULL)
         copy_condition_tree(root,ct.root);
+    else
+        root = NULL;
     exp = ct.exp;
+}
+
+void deconstruct_node(condition_tree_node *node)
+{
+    if(node == NULL)
+        return;
+    deconstruct_node(node->left);
+    deconstruct_node(node->right);
+    delete node;
+}
+
+void condition_tree::deconstruct() {
+    deconstruct_node(root);
 }

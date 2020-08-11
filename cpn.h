@@ -19,6 +19,7 @@
 #include "condition_tree.h"
 #include <gperftools/tcmalloc.h>
 #include <gperftools/malloc_extension.h>
+#define H1FACTOR 13
 
 using namespace std;
 
@@ -312,9 +313,9 @@ public:
     index_t Hash();
     void clear();
     void insert(Tokens *token);
-    bool operator>=(const MultiSet ms1);
-    bool operator==(const MultiSet ms);
-    void operator=(const MultiSet ms);
+    bool operator>=(const MultiSet &ms1);
+    bool operator==(const MultiSet &ms);
+    void operator=(const MultiSet &ms);
     void MINUS(MultiSet &ms);
     void PLUS(MultiSet &ms);
 
@@ -380,7 +381,7 @@ typedef struct CPN_Small_Arc
     index_t idx;
     condition_tree arc_exp;
     Arc_Type arcType;
-
+    bool onlydot;
 } CSArc;
 
 typedef struct CPN_Place
@@ -477,6 +478,7 @@ public:
     void Add_Place(string id,string Type_name,int size,bool control_P,string exp);
     void Add_Transition(string id,string guard,string exp);
     void Add_Arc(string source,string target,string exp,bool sourceP,Arc_Type arcType);
+    void Add_Arc_override(string source,string target,string exp,bool sourceP,Arc_Type arcType);
     void init_Place(string id,Tokens *token);
     void process_declaration(gtree *declaration,string base);
     void process_declarator(gtree *declarator, string tag, string base, bool para);

@@ -20,6 +20,13 @@ CMakeFiles/PDNet_checker.dir/cpn.cpp.o: ../cpn.h
 CMakeFiles/PDNet_checker.dir/cpn.cpp.o: ../v_table.h
 CMakeFiles/PDNet_checker.dir/cpn.cpp.o: ../y.tab.h
 
+CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o: ../AST.h
+CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o: ../condition_tree.h
+CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o: ../cpn.h
+CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o: ../cpn_rg.cpp
+CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o: ../cpn_rg.h
+CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o: ../y.tab.h
+
 CMakeFiles/PDNet_checker.dir/lex.y.cpp.o: ../AST.h
 CMakeFiles/PDNet_checker.dir/lex.y.cpp.o: ../lex.y.cpp
 CMakeFiles/PDNet_checker.dir/lex.y.cpp.o: ../y.tab.h
@@ -28,6 +35,7 @@ CMakeFiles/PDNet_checker.dir/main.cpp.o: ../AST.h
 CMakeFiles/PDNet_checker.dir/main.cpp.o: ../base.h
 CMakeFiles/PDNet_checker.dir/main.cpp.o: ../condition_tree.h
 CMakeFiles/PDNet_checker.dir/main.cpp.o: ../cpn.h
+CMakeFiles/PDNet_checker.dir/main.cpp.o: ../cpn_rg.h
 CMakeFiles/PDNet_checker.dir/main.cpp.o: ../main.cpp
 CMakeFiles/PDNet_checker.dir/main.cpp.o: ../y.tab.h
 

@@ -1,7 +1,7 @@
 #include <iostream>
 #include "AST.h"
 #include "base.h"
-#include "cpn.h"
+#include "cpn_rg.h"
 #include<string.h>
 
 
@@ -75,5 +75,10 @@ int main() {
     readGraph(filename_prefix + ".txt",filename_prefix + ".dot");
     makeGraph(filename_prefix + ".dot",filename_prefix + ".png");
 
+    cpnet->set_producer_consumer();
+    RG rg;
+    rg.init(cpnet);
+    rg.GENERATE(cpnet);
+    rg.print_RG("rg.txt",cpnet);
     return 0;
 }

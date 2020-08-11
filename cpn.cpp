@@ -4,7 +4,7 @@
 
 #include "cpn.h"
 #include "v_table.h"
-#define H1FACTOR 13
+
 
 SortTable sorttable;
 SORTID SortTable::psptr = 0;
@@ -207,6 +207,7 @@ void create_connect(CPN *petri, string T, string express, string base)
     string V;
     bool sourceP;
     splitExpression(express, v);
+    set<string> exist_V;
     for (unsigned int i = 0; i < v.size(); i++)
     {
         if (v[i][0] == '_' || (v[i][0] >= 'a'&&v[i][0] <= 'z') || (v[i][0] >= 'A'&&v[i][0] <= 'Z'))
@@ -228,6 +229,10 @@ void create_connect(CPN *petri, string T, string express, string base)
 
             V = v[i];
 
+            auto viter = exist_V.find(V);
+            if(viter!=exist_V.end())
+                continue;
+            exist_V.insert(V);
             auto iter = petri->mapVariable.find(V);
             if(iter==petri->mapVariable.end())
             {
@@ -236,11 +241,11 @@ void create_connect(CPN *petri, string T, string express, string base)
                 auto iter1 = petri->mapPlace.find(P2);
                 var->sid = petri->place[iter1->second].initMarking.sid;
                 var->tid = petri->place[iter1->second].initMarking.tid;
-                petri->mapVariable.insert(make_pair(temp_s,petri->varcount-1));
+                petri->mapVariable.insert(make_pair(V,petri->varcount-1));
             }
 
             petri->Add_Arc(P2,T,V,true,data);
-            petri->Add_Arc(T,P2,V,true,data);
+            petri->Add_Arc(T,P2,V,false,data);
 //            sourceP = true;
 //            petri.Add_Arc(P2, T, V, sourceP);//_v库所
 //            sourceP = false;
@@ -430,6 +435,8 @@ void Tokens::initiate(token_count_t tc, type sort, int PSnum) {
         color = new RealSortValue;
     else if(sort == String)
         color = new StringSortValue;
+    else if(sort == dot)
+        color = NULL;
     else
     {
         cout<<"error type!"<<endl;
@@ -598,7 +605,7 @@ void MultiSet::insert(Tokens *token) {
     }
 }
 
-bool MultiSet::operator>=(const MultiSet ms1) {
+bool MultiSet::operator>=(const MultiSet &ms1) {
     Tokens *t1 = tokenQ->next,*t2=ms1.tokenQ->next;
     if(tid == productsort)
     {
@@ -756,7 +763,7 @@ void MultiSet::clear() {
 }
 
 void MultiSet::MINUS(MultiSet &ms) {
-    Tokens *t1 = tokenQ->next,*t2=ms.tokenQ->next;
+    Tokens *t1 = tokenQ->next,*t2=ms.tokenQ->next,*last = tokenQ;
     if(tid == productsort)
     {
         while(t2)
@@ -778,6 +785,7 @@ void MultiSet::MINUS(MultiSet &ms) {
                 }
                 else if(cmp == 0)
                     break;
+                last = t1;
                 t1=t1->next;
             }
             if(cmp == 0&& t1!=NULL) {
@@ -788,6 +796,10 @@ void MultiSet::MINUS(MultiSet &ms) {
                 }
                 else {
                     t1->tokencount -= t2->tokencount;
+                    if(t1->tokencount == 0) {
+                        last->next = t1->next;
+                        delete t1;
+                    }
                 }
                 t1 = t1->next;
             }
@@ -825,6 +837,7 @@ void MultiSet::MINUS(MultiSet &ms) {
                 }
                 else if(cmp == 0)
                     break;
+                last = t1;
                 t1=t1->next;
             }
             if(cmp == 0 && t1!=NULL) {
@@ -833,8 +846,14 @@ void MultiSet::MINUS(MultiSet &ms) {
                     cout<<"MINUS error!"<<endl;
                     exit(-1);
                 }
-                else
+                else {
                     t1->tokencount -= t2->tokencount;
+                    if(t1->tokencount == 0)
+                    {
+                        last->next = t1->next;
+                        delete t1;
+                    }
+                }
                 t1 = t1->next;
             }
             else
@@ -869,6 +888,7 @@ void MultiSet::MINUS(MultiSet &ms) {
                 }
                 else if(cmp == 0)
                     break;
+                last = t1;
                 t1=t1->next;
             }
             if(cmp == 0&& t1!=NULL) {
@@ -877,8 +897,14 @@ void MultiSet::MINUS(MultiSet &ms) {
                     cout<<"MINUS error!"<<endl;
                     exit(-1);
                 }
-                else
+                else {
                     t1->tokencount -= t2->tokencount;
+                    if(t1->tokencount == 0)
+                    {
+                        last->next = t1->next;
+                        delete t1;
+                    }
+                }
                 t1 = t1->next;
             }
             else
@@ -913,6 +939,7 @@ void MultiSet::MINUS(MultiSet &ms) {
                 }
                 else if(cmp == 0)
                     break;
+                last = t1;
                 t1=t1->next;
             }
             if(cmp == 0&& t1!=NULL) {
@@ -921,8 +948,14 @@ void MultiSet::MINUS(MultiSet &ms) {
                     cout<<"MINUS error!"<<endl;
                     exit(-1);
                 }
-                else
+                else {
                     t1->tokencount -= t2->tokencount;
+                    if(t1->tokencount == 0)
+                    {
+                        last->next = t1->next;
+                        delete t1;
+                    }
+                }
                 t1 = t1->next;
             }
             else
@@ -946,22 +979,33 @@ void MultiSet::MINUS(MultiSet &ms) {
             cout<<"MINUS error!"<<endl;
             exit(-1);
         }
-        else
-            t1->tokencount -=t2->tokencount;
+        else {
+            t1->tokencount -= t2->tokencount;
+            if(t1->tokencount == 0) {
+                last = tokenQ->next;
+                tokenQ->next = NULL;
+                delete last;
+            }
+        }
     }
-
-    Tokens *temp;
-    t2 = ms.tokenQ->next;
-    while(t2)
+    else
     {
-        temp = t2;
-        t2 = t2->next;
-        delete temp;
+        cout<<"error tid in MINUS"<<endl;
+        exit(-1);
     }
-    ms.tokenQ->next = NULL;
+//    Tokens *temp;
+//    t2 = ms.tokenQ->next;
+//    while(t2)
+//    {
+//        temp = t2;
+//        t2 = t2->next;
+//        delete temp;
+//    }
+//    ms.tokenQ->next = NULL;
 }
 
 void MultiSet::PLUS(MultiSet &ms) {
+
     Tokens *t1 = tokenQ->next,*t2=ms.tokenQ->next;
     while(t2)
     {
@@ -971,7 +1015,7 @@ void MultiSet::PLUS(MultiSet &ms) {
     ms.tokenQ->next = NULL;
 }
 
-void MultiSet::operator=(const MultiSet ms) {
+void MultiSet::operator=(const MultiSet &ms) {
     sid = ms.sid;
     tid = ms.tid;
     color_count = ms.color_count;
@@ -1011,7 +1055,8 @@ void MultiSet::operator=(const MultiSet ms) {
 
         t2=t2->next;
     }
-    t1->next->next = NULL;
+    if(t1->next)
+        t1->next->next = NULL;
 }
 
 index_t MultiSet::Hash() {
@@ -1091,7 +1136,7 @@ index_t MultiSet::Hash() {
     return hv;
 }
 
-bool MultiSet::operator==(const MultiSet ms) {
+bool MultiSet::operator==(const MultiSet &ms) {
     Tokens *t1 = tokenQ->next,*t2=ms.tokenQ->next;
     if(tid == productsort)
     {
@@ -1347,6 +1392,7 @@ void CPN::Add_Arc(string source, string target, string exp, bool sourceP,Arc_Typ
     CArc *aa = &arc[arccount++];
     aa->arcType = arcType;
     if(exp != "") {
+        aa->arc_exp.deconstruct();
         aa->arc_exp.construct(exp);
         aa->onlydot = false;
     }
@@ -1355,6 +1401,32 @@ void CPN::Add_Arc(string source, string target, string exp, bool sourceP,Arc_Typ
     aa->isp2t = sourceP;
     aa->source_id = source;
     aa->target_id = target;
+}
+
+void CPN::Add_Arc_override(string source, string target, string exp, bool sourceP,Arc_Type arcType) {
+    CArc *aa;
+    for(int i=arccount-1;i>=0;i--)
+    {
+        aa = &arc[i];
+        if(aa->source_id == source && aa->target_id == target)
+        {
+            aa->arcType = arcType;
+            if(exp != "") {
+                aa->arc_exp.deconstruct();
+                aa->arc_exp.construct(exp);
+                aa->onlydot = false;
+            }
+            else
+                aa->onlydot = true;
+            aa->isp2t = sourceP;
+            aa->source_id = source;
+            aa->target_id = target;
+            return;
+        }
+    }
+    Add_Arc(source,target,exp,sourceP,arcType);
+
+
 }
 
 void CPN::init() {
@@ -1590,6 +1662,8 @@ bool operate_reloperator(string s1,string s2,string Operator)
 
 void CPN::CTN_cal(condition_tree_node *CTN) {
     //recursion stops when node_type is variable or color
+    if(CTN == NULL)
+        return;
     if(CTN->node_type == RelationOperator)
     {
         string value1,value2;
@@ -1597,8 +1671,8 @@ void CPN::CTN_cal(condition_tree_node *CTN) {
         CTN_cal(CTN->right);
         if(CTN->left->node_type == variable)
         {
-            string var1 = CTN->left->value;
-            map<string,index_t>::iterator iter = mapVariable.find(var1);
+            string var1 = CTN->left->node_name;
+            auto iter = mapVariable.find(var1);
             Variable *var  = &vartable[iter->second];
             if(var->tid == Integer) {
                 Integer_t v;
@@ -1615,7 +1689,7 @@ void CPN::CTN_cal(condition_tree_node *CTN) {
             value1 = CTN->left->value;
         if(CTN->right->node_type == variable)
         {
-            string var2 = CTN->left->value;
+            string var2 = CTN->left->node_name;
             map<string,index_t>::iterator iter = mapVariable.find(var2);
             Variable *var  = &vartable[iter->second];
             if(var->tid == Integer) {
@@ -1640,7 +1714,7 @@ void CPN::CTN_cal(condition_tree_node *CTN) {
     else if(CTN->node_type == Operator)
     {
         //**Operator is used for Integer and Real
-        int count = is_Operator(CTN->value);
+        int count = is_Operator(CTN->node_name);
         if(count == 2)
         {
             string value1,value2;
@@ -1648,7 +1722,7 @@ void CPN::CTN_cal(condition_tree_node *CTN) {
             CTN_cal(CTN->right);
             if(CTN->left->node_type == variable)
             {
-                string var1 = CTN->left->value;
+                string var1 = CTN->left->node_name;
                 map<string,index_t>::iterator iter = mapVariable.find(var1);
                 Variable *var  = &vartable[iter->second];
                 if(var->tid == Integer) {
@@ -1666,7 +1740,7 @@ void CPN::CTN_cal(condition_tree_node *CTN) {
                 value1 = CTN->left->value;
             if(CTN->right->node_type == variable)
             {
-                string var2 = CTN->left->value;
+                string var2 = CTN->left->node_name;
                 map<string,index_t>::iterator iter = mapVariable.find(var2);
                 Variable *var  = &vartable[iter->second];
                 if(var->tid == Integer) {
@@ -1691,7 +1765,7 @@ void CPN::CTN_cal(condition_tree_node *CTN) {
             CTN_cal(CTN->left);
             if(CTN->left->node_type == variable)
             {
-                string var1 = CTN->left->value;
+                string var1 = CTN->left->node_name;
                 map<string,index_t>::iterator iter = mapVariable.find(var1);
                 Variable *var  = &vartable[iter->second];
                 if(var->tid == Integer) {
@@ -1718,7 +1792,7 @@ void CPN::CTN_cal(condition_tree_node *CTN) {
     }
     else if(CTN->node_type == variable)
     {
-        string var1 = CTN->value;
+        string var1 = CTN->node_name;
         map<string,index_t>::iterator iter = mapVariable.find(var1);
         Variable *var  = &vartable[iter->second];
         if(var->tid == Integer) {
@@ -1739,6 +1813,12 @@ void CPN::CTN_cal(condition_tree_node *CTN) {
 }
 
 void CPN::CT2MS(condition_tree ct, MultiSet &ms) {
+    if(ct.root == NULL)
+    {
+        Tokens *token = new Tokens;
+        token->initiate(1,dot,0);
+        ms.insert(token);
+    }
     CTN2MS(ct.root,ms);
 }
 
@@ -1839,6 +1919,8 @@ void CPN::CTN2COLOR(condition_tree_node *ctn,MultiSet &ms)
 }
 
 void CPN::CTN2MS(condition_tree_node *ctn, MultiSet &ms) {
+    if(ctn == NULL)
+        return;
     if(ctn->node_type==TokenOperator && ctn->node_name == "++")
     {
         if(ctn->left->node_type == TokenOperator && ctn->left->node_name == "++")
@@ -2273,7 +2355,26 @@ void CPN::create_PDNet(gtree *p)
         while(com->type!=COMPOUND_STATEMENT)
             com = com->parent;
         string base = com->place;
-        create_connect(this, control_T, p->place,base);
+        string exp = p->child->next->next->place;
+
+        create_connect(this, control_T, exp ,base);
+
+
+        string left = p->child->place;
+        string left_P = find_P_name(left,base);
+        Add_Arc_override(control_T,left_P,exp,false,data);
+        Add_Arc_override(left_P,control_T,left,true,data);
+        string V = left;
+        auto iter = mapVariable.find(V);
+        if(iter==mapVariable.end())
+        {
+            Variable *var = &vartable[varcount++];
+            var->id = V;
+            auto iter1 = mapPlace.find(left_P);
+            var->sid = place[iter1->second].initMarking.sid;
+            var->tid = place[iter1->second].initMarking.tid;
+            mapVariable.insert(make_pair(V,varcount-1));
+        }
     }
     else if(p->type == SELECTION_STATEMENT)
     {
@@ -2663,15 +2764,17 @@ void CPN::set_producer_consumer() {
         target = arc[i].target_id;
         csArc1.arcType = arc[i].arcType;
         csArc1.arc_exp = arc[i].arc_exp;
+        csArc1.onlydot = arc[i].onlydot;
         csArc2.arcType = arc[i].arcType;
         csArc2.arc_exp = arc[i].arc_exp;
+        csArc2.onlydot = arc[i].onlydot;
         if(arc[i].isp2t) {
             auto siter = mapPlace.find(source);
             auto titer = mapTransition.find(target);
             csArc1.idx = titer->second;
             csArc2.idx = siter->second;
             place[siter->second].consumer.push_back(csArc1);
-            transition[siter->second].producer.push_back(csArc2);
+            transition[titer->second].producer.push_back(csArc2);
         }
         else
         {
