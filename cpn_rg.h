@@ -23,10 +23,18 @@ public:
     ~Marking(){delete[] mss;};
 };
 
+class Binding
+{
+public:
+    string variable;
+    SortValue *value;
+};
+
 class FireTranQ
 {
 public:
     CTransition *transition;
+    vector<Binding*> bindings;
     FireTranQ *next;
     void insert(CTransition *transition);
 };

@@ -1,21 +1,27 @@
-total node:6 nodes
+total node:8 nodes
 show them below
 
 node:0
-(main begin,[1,dot] )    (main end,)    (main v,[1,0] )    (a,[1,0] )    (b,[1,0] )    (a=1,)    (b=2,)    (a=a+1,)    (b=3,)    (sel0,)    (executed_P,)    (executed_P,)    
-successor node:T0 , 
+(add begin,)    (add end,)    (a,[1,0] )    (b,[1,0] )    (add_v,[1,0] )    (jump0,)    (main begin,[1,dot] )    (main end,)    (main_v,[1,0] )    (a,[1,0] )    (b,[1,0] )    (a=1,)    (sel0,)    (b=add_v,)    (add(),)    (a=a+1,)    (b=3,)    (executed_P,)    (executed_P,)    
+successor node:T2 , 
 node:1
-(main begin,)    (main end,)    (main v,[1,0] )    (a,[1,0] )    (b,[1,0] )    (a=1,[1,dot] )    (b=2,)    (a=a+1,)    (b=3,)    (sel0,[1,dot] )    (executed_P,)    (executed_P,)    
-successor node:T1 , 
-node:2
-(main begin,)    (main end,)    (main v,[1,0] )    (a,[1,1] )    (b,[1,0] )    (a=1,)    (b=2,)    (a=a+1,)    (b=3,)    (sel0,[1,dot] )    (executed_P,)    (executed_P,[1,dot] )    
-successor node:T6 , 
-node:3
-(main begin,)    (main end,)    (main v,[1,0] )    (a,[1,1] )    (b,[1,0] )    (a=1,)    (b=2,)    (a=a+1,[1,dot] )    (b=3,[1,dot] )    (sel0,)    (executed_P,)    (executed_P,)    
+(add begin,)    (add end,)    (a,[1,0] )    (b,[1,0] )    (add_v,[1,0] )    (jump0,)    (main begin,)    (main end,)    (main_v,[1,0] )    (a,[1,0] )    (b,[1,0] )    (a=1,[1,dot] )    (sel0,[1,dot] )    (b=add_v,)    (add(),)    (a=a+1,)    (b=3,)    (executed_P,)    (executed_P,)    
 successor node:T3 , 
-node:4
-(main begin,)    (main end,)    (main v,[1,0] )    (a,[1,2] )    (b,[1,0] )    (a=1,)    (b=2,)    (a=a+1,)    (b=3,[1,dot] )    (sel0,)    (executed_P,[1,dot] )    (executed_P,)    
+node:2
+(add begin,)    (add end,)    (a,[1,0] )    (b,[1,0] )    (add_v,[1,0] )    (jump0,)    (main begin,)    (main end,)    (main_v,[1,0] )    (a,[1,1] )    (b,[1,0] )    (a=1,)    (sel0,[1,dot] )    (b=add_v,)    (add(),)    (a=a+1,)    (b=3,)    (executed_P,)    (executed_P,[1,dot] )    
 successor node:T4 , 
+node:3
+(add begin,)    (add end,)    (a,[1,0] )    (b,[1,0] )    (add_v,[1,0] )    (jump0,)    (main begin,)    (main end,)    (main_v,[1,0] )    (a,[1,1] )    (b,[1,0] )    (a=1,)    (sel0,)    (b=add_v,[1,dot] )    (add(),[1,dot] )    (a=a+1,)    (b=3,)    (executed_P,)    (executed_P,)    
+successor node:T7 , 
+node:4
+(add begin,[1,dot] )    (add end,)    (a,[1,1] )    (b,[1,2] )    (add_v,[1,0] )    (jump0,)    (main begin,)    (main end,)    (main_v,[1,0] )    (a,[1,1] )    (b,[1,0] )    (a=1,)    (sel0,)    (b=add_v,[1,dot] )    (add(),)    (a=a+1,)    (b=3,)    (executed_P,)    (executed_P,)    
+successor node:T0 , 
 node:5
-(main begin,)    (main end,[1,dot] )    (main v,[1,0] )    (a,[1,2] )    (b,[1,3] )    (a=1,)    (b=2,)    (a=a+1,)    (b=3,)    (sel0,)    (executed_P,)    (executed_P,)    
+(add begin,)    (add end,)    (a,[1,1] )    (b,[1,2] )    (add_v,[1,0] )    (jump0,[1,dot] )    (main begin,)    (main end,)    (main_v,[1,0] )    (a,[1,1] )    (b,[1,0] )    (a=1,)    (sel0,)    (b=add_v,[1,dot] )    (add(),)    (a=a+1,)    (b=3,)    (executed_P,)    (executed_P,)    
+successor node:T1 , 
+node:6
+(add begin,)    (add end,[1,dot] )    (a,[1,1] )    (b,[1,2] )    (add_v,[1,3] )    (jump0,)    (main begin,)    (main end,)    (main_v,[1,0] )    (a,[1,1] )    (b,[1,0] )    (a=1,)    (sel0,)    (b=add_v,[1,dot] )    (add(),)    (a=a+1,)    (b=3,)    (executed_P,)    (executed_P,)    
+successor node:T6 , 
+node:7
+(add begin,)    (add end,)    (a,[1,1] )    (b,[1,2] )    (add_v,[1,3] )    (jump0,)    (main begin,)    (main end,[1,dot] )    (main_v,[1,0] )    (a,[1,1] )    (b,[1,3] )    (a=1,)    (sel0,)    (b=add_v,)    (add(),)    (a=a+1,)    (b=3,)    (executed_P,)    (executed_P,)    
 successor node:

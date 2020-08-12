@@ -4,6 +4,7 @@
 
 #include "cpn_rg.h"
 extern CPN *cpnet;
+extern string arr_suffix ,begin_suffix,end_suffix ,return_suffix ,call_suffix ;
 void Marking::init_marking(CPlace *place,NUM_t pc) {
     placecount = pc;
     mss = new MultiSet[pc];
@@ -31,17 +32,14 @@ bool Marking::operator==(Marking &marking) {
     return true;
 }
 
-bool is_Fireable(CTransition *transition,CPN *cpn,const Marking &marking)
+bool is_Fireable(CTransition *transition,CPN *cpn,vector<Binding *>&bindings,const Marking &marking)
 {
-
     //1.binding
+    Binding *binding;
     for(int i=0;i<transition->producer.size();i++)
     {
         index_t idx = transition->producer[i].idx;
-//        MultiSet ms;
-//        ms.sid = cpn->place[idx].initMarking.sid;
-//        ms.tid = cpn->place[idx].initMarking.tid;
-//        cpnet->CT2MS(transition->producer[i].arc_exp,ms);
+
         if(cpn->place[idx].control_P == false) {
             //now just for normal variable
             string var = transition->producer[i].arc_exp.exp;
@@ -51,29 +49,45 @@ bool is_Fireable(CTransition *transition,CPN *cpn,const Marking &marking)
                 if(marking.mss[idx].tid == productsort) {
                     int psnum = sorttable.productsort[marking.mss[idx].sid].sortnum;
                     SortValue **cid;
-                    cpn->vartable[iter->second].value = new ProductSortValue(psnum);
                     marking.mss[idx].tokenQ->next->color->getColor(cid,psnum);
+                    binding = new Binding;
+                    binding->variable = var;
+                    binding->value = new ProductSortValue(psnum);
+                    binding->value->setColor(cid,psnum);
+                    bindings.push_back(binding);
                     cpn->vartable[iter->second].value->setColor(cid,psnum);
                 }
                 else if(marking.mss[idx].tid == Integer)
                 {
                     Integer_t cid;
-                    cpn->vartable[iter->second].value = new IntegerSortValue;
                     marking.mss[idx].tokenQ->next->color->getColor(cid);
+                    binding = new Binding;
+                    binding->variable = var;
+                    binding->value = new IntegerSortValue;
+                    binding->value->setColor(cid);
+                    bindings.push_back(binding);
                     cpn->vartable[iter->second].value->setColor(cid);
                 }
                 else if(marking.mss[idx].tid == Real)
                 {
                     Real_t cid;
-                    cpn->vartable[iter->second].value = new RealSortValue;
                     marking.mss[idx].tokenQ->next->color->getColor(cid);
+                    binding = new Binding;
+                    binding->variable = var;
+                    binding->value = new RealSortValue;
+                    binding->value->setColor(cid);
+                    bindings.push_back(binding);
                     cpn->vartable[iter->second].value->setColor(cid);
                 }
                 else if(marking.mss[idx].tid == String)
                 {
                     String_t cid;
-                    cpn->vartable[iter->second].value = new StringSortValue;
                     marking.mss[idx].tokenQ->next->color->getColor(cid);
+                    binding = new Binding;
+                    binding->variable = var;
+                    binding->value = new StringSortValue;
+                    binding->value->setColor(cid);
+                    bindings.push_back(binding);
                     cpn->vartable[iter->second].value->setColor(cid);
                 }
                 else if(marking.mss[idx].tid == dot)
@@ -115,15 +129,20 @@ bool is_Fireable(CTransition *transition,CPN *cpn,const Marking &marking)
                 return false;
         }
     }
+
+
     return true;
 }
 
 void RG_NODE::get_FireTranQ(CPN *cpn) {
+
     for(int i=0;i<cpn->transitioncount;i++)
     {
-        if(is_Fireable(&cpn->transition[i],cpn,marking)) {
+        vector<Binding *>bindings;
+        if(is_Fireable(&cpn->transition[i],cpn,bindings,marking)) {
             firenum++;
             tranQ->insert(&cpn->transition[i]);
+            tranQ->next->bindings = bindings;
         }
     }
 }
@@ -149,7 +168,7 @@ void FireTranQ::insert(CTransition *transition) {
 
 void RG::init(CPN *cpn) {
 
-    auto iter = cpn->mapFunction.find("main begin");
+    auto iter = cpn->mapFunction.find("main" + begin_suffix);
     string main_P = iter->second;
     auto iter2 = cpn->mapPlace.find(main_P);
     Tokens *token = new Tokens;
@@ -158,12 +177,46 @@ void RG::init(CPN *cpn) {
 
     init_node = new RG_NODE;
     init_node->marking.init_marking(cpn->place,cpn->placecount);
-    rgnodetable = new RG_NODE*[CPNRGTABLE_SIZE];
+    rgnodetable = new RG_NODE*[CPNRGTABLE_SIZE]();
     addRGNode(init_node);
 }
 
-void Marking_after_fire(Marking &marking,CTransition *transition,CPN *cpn)
+void Marking_after_fire(Marking &marking,CTransition *transition,vector<Binding *>bindings,CPN *cpn)
 {
+    string variable;
+    for(unsigned int i=0;i<bindings.size();i++)
+    {
+        variable = bindings[i]->variable;
+        auto iter = cpn->mapVariable.find(variable);
+        type tid = cpn->vartable[iter->second].tid;
+        SORTID sid = cpn->vartable[iter->second].sid;
+        int psnum = 0;
+        if(tid == productsort) {
+            SortValue **cid;
+            psnum = sorttable.productsort[sid].sortnum;
+            bindings[i]->value->getColor(cid,psnum);
+            cpn->vartable[iter->second].value->setColor(cid,psnum);
+        }
+        else if(tid == Integer)
+        {
+            Integer_t cid;
+            bindings[i]->value->getColor(cid);
+            cpn->vartable[iter->second].value->setColor(cid);
+        }
+        else if(tid == Real)
+        {
+            Real_t cid;
+            bindings[i]->value->getColor(cid);
+            cpn->vartable[iter->second].value->setColor(cid);
+        }
+        else if(tid == String)
+        {
+            String_t cid;
+            bindings[i]->value->getColor(cid);
+            cpn->vartable[iter->second].value->setColor(cid);
+        }
+
+    }
     //1.producer
     for(unsigned int i=0;i<transition->producer.size();i++)
     {
@@ -194,7 +247,7 @@ void RG::createNode(RG_NODE *node,CPN *cpn) {
     {
         RG_NODE *newnode = new RG_NODE;
         newnode->marking.init_marking(node->marking);
-        Marking_after_fire(newnode->marking,tranQ->transition,cpn);
+        Marking_after_fire(newnode->marking,tranQ->transition,tranQ->bindings,cpn);
         if(nodeExist(newnode))
             ;
         else {
@@ -220,6 +273,14 @@ bool RG::nodeExist(RG_NODE *node) {
 void RG::addRGNode(RG_NODE *node) {
 
     index_t hv = node->Hash() % CPNRGTABLE_SIZE;
+    if(rgnodetable[hv] == NULL) {
+        rgnodetable[hv] = new RG_NODE;
+        rgnodetable[hv] = node;
+        rgnodetable[hv]->next = NULL;
+        rgnodevec.push_back(node);
+        node_num++;
+        return;
+    }
     node->next = rgnodetable[hv];
     rgnodetable[hv] = node;
     rgnodevec.push_back(node);

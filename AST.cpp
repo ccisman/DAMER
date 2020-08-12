@@ -16,7 +16,7 @@
 
 
 set<string> build_in_type {"void","char","short","int","long","float","double"};
-
+extern string return_suffix;
 
 extern int yyparse(void);
 extern FILE *yyin;
@@ -249,7 +249,7 @@ void TraverseTree2(gtree *p)
     else if (p->type == POSTFIX_EXPRESSION && judge_call_postfix_expression(p))
     {
         if (p->place=="postfix_expression")
-            p->place = p->child->child->place + "_v";
+            p->place = p->child->child->place + return_suffix;
 
         gtree *statement = p;
         while (statement->type != STATEMENT)

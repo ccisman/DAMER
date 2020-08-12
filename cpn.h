@@ -400,6 +400,7 @@ typedef struct CPN_Place
     vector<string> exit;
     vector<string> false_exit;
     vector<string> enter_P;
+    vector<pair<string,string>> para_list;
     //***PDNet added end***/
 
     CPN_Place(){expression="";}
@@ -419,7 +420,7 @@ typedef struct CPN_Transition
     bool hasguard;
     vector<CSArc> producer;
     vector<CSArc> consumer;
-    //set<Variable> relvars;
+    set<string> relvars;
     //vector<Variable> relvararray;
 
     //***PDNet added start***/
@@ -479,6 +480,7 @@ public:
     void Add_Transition(string id,string guard,string exp);
     void Add_Arc(string source,string target,string exp,bool sourceP,Arc_Type arcType);
     void Add_Arc_override(string source,string target,string exp,bool sourceP,Arc_Type arcType);
+    void Add_Variable(string id,string related_P);
     void init_Place(string id,Tokens *token);
     void process_declaration(gtree *declaration,string base);
     void process_declarator(gtree *declarator, string tag, string base, bool para);

@@ -24,7 +24,7 @@ map<string,type> map_build_in_type {
         {"float",Real},
         {"double",Real}
 };
-string arr_suffix = "_arr",begin_suffix = " begin",end_suffix = " end",return_suffix = " v";
+string arr_suffix = "_arr",begin_suffix = " begin",end_suffix = " end",return_suffix = "_v",call_suffix = "()";
 string executed_P_name = "executed_P";
 extern int string_replace(std::string &s1, const std::string &s2, const std::string &s3);
 string gen_P()
@@ -223,7 +223,7 @@ void create_connect(CPN *petri, string T, string express, string base)
             }
             if (position != 0)
                 v[i] = v[i].substr(0, position);
-            string temp = v[i], temp_s = "";
+
 
             P2 = find_P_name(v[i],base);
 
@@ -232,17 +232,10 @@ void create_connect(CPN *petri, string T, string express, string base)
             auto viter = exist_V.find(V);
             if(viter!=exist_V.end())
                 continue;
+            auto iter = petri->mapTransition.find(T);
+            petri->transition[iter->second].relvars.insert(V);
             exist_V.insert(V);
-            auto iter = petri->mapVariable.find(V);
-            if(iter==petri->mapVariable.end())
-            {
-                Variable *var = &petri->vartable[petri->varcount++];
-                var->id = V;
-                auto iter1 = petri->mapPlace.find(P2);
-                var->sid = petri->place[iter1->second].initMarking.sid;
-                var->tid = petri->place[iter1->second].initMarking.tid;
-                petri->mapVariable.insert(make_pair(V,petri->varcount-1));
-            }
+            petri->Add_Variable(V,P2);
 
             petri->Add_Arc(P2,T,V,true,data);
             petri->Add_Arc(T,P2,V,false,data);
@@ -514,7 +507,7 @@ void MultiSet::insert(Tokens *token) {
             q=p;
             p=p->next;
         }
-        if(cmp == 0) {
+        if(cmp == 0&& p!=NULL) {
             p->tokencount+=token->tokencount;
             delete token;
         }
@@ -538,7 +531,7 @@ void MultiSet::insert(Tokens *token) {
             q=p;
             p=p->next;
         }
-        if(cid1 == cid2) {
+        if(cid1 == cid2 && p!=NULL) {
             p->tokencount+=token->tokencount;
             delete token;
         }
@@ -561,7 +554,7 @@ void MultiSet::insert(Tokens *token) {
             q=p;
             p=p->next;
         }
-        if(cid1 == cid2) {
+        if(cid1 == cid2&& p!=NULL) {
             p->tokencount+=token->tokencount;
             delete token;
         }
@@ -583,7 +576,7 @@ void MultiSet::insert(Tokens *token) {
             q=p;
             p=p->next;
         }
-        if(cid1 == cid2) {
+        if(cid1 == cid2&& p!=NULL) {
             p->tokencount+=token->tokencount;
             delete token;
         }
@@ -744,6 +737,8 @@ bool MultiSet::operator>=(const MultiSet &ms1) {
     {
         if(t1 == NULL)
             return false;
+        else if(t2 == NULL)
+            return true;
         if(t1->tokencount < t2->tokencount)
             return false;
     }
@@ -1273,7 +1268,7 @@ bool MultiSet::operator==(const MultiSet &ms) {
     }
     else if(tid == dot)
     {
-        if(t1 == NULL)
+        if(t1 == NULL||t2==NULL)
             return false;
         if(t1->tokencount != t2->tokencount)
             return false;
@@ -1427,6 +1422,30 @@ void CPN::Add_Arc_override(string source, string target, string exp, bool source
     Add_Arc(source,target,exp,sourceP,arcType);
 
 
+}
+
+void CPN::Add_Variable(string id, string related_P) {
+    auto iter = mapVariable.find(id);
+    if(iter==mapVariable.end())
+    {
+        Variable *var = &vartable[varcount++];
+        var->id = id;
+        auto iter1 = mapPlace.find(related_P);
+        var->sid = place[iter1->second].initMarking.sid;
+        var->tid = place[iter1->second].initMarking.tid;
+        int psnum = 0;
+        if(var->tid == productsort) {
+            psnum = sorttable.productsort[var->sid].sortnum;
+            var->value = new ProductSortValue(psnum);
+        }
+        else if(var->tid == Integer)
+            var->value = new IntegerSortValue;
+        else if(var->tid == Real)
+            var->value = new RealSortValue;
+        else if(var->tid == String)
+            var->value = new StringSortValue;
+        mapVariable.insert(make_pair(id,varcount-1));
+    }
 }
 
 void CPN::init() {
@@ -1740,18 +1759,18 @@ void CPN::CTN_cal(condition_tree_node *CTN) {
                 value1 = CTN->left->value;
             if(CTN->right->node_type == variable)
             {
-                string var2 = CTN->left->node_name;
+                string var2 = CTN->right->node_name;
                 map<string,index_t>::iterator iter = mapVariable.find(var2);
                 Variable *var  = &vartable[iter->second];
                 if(var->tid == Integer) {
                     Integer_t v;
                     var->value->getColor(v);
-                    value1 = to_string(v);
+                    value2 = to_string(v);
                 }
                 else if(var->tid == Real) {
                     Real_t v;
                     var->value->getColor(v);
-                    value1 = to_string(v);
+                    value2 = to_string(v);
                 }
             }
             else
@@ -2224,8 +2243,21 @@ void CPN::create_PDNet(gtree *p)
 
         while (up != NULL && up->type != COMPOUND_STATEMENT)
             up = up->parent;
-        for (unsigned int i = 0; i < p->para.size(); i++)
-            table->insert(p->para[i].first,p->para[i].second);
+        if(p->para.size()!=0) {
+            for (unsigned int i = 0; i < p->para.size(); i++)
+                table->insert(p->para[i].first, p->para[i].second);
+            string identifier;
+            gtree *func = p->parent;
+            if (func->child->next->child->type == POINTER)
+                identifier = func->child->next->child->next->child->child->place;
+            else
+                identifier = func->child->next->child->child->child->place;
+            auto iter = mapFunction.find(identifier + begin_suffix);
+            string func_P = iter->second;
+            auto iter1 = mapPlace.find(func_P);
+            for(unsigned int i=0;i<p->para.size();i++)
+                place[iter1->second].para_list.push_back(p->para[i]);
+        }
         if (up == NULL)
         {
             v_tables[v_tables.size()-1]->connect(v_tables[0]);
@@ -2282,7 +2314,7 @@ void CPN::create_PDNet(gtree *p)
         else
         {
             gtree *direct_declarator = p->child->next->child;
-            if (direct_declarator->child->next->type == REMAIN && direct_declarator->child->next->place == "(")//������������βο���
+            if (direct_declarator->child->next->type == REMAIN && direct_declarator->child->next->place == "(")
             {
                 if (direct_declarator->child->next->next->type == PARAMETER_TYPE_LIST)
                 {
@@ -2298,7 +2330,7 @@ void CPN::create_PDNet(gtree *p)
             else
             {
                 cout << "there is no '('!" << endl;
-                exit(1);
+                exit(-1);
             }
         }
 
@@ -2308,6 +2340,10 @@ void CPN::create_PDNet(gtree *p)
             string return_P = gen_P();
             Add_Place(return_P,ret_tag,1,false,func + return_suffix);
             mapFunction.insert(make_pair(func + return_suffix,return_P));
+            string V = func + return_suffix;
+            Add_Variable(V,return_P);
+            v_tables[0]->insert(V,return_P);
+            //to be continue
         }
 
     }
@@ -2323,38 +2359,75 @@ void CPN::create_PDNet(gtree *p)
     }
     else if(judge_statement(p))
     {
+        //handle it first because call statement needs them
+        if(p->type == SELECTION_STATEMENT || p->type == ITERATION_STATEMENT)
+        {
+            //construct  P、T
+            string control_P = gen_P();
+            gtree *statement = p;
+            while(statement->type != STATEMENT)
+                statement = statement->parent;
+            statement->matched_P = control_P;
+            Add_Place(control_P,"",0,true,p->place);
+            string control_T1 = gen_T(),control_T2 = gen_T();
+            string condition = p->child->next->next->place;
+            Add_Transition(control_T1,condition,condition);
+            Add_Arc(control_P,control_T1,"",true,control);
+            string condition_op = opposite_all(condition);
+            Add_Transition(control_T2,condition_op,condition_op);
+            Add_Arc(control_P,control_T2,"",true,control);
 
+            //set enter,enter_P
+            vector<string> enter,enter_P;
+            enter.push_back(control_T1);
+            enter.push_back(control_T2);
+            enter_P.push_back(control_P);
+            set_enter_T(control_P,enter);
+            set_enter_P(control_P,enter_P);
+        }
+        else
+        {
+            //construct  P、T
+            string control_P = gen_P();
+            gtree *statement = p;
+            while(statement->type != STATEMENT)
+                statement = statement->parent;
+            statement->matched_P = control_P;
+            Add_Place(control_P,"",0,true,p->place);
+            string control_T = gen_T();
+            Add_Transition(control_T,"",p->place);
+            Add_Arc(control_P,control_T,"",true,control);
+
+            //set exit,enter
+            vector<string> enter,exit,enter_P;
+            enter.push_back(control_T);
+            exit.push_back(control_T);
+            enter_P.push_back(control_P);
+            set_enter_T(control_P,enter);
+            set_exit_T(control_P,exit);
+            set_enter_P(control_P,enter_P);
+
+        }
     }
 
     create_PDNet(p->child);
 
     if(p->type == ASSIGNMENT_EXPRESSION && p->child->next!=NULL)
     {
-        //construct  P、T
-        string control_P = gen_P();
-        gtree *statement = p;
-        while(statement->type != STATEMENT)
-            statement = statement->parent;
-        statement->matched_P = control_P;
-        Add_Place(control_P,"",0,true,p->place);
-        string control_T = gen_T();
-        Add_Transition(control_T,"",p->place);
-        Add_Arc(control_P,control_T,"",true,control);
-
-        //set exit,enter
-        vector<string> enter,exit,enter_P;
-        enter.push_back(control_T);
-        exit.push_back(control_T);
-        enter_P.push_back(control_P);
-        set_enter_T(control_P,enter);
-        set_exit_T(control_P,exit);
-        set_enter_P(control_P,enter_P);
-
-        //create_connection
         gtree *com = p;
         while(com->type!=COMPOUND_STATEMENT)
             com = com->parent;
         string base = com->place;
+        gtree *statement = p;
+        while(statement->type != STATEMENT)
+            statement = statement->parent;
+        string control_P = statement->matched_P;
+        string control_T = get_enter_T(control_P)[0];
+
+
+
+        //create_connection
+
         string exp = p->child->next->next->place;
 
         create_connect(this, control_T, exp ,base);
@@ -2365,41 +2438,27 @@ void CPN::create_PDNet(gtree *p)
         Add_Arc_override(control_T,left_P,exp,false,data);
         Add_Arc_override(left_P,control_T,left,true,data);
         string V = left;
-        auto iter = mapVariable.find(V);
-        if(iter==mapVariable.end())
-        {
-            Variable *var = &vartable[varcount++];
-            var->id = V;
-            auto iter1 = mapPlace.find(left_P);
-            var->sid = place[iter1->second].initMarking.sid;
-            var->tid = place[iter1->second].initMarking.tid;
-            mapVariable.insert(make_pair(V,varcount-1));
-        }
+        Add_Variable(left,left_P);
+        auto iter = mapTransition.find(control_T);
+        transition[iter->second].relvars.insert(V);
     }
     else if(p->type == SELECTION_STATEMENT)
     {
-        //construct  P、T
-        string control_P = gen_P();
+        gtree *com = p;
+        while(com->type!=COMPOUND_STATEMENT)
+            com = com->parent;
+        string base = com->place;
         gtree *statement = p;
         while(statement->type != STATEMENT)
             statement = statement->parent;
-        statement->matched_P = control_P;
-        Add_Place(control_P,"",0,true,p->place);
-        string control_T1 = gen_T(),control_T2 = gen_T();
+        string control_P = statement->matched_P;
+        string control_T1 = get_enter_T(control_P)[0];
+        string control_T2 = get_enter_T(control_P)[1];
         string condition = p->child->next->next->place;
-        Add_Transition(control_T1,condition,condition);
-        Add_Arc(control_P,control_T1,"",true,control);
         string condition_op = opposite_all(condition);
-        Add_Transition(control_T2,condition_op,condition_op);
-        Add_Arc(control_P,control_T2,"",true,control);
 
-        //set exit,enter,enter_P
-        vector<string> enter,exit,enter_P;
-        enter.push_back(control_T1);
-        enter.push_back(control_T2);
-        enter_P.push_back(control_P);
-        set_enter_T(control_P,enter);
-        set_enter_P(control_P,enter_P);
+        //set exit
+        vector<string> exit;
 
         vector<string> temp1,temp2;
         gtree *statement1 = p->child->next->next->next->next;
@@ -2416,10 +2475,7 @@ void CPN::create_PDNet(gtree *p)
         set_exit_T(control_P,exit);
 
         //create_connection
-        gtree *com = p;
-        while(com->type!=COMPOUND_STATEMENT)
-            com = com->parent;
-        string base = com->place;
+
         create_connect(this, control_T1, condition,base);
         create_connect(this, control_T2, condition_op,base);
 
@@ -2452,29 +2508,22 @@ void CPN::create_PDNet(gtree *p)
     }
     else if(p->type == ITERATION_STATEMENT)
     {
-        //construct  P、T
-        string control_P = gen_P();
+        gtree *com = p;
+        while(com->type!=COMPOUND_STATEMENT)
+            com = com->parent;
+        string base = com->place;
+
         gtree *statement = p;
         while(statement->type != STATEMENT)
             statement = statement->parent;
-        statement->matched_P = control_P;
-        Add_Place(control_P,"",0,true,p->place);
-        string control_T1 = gen_T(),control_T2 = gen_T();
+        string control_P = statement->matched_P;
+        string control_T1 = get_enter_T(control_P)[0];
+        string control_T2 = get_enter_T(control_P)[1];
         string condition = p->child->next->next->place;
-        Add_Transition(control_T1,condition,condition);
-        Add_Arc(control_P,control_T1,"",true,control);
         string condition_op = opposite_all(condition);
-        Add_Transition(control_T2,condition_op,condition_op);
-        Add_Arc(control_P,control_T2,"",true,control);
 
-        //set exit,enter,enter_P
-        vector<string> enter,exit,falseexit,enter_P;
-        enter.push_back(control_T1);
-        enter.push_back(control_T2);
-        enter_P.push_back(control_P);
-        set_enter_T(control_P,enter);
-        set_enter_P(control_P,enter_P);
-
+        //set exit
+        vector<string> exit,falseexit;
 
         vector<string> temp1;
         gtree *statement1 = p->child->next->next->next->next;
@@ -2486,10 +2535,7 @@ void CPN::create_PDNet(gtree *p)
 
 
         //create_connection
-        gtree *com = p;
-        while(com->type!=COMPOUND_STATEMENT)
-            com = com->parent;
-        string base = com->place;
+
         create_connect(this, control_T1, condition,base);
         create_connect(this, control_T2, condition_op,base);
 
@@ -2598,7 +2644,7 @@ void CPN::create_PDNet(gtree *p)
         }
 
     }
-    else if (p->type == COMPOUND_STATEMENT && p->parent->type == STATEMENT && p->parent->parent->type == STATEMENT_LIST)
+    else if(p->type == COMPOUND_STATEMENT && p->parent->type == STATEMENT && p->parent->parent->type == STATEMENT_LIST)
     {
 
         //construct P、T
@@ -2608,6 +2654,8 @@ void CPN::create_PDNet(gtree *p)
         string control_T = gen_T();
         Add_Transition(control_T,"",p->place);
         Add_Arc(control_P, control_T, "", true,control);
+
+
         inside_block(this, p, control_T);
 
         //set enter,exit,enter_P
@@ -2623,18 +2671,13 @@ void CPN::create_PDNet(gtree *p)
 
 
     }
-    else if (judge_return_statement(p))
+    else if(judge_return_statement(p))
     {
-        //construct  P、T
-        string control_P = gen_P();
         gtree *statement = p;
         while(statement->type != STATEMENT)
             statement = statement->parent;
-        statement->matched_P = control_P;
-        Add_Place(control_P,"",0,true,p->place);
-        string control_T = gen_T();
-        Add_Transition(control_T,"",p->place);
-        Add_Arc(control_P,control_T,"",true,control);
+        string control_P = statement->matched_P;
+        string control_T = get_enter_T(control_P)[0];
 
         //set exit,enter,enter_P
         vector<string> enter,exit,enter_P;
@@ -2670,14 +2713,103 @@ void CPN::create_PDNet(gtree *p)
             auto iter2 = mapFunction.find(identifier + return_suffix);
             string last_func_v= iter2->second;
             Add_Arc(control_T, last_func_v, expression, false,data);
-            Add_Arc(last_func_v, control_T, expression, true,data);
+            Add_Arc(last_func_v, control_T, identifier + return_suffix, true,data);
             gtree *com = p;
             while(com->type!=COMPOUND_STATEMENT)
                 com = com->parent;
             string base = com->place;
             create_connect(this, control_T, expression,base);
+            auto iter = mapTransition.find(control_T);
+            transition[iter->second].relvars.insert(identifier + return_suffix);
         }
 
+    }
+    else if(p->type == EXPRESSION_STATEMENT && p->parent->matched_P == "")
+    {
+        //construct  P、T
+        string control_P = gen_P();
+        gtree *statement = p;
+        while(statement->type != STATEMENT)
+            statement = statement->parent;
+        statement->matched_P = control_P;
+        Add_Place(control_P,"",0,true,p->place);
+        string control_T = gen_T();
+        Add_Transition(control_T,"",p->place);
+        Add_Arc(control_P,control_T,"",true,control);
+
+        //set exit,enter
+        vector<string> enter,exit,enter_P;
+        enter.push_back(control_T);
+        exit.push_back(control_T);
+        enter_P.push_back(control_P);
+        set_enter_T(control_P,enter);
+        set_exit_T(control_P,exit);
+        set_enter_P(control_P,enter_P);
+    }
+    else if(judge_call_postfix_expression(p))
+    {
+        gtree *com = p;
+        while(com->type!=COMPOUND_STATEMENT)
+            com = com->parent;
+        string base = com->place;
+        string call_func_id = p->child->place,call_func_P_begin,call_func_P_end;
+
+        //construct call structure
+        string call_P = gen_P();
+        string call_T = gen_T();
+        Add_Place(call_P,"",0,true,p->child->place + call_suffix);
+        Add_Transition(call_T,"",p->child->place + call_suffix);
+        Add_Arc(call_P,call_T,"",true,control);
+
+        // set enter_P
+        gtree *statement = p;
+        while(statement->type!=STATEMENT)
+            statement = statement->parent;
+        string statement_P = statement->matched_P;
+        vector<string> statement_enter_P = get_enter_P(statement_P);
+        statement_enter_P.push_back(call_P);
+        set_enter_P(statement_P,statement_enter_P);
+
+
+        //passing parameter
+        gtree *temp_tree = p->child->next->next;
+        if (temp_tree->type == ARGUMENT_EXPRESSION_LIST)
+        {
+            vector<string> v;
+            gtree *temp_assignment_expression = temp_tree;
+            while (temp_assignment_expression->type != ASSIGNMENT_EXPRESSION)
+                temp_assignment_expression = temp_assignment_expression->child;
+
+            while (1)
+            {
+                string value = temp_assignment_expression->place;
+                v.push_back(value);
+                if (temp_assignment_expression->parent->next->next != NULL
+                && temp_assignment_expression->parent->next->next->type == ASSIGNMENT_EXPRESSION)
+                    temp_assignment_expression = temp_assignment_expression->parent->next->next;
+                else
+                    break;
+            }
+            auto iter = mapFunction.find(call_func_id + begin_suffix);
+            call_func_P_begin = iter->second;
+            auto iter1 = mapPlace.find(call_func_P_begin);
+            CPlace *begin_place = &place[iter1->second];
+            for(unsigned int i=0;i<begin_place->para_list.size();i++)
+            {
+                Add_Arc(call_T,begin_place->para_list[i].second,v[i],false,data);
+                Add_Arc(begin_place->para_list[i].second,call_T,begin_place->para_list[i].first,true,data);
+                create_connect(this,call_T,v[i],base);
+            }
+        }
+
+        //construct enter&return arcs
+        vector<string> enter_T = get_enter_T(statement_P);
+        string called_identifier = p->child->place;
+        string called_begin_P = mapFunction.find(called_identifier + begin_suffix)->second;
+        string called_end_P = mapFunction.find(called_identifier + end_suffix)->second;
+        Add_Arc(call_T,called_begin_P,"",false,call_enter);
+        for(unsigned int i=0;i<enter_T.size();i++)
+            Add_Arc(called_end_P,enter_T[i],"",true,call_exit);
     }
     create_PDNet(p->next);
 
