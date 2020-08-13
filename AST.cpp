@@ -134,9 +134,11 @@ bool judge_statement(gtree *p)
 
 bool judge_expression_statement(gtree *statement1)
 {
-    if (statement1->type == STATEMENT && statement1->child->type == EXPRESSION_STATEMENT && statement1->child->child->type == EXPRESSION
-        && statement1->child->child->child->type == ASSIGNMENT_EXPRESSION && statement1->child->child->child->child->type == CONDITIONAL_EXPRESSION
-        && !judge_call_statement(statement1))
+    if (statement1->type == STATEMENT && statement1->child->type == EXPRESSION_STATEMENT
+        && statement1->child->child->type == EXPRESSION
+        && statement1->child->child->child->type == ASSIGNMENT_EXPRESSION
+        && statement1->child->child->child->child->type == CONDITIONAL_EXPRESSION
+        )
         return true;
     return false;
 }

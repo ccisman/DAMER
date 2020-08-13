@@ -5,20 +5,25 @@ P1[shape=circle,label="add end"]
 subgraph cluster_P2{label="a"color="white"P2[shape=circle, style="filled",color="black",fillcolor="chartreuse"]}
 subgraph cluster_P3{label="b"color="white"P3[shape=circle, style="filled",color="black",fillcolor="chartreuse"]}
 subgraph cluster_P4{label="add_v"color="white"P4[shape=circle, style="filled",color="black",fillcolor="chartreuse"]}
-P5[shape=circle,label="jump0"]
-P6[shape=circle,label="main begin"]
-P7[shape=circle,label="main end"]
-subgraph cluster_P8{label="main_v"color="white"P8[shape=circle, style="filled",color="black",fillcolor="chartreuse"]}
-subgraph cluster_P9{label="a"color="white"P9[shape=circle, style="filled",color="black",fillcolor="chartreuse"]}
-subgraph cluster_P10{label="b"color="white"P10[shape=circle, style="filled",color="black",fillcolor="chartreuse"]}
-P11[shape=circle,label="a=1"]
-P12[shape=circle,label="sel0"]
-P13[shape=circle,label="b=add_v"]
-P14[shape=circle,label="add()"]
-P15[shape=circle,label="a=a+1"]
-P16[shape=circle,label="b=3"]
-P17[shape=circle,label="executed_P"]
-P18[shape=circle,label="executed_P"]
+subgraph cluster_P5{label="temp"color="white"P5[shape=circle, style="filled",color="black",fillcolor="chartreuse"]}
+P6[shape=circle,label="temp=a+b"]
+P7[shape=circle,label="jump0"]
+P8[shape=circle,label="executed_P"]
+P9[shape=circle,label="executed_P"]
+P10[shape=circle,label="main begin"]
+P11[shape=circle,label="main end"]
+subgraph cluster_P12{label="main_v"color="white"P12[shape=circle, style="filled",color="black",fillcolor="chartreuse"]}
+subgraph cluster_P13{label="a"color="white"P13[shape=circle, style="filled",color="black",fillcolor="chartreuse"]}
+subgraph cluster_P14{label="b"color="white"P14[shape=circle, style="filled",color="black",fillcolor="chartreuse"]}
+P15[shape=circle,label="a=0"]
+P16[shape=circle,label="b=1"]
+P17[shape=circle,label="a=add_v"]
+P18[shape=circle,label="add()"]
+P19[shape=circle,label="b=b-1"]
+P20[shape=circle,label="executed_P"]
+P21[shape=circle,label="executed_P"]
+P22[shape=circle,label="executed_P"]
+P23[shape=circle,label="executed_P"]
 T0[shape=box]
 T1[shape=box]
 T2[shape=box]
@@ -28,25 +33,35 @@ T5[shape=box]
 T6[shape=box]
 T7[shape=box]
 T8[shape=box]
-T9[shape=box]
 P0->T0
-P5->T1
-T1->P1[style="dashed"]
-T1->P4
-P4->T1
+P6->T1
 P2->T1
 T1->P2
 P3->T1
 T1->P3
-T0->P5
-P6->T2
-P11->T3
-T3->P9
-P9->T3
-P12->T4
-P12->T5
-P13->T6
-P14->T7
+T1->P5
+P5->T1
+P7->T2
+T2->P1[style="dashed"]
+T2->P4
+P4->T2
+P5->T2
+T2->P5
+T0->P6
+T0->P8[style="dashed"]
+P8->T1
+T0->P7
+T1->P9[style="dashed"]
+P9->T2
+P10->T3
+P15->T4
+T4->P13
+P13->T4
+P16->T5
+T5->P14
+P14->T5
+P17->T6
+P18->T7
 T7->P2
 P2->T7
 T7->P3
@@ -55,29 +70,23 @@ T7->P0
 P1->T6
 P4->T6
 T6->P4
-T6->P10
-P10->T6
-P15->T8
-P9->T8
-T8->P9
-P16->T9
-T9->P10
-P10->T9
-P9->T4
-T4->P9
-P9->T5
-T5->P9
-T4->P13
-T4->P14
-T5->P15
-T5->P16
-T8->P17[style="dashed"]
-P17->T9[style="dashed"]
-T2->P11
-T2->P12
-T3->P18[style="dashed"]
-P18->T4[style="dashed"]
-P18->T5[style="dashed"]
-T6->P7[style="dashed"]
-T9->P7[style="dashed"]
+T6->P13
+P13->T6
+P19->T8
+P14->T8
+T8->P14
+T3->P15
+T3->P20[style="dashed"]
+P20->T4
+T3->P16
+T4->P21[style="dashed"]
+P21->T5
+T3->P18
+T3->P17
+T5->P22[style="dashed"]
+P22->T7
+T3->P19
+T6->P23[style="dashed"]
+P23->T8
+T8->P11[style="dashed"]
 }

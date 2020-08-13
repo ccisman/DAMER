@@ -5,6 +5,59 @@ CMakeFiles/PDNet_checker.dir/AST.cpp.o
  /home/cc/CLionProjects/PDNet_checker/AST.cpp
  /home/cc/CLionProjects/PDNet_checker/AST.h
  /home/cc/CLionProjects/PDNet_checker/y.tab.h
+CMakeFiles/PDNet_checker.dir/BA/Data_Structures.cpp.o
+ /home/cc/CLionProjects/PDNet_checker/BA/Data_Structures.cpp
+ /home/cc/CLionProjects/PDNet_checker/BA/Data_Structures.h
+ /home/cc/CLionProjects/PDNet_checker/BA/Lexer.h
+CMakeFiles/PDNet_checker.dir/BA/Lexer.cpp.o
+ /home/cc/CLionProjects/PDNet_checker/BA/Lexer.cpp
+ /home/cc/CLionProjects/PDNet_checker/BA/Lexer.h
+CMakeFiles/PDNet_checker.dir/BA/SBA.cpp.o
+ /home/cc/CLionProjects/PDNet_checker/BA/Data_Structures.h
+ /home/cc/CLionProjects/PDNet_checker/BA/Lexer.h
+ /home/cc/CLionProjects/PDNet_checker/BA/SBA.cpp
+ /home/cc/CLionProjects/PDNet_checker/BA/SBA.h
+ /home/cc/CLionProjects/PDNet_checker/BA/Syntax_Tree.h
+ /home/cc/CLionProjects/PDNet_checker/BA/TBA.h
+ /home/cc/CLionProjects/PDNet_checker/BA/TGBA.h
+CMakeFiles/PDNet_checker.dir/BA/Syntax_Tree.cpp.o
+ /home/cc/CLionProjects/PDNet_checker/BA/Data_Structures.h
+ /home/cc/CLionProjects/PDNet_checker/BA/Lexer.h
+ /home/cc/CLionProjects/PDNet_checker/BA/Syntax_Tree.cpp
+ /home/cc/CLionProjects/PDNet_checker/BA/Syntax_Tree.h
+CMakeFiles/PDNet_checker.dir/BA/TBA.cpp.o
+ /home/cc/CLionProjects/PDNet_checker/BA/Data_Structures.h
+ /home/cc/CLionProjects/PDNet_checker/BA/Lexer.h
+ /home/cc/CLionProjects/PDNet_checker/BA/Syntax_Tree.h
+ /home/cc/CLionProjects/PDNet_checker/BA/TBA.cpp
+ /home/cc/CLionProjects/PDNet_checker/BA/TBA.h
+ /home/cc/CLionProjects/PDNet_checker/BA/TGBA.h
+CMakeFiles/PDNet_checker.dir/BA/TGBA.cpp.o
+ /home/cc/CLionProjects/PDNet_checker/BA/Data_Structures.h
+ /home/cc/CLionProjects/PDNet_checker/BA/Lexer.h
+ /home/cc/CLionProjects/PDNet_checker/BA/Syntax_Tree.h
+ /home/cc/CLionProjects/PDNet_checker/BA/TGBA.cpp
+ /home/cc/CLionProjects/PDNet_checker/BA/TGBA.h
+CMakeFiles/PDNet_checker.dir/BA/tinystr.cpp.o
+ /home/cc/CLionProjects/PDNet_checker/BA/tinystr.cpp
+ /home/cc/CLionProjects/PDNet_checker/BA/tinystr.h
+CMakeFiles/PDNet_checker.dir/BA/tinyxml.cpp.o
+ /home/cc/CLionProjects/PDNet_checker/BA/tinystr.h
+ /home/cc/CLionProjects/PDNet_checker/BA/tinyxml.cpp
+ /home/cc/CLionProjects/PDNet_checker/BA/tinyxml.h
+CMakeFiles/PDNet_checker.dir/BA/tinyxmlerror.cpp.o
+ /home/cc/CLionProjects/PDNet_checker/BA/tinystr.h
+ /home/cc/CLionProjects/PDNet_checker/BA/tinyxml.h
+ /home/cc/CLionProjects/PDNet_checker/BA/tinyxmlerror.cpp
+CMakeFiles/PDNet_checker.dir/BA/tinyxmlparser.cpp.o
+ /home/cc/CLionProjects/PDNet_checker/BA/tinystr.h
+ /home/cc/CLionProjects/PDNet_checker/BA/tinyxml.h
+ /home/cc/CLionProjects/PDNet_checker/BA/tinyxmlparser.cpp
+CMakeFiles/PDNet_checker.dir/BA/xml2ltl.cpp.o
+ /home/cc/CLionProjects/PDNet_checker/BA/tinystr.h
+ /home/cc/CLionProjects/PDNet_checker/BA/tinyxml.h
+ /home/cc/CLionProjects/PDNet_checker/BA/xml2ltl.cpp
+ /home/cc/CLionProjects/PDNet_checker/BA/xml2ltl.h
 CMakeFiles/PDNet_checker.dir/base.cpp.o
  /home/cc/CLionProjects/PDNet_checker/base.cpp
 CMakeFiles/PDNet_checker.dir/condition_tree.cpp.o
@@ -41,6 +94,15 @@ CMakeFiles/PDNet_checker.dir/main.cpp.o
  /home/cc/CLionProjects/PDNet_checker/y.tab.h
 CMakeFiles/PDNet_checker.dir/pre_process.cpp.o
  /home/cc/CLionProjects/PDNet_checker/pre_process.cpp
+CMakeFiles/PDNet_checker.dir/slice.cpp.o
+ /home/cc/CLionProjects/PDNet_checker/AST.h
+ /home/cc/CLionProjects/PDNet_checker/BA/tinystr.h
+ /home/cc/CLionProjects/PDNet_checker/BA/tinyxml.h
+ /home/cc/CLionProjects/PDNet_checker/BA/xml2ltl.h
+ /home/cc/CLionProjects/PDNet_checker/condition_tree.h
+ /home/cc/CLionProjects/PDNet_checker/cpn.h
+ /home/cc/CLionProjects/PDNet_checker/slice.cpp
+ /home/cc/CLionProjects/PDNet_checker/y.tab.h
 CMakeFiles/PDNet_checker.dir/y.tab.cpp.o
  /home/cc/CLionProjects/PDNet_checker/AST.h
  /home/cc/CLionProjects/PDNet_checker/y.tab.cpp

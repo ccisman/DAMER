@@ -5,6 +5,17 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
   "/home/cc/CLionProjects/PDNet_checker/AST.cpp" "/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/CMakeFiles/PDNet_checker.dir/AST.cpp.o"
+  "/home/cc/CLionProjects/PDNet_checker/BA/Data_Structures.cpp" "/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/CMakeFiles/PDNet_checker.dir/BA/Data_Structures.cpp.o"
+  "/home/cc/CLionProjects/PDNet_checker/BA/Lexer.cpp" "/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/CMakeFiles/PDNet_checker.dir/BA/Lexer.cpp.o"
+  "/home/cc/CLionProjects/PDNet_checker/BA/SBA.cpp" "/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/CMakeFiles/PDNet_checker.dir/BA/SBA.cpp.o"
+  "/home/cc/CLionProjects/PDNet_checker/BA/Syntax_Tree.cpp" "/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/CMakeFiles/PDNet_checker.dir/BA/Syntax_Tree.cpp.o"
+  "/home/cc/CLionProjects/PDNet_checker/BA/TBA.cpp" "/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/CMakeFiles/PDNet_checker.dir/BA/TBA.cpp.o"
+  "/home/cc/CLionProjects/PDNet_checker/BA/TGBA.cpp" "/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/CMakeFiles/PDNet_checker.dir/BA/TGBA.cpp.o"
+  "/home/cc/CLionProjects/PDNet_checker/BA/tinystr.cpp" "/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/CMakeFiles/PDNet_checker.dir/BA/tinystr.cpp.o"
+  "/home/cc/CLionProjects/PDNet_checker/BA/tinyxml.cpp" "/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/CMakeFiles/PDNet_checker.dir/BA/tinyxml.cpp.o"
+  "/home/cc/CLionProjects/PDNet_checker/BA/tinyxmlerror.cpp" "/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/CMakeFiles/PDNet_checker.dir/BA/tinyxmlerror.cpp.o"
+  "/home/cc/CLionProjects/PDNet_checker/BA/tinyxmlparser.cpp" "/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/CMakeFiles/PDNet_checker.dir/BA/tinyxmlparser.cpp.o"
+  "/home/cc/CLionProjects/PDNet_checker/BA/xml2ltl.cpp" "/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/CMakeFiles/PDNet_checker.dir/BA/xml2ltl.cpp.o"
   "/home/cc/CLionProjects/PDNet_checker/base.cpp" "/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/CMakeFiles/PDNet_checker.dir/base.cpp.o"
   "/home/cc/CLionProjects/PDNet_checker/condition_tree.cpp" "/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/CMakeFiles/PDNet_checker.dir/condition_tree.cpp.o"
   "/home/cc/CLionProjects/PDNet_checker/cpn.cpp" "/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/CMakeFiles/PDNet_checker.dir/cpn.cpp.o"
@@ -12,6 +23,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/cc/CLionProjects/PDNet_checker/lex.y.cpp" "/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/CMakeFiles/PDNet_checker.dir/lex.y.cpp.o"
   "/home/cc/CLionProjects/PDNet_checker/main.cpp" "/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/CMakeFiles/PDNet_checker.dir/main.cpp.o"
   "/home/cc/CLionProjects/PDNet_checker/pre_process.cpp" "/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/CMakeFiles/PDNet_checker.dir/pre_process.cpp.o"
+  "/home/cc/CLionProjects/PDNet_checker/slice.cpp" "/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/CMakeFiles/PDNet_checker.dir/slice.cpp.o"
   "/home/cc/CLionProjects/PDNet_checker/y.tab.cpp" "/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/CMakeFiles/PDNet_checker.dir/y.tab.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")

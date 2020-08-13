@@ -46,7 +46,7 @@ extern SortTable sorttable;
 extern CPN *cpnet;
 
 enum type{dot,finiteintrange,productsort,usersort,Integer,Real,String};
-enum Arc_Type{executed,control,call_enter,call_exit,data};
+enum Arc_Type{executed,control,call_enter,call_exit,data,write,remain};
 
 
 /*========================Sort==========================*/
@@ -399,7 +399,7 @@ typedef struct CPN_Place
     vector<string> enter;
     vector<string> exit;
     vector<string> false_exit;
-    vector<string> enter_P;
+    vector<string> call_P;
     vector<pair<string,string>> para_list;
     //***PDNet added end***/
 
@@ -486,8 +486,8 @@ public:
     void process_declarator(gtree *declarator, string tag, string base, bool para);
     void process_para_type_list(gtree *para_type_list, string base_Vname);
     void set_producer_consumer();
-    void set_enter_P(string p_name,vector<string> enter_P);
-    vector<string> get_enter_P(string p_name);
+    void set_call_P(string p_name,vector<string> enter_P);
+    vector<string> get_call_P(string p_name);
     void set_exit_T(string p_name,vector<string> exit_T);
     vector<string> get_exit_T(string p_name);
     void set_falseexit_T(string p_name,vector<string> exit_T);
@@ -507,3 +507,4 @@ private:
 //void Tokenscopy(Tokens &t1,const Tokens &t2,type tid,int PSnum=0);
 extern string arr_suffix;
 extern map<string,type> map_build_in_type;
+extern void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P, vector<string>&final_T);

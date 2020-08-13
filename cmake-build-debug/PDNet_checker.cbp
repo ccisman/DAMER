@@ -90,6 +90,66 @@
 		<Unit filename="/home/cc/CLionProjects/PDNet_checker/AST.h">
 			<Option target="PDNet_checker"/>
 		</Unit>
+		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/Data_Structures.cpp">
+			<Option target="PDNet_checker"/>
+		</Unit>
+		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/Data_Structures.h">
+			<Option target="PDNet_checker"/>
+		</Unit>
+		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/Lexer.cpp">
+			<Option target="PDNet_checker"/>
+		</Unit>
+		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/Lexer.h">
+			<Option target="PDNet_checker"/>
+		</Unit>
+		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/SBA.cpp">
+			<Option target="PDNet_checker"/>
+		</Unit>
+		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/SBA.h">
+			<Option target="PDNet_checker"/>
+		</Unit>
+		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/Syntax_Tree.cpp">
+			<Option target="PDNet_checker"/>
+		</Unit>
+		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/Syntax_Tree.h">
+			<Option target="PDNet_checker"/>
+		</Unit>
+		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/TBA.cpp">
+			<Option target="PDNet_checker"/>
+		</Unit>
+		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/TBA.h">
+			<Option target="PDNet_checker"/>
+		</Unit>
+		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/TGBA.cpp">
+			<Option target="PDNet_checker"/>
+		</Unit>
+		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/TGBA.h">
+			<Option target="PDNet_checker"/>
+		</Unit>
+		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/tinystr.cpp">
+			<Option target="PDNet_checker"/>
+		</Unit>
+		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/tinystr.h">
+			<Option target="PDNet_checker"/>
+		</Unit>
+		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/tinyxml.cpp">
+			<Option target="PDNet_checker"/>
+		</Unit>
+		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/tinyxml.h">
+			<Option target="PDNet_checker"/>
+		</Unit>
+		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/tinyxmlerror.cpp">
+			<Option target="PDNet_checker"/>
+		</Unit>
+		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/tinyxmlparser.cpp">
+			<Option target="PDNet_checker"/>
+		</Unit>
+		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/xml2ltl.cpp">
+			<Option target="PDNet_checker"/>
+		</Unit>
+		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/xml2ltl.h">
+			<Option target="PDNet_checker"/>
+		</Unit>
 		<Unit filename="/home/cc/CLionProjects/PDNet_checker/base.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
@@ -121,6 +181,9 @@
 			<Option target="PDNet_checker"/>
 		</Unit>
 		<Unit filename="/home/cc/CLionProjects/PDNet_checker/pre_process.cpp">
+			<Option target="PDNet_checker"/>
+		</Unit>
+		<Unit filename="/home/cc/CLionProjects/PDNet_checker/slice.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
 		<Unit filename="/home/cc/CLionProjects/PDNet_checker/v_table.h">

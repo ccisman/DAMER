@@ -422,8 +422,9 @@ bool has_variable(string s)
     return false;
 }
 
-int extract_dynamic_init(string s,stack<string> &st)
+bool extract_dynamic_init(string &s,stack<string> &st)
 {
+    bool flag;
     int begin,end;
     string temp,right_exp;
     for(unsigned int i=0;i<s.length();i++)
@@ -437,8 +438,11 @@ int extract_dynamic_init(string s,stack<string> &st)
                 end++;
             right_exp = s.substr(i+1,end-i-1);
             temp = s.substr(begin+1,end-begin-1);
-            if(has_variable(right_exp))
+            if(has_variable(right_exp)) {
                 st.push(temp);
+                s = s.substr(0,i) + s.substr(end,s.length());
+                flag = true;
+            }
             //cout<<"temp:"<<temp<<endl;
             //cout<<"right_exp:"<<right_exp<<endl;
 
@@ -490,23 +494,22 @@ int trans_dynamic_init(string &s)
         text = result.suffix();
         if(res.find('(')==string::npos && res.find('=')!=string::npos) {
             //cout<<"res:"<<result[0]<<endl;
-            extract_dynamic_init(res, st);
-
-            if (!judge_next_dec(text, 0))
-            {
-                while(!st.empty())
-                {
-                    string top = st.top();
-                    top = "\n" + top + ";";
-                    st.pop();
-                    oldtext = text;
-                    text.insert(0,top);
-                    s.replace(s.find(oldtext),oldtext.size(),text);
+            string old_res = res;
+            if(extract_dynamic_init(res, st)) {
+                s.replace(s.find(old_res), old_res.size(), res);
+                if (!judge_next_dec(text, 0)) {
+                    while (!st.empty()) {
+                        string top = st.top();
+                        top = "\n" + top + ";";
+                        st.pop();
+                        oldtext = text;
+                        text.insert(0, top);
+                        s.replace(s.find(oldtext), oldtext.size(), text);
 //                    cout<<"text:"<<text<<endl;
 //                    cout<<"s:"<<s<<endl;
+                    }
                 }
             }
-
         }
 
     }

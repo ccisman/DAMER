@@ -10,6 +10,7 @@ string rg_sliceOnly_dirname = "../rg_sliceOnly/";
 string origin_dirname = "../test/";
 string newfile_dirname = "../newfile/";
 
+
 void travel_tree(gtree *tree,ofstream &out,vector<pair<string,int>> &list)
 {
 
@@ -68,14 +69,18 @@ int main() {
     cpnet->initDecl();
     cpnet->getDecl(tree);
     cpnet->create_PDNet(tree);
-
+    cpnet->set_producer_consumer();
     string filename_prefix = "1";
 
     cpnet->print_CPN(filename_prefix + ".txt");
     readGraph(filename_prefix + ".txt",filename_prefix + ".dot");
     makeGraph(filename_prefix + ".dot",filename_prefix + ".png");
 
-    cpnet->set_producer_consumer();
+    vector<string> final_P,final_T,criteria;
+    criteria.push_back("P17");
+    two_phrase_slicing(cpnet,criteria,final_P,final_T);
+
+
     RG rg;
     rg.init(cpnet);
     rg.GENERATE(cpnet);

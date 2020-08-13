@@ -170,6 +170,303 @@ AST.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/AST.cpp.s
 .PHONY : AST.cpp.s
 
+BA/Data_Structures.o: BA/Data_Structures.cpp.o
+
+.PHONY : BA/Data_Structures.o
+
+# target to build an object file
+BA/Data_Structures.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/Data_Structures.cpp.o
+.PHONY : BA/Data_Structures.cpp.o
+
+BA/Data_Structures.i: BA/Data_Structures.cpp.i
+
+.PHONY : BA/Data_Structures.i
+
+# target to preprocess a source file
+BA/Data_Structures.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/Data_Structures.cpp.i
+.PHONY : BA/Data_Structures.cpp.i
+
+BA/Data_Structures.s: BA/Data_Structures.cpp.s
+
+.PHONY : BA/Data_Structures.s
+
+# target to generate assembly for a file
+BA/Data_Structures.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/Data_Structures.cpp.s
+.PHONY : BA/Data_Structures.cpp.s
+
+BA/Lexer.o: BA/Lexer.cpp.o
+
+.PHONY : BA/Lexer.o
+
+# target to build an object file
+BA/Lexer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/Lexer.cpp.o
+.PHONY : BA/Lexer.cpp.o
+
+BA/Lexer.i: BA/Lexer.cpp.i
+
+.PHONY : BA/Lexer.i
+
+# target to preprocess a source file
+BA/Lexer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/Lexer.cpp.i
+.PHONY : BA/Lexer.cpp.i
+
+BA/Lexer.s: BA/Lexer.cpp.s
+
+.PHONY : BA/Lexer.s
+
+# target to generate assembly for a file
+BA/Lexer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/Lexer.cpp.s
+.PHONY : BA/Lexer.cpp.s
+
+BA/SBA.o: BA/SBA.cpp.o
+
+.PHONY : BA/SBA.o
+
+# target to build an object file
+BA/SBA.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/SBA.cpp.o
+.PHONY : BA/SBA.cpp.o
+
+BA/SBA.i: BA/SBA.cpp.i
+
+.PHONY : BA/SBA.i
+
+# target to preprocess a source file
+BA/SBA.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/SBA.cpp.i
+.PHONY : BA/SBA.cpp.i
+
+BA/SBA.s: BA/SBA.cpp.s
+
+.PHONY : BA/SBA.s
+
+# target to generate assembly for a file
+BA/SBA.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/SBA.cpp.s
+.PHONY : BA/SBA.cpp.s
+
+BA/Syntax_Tree.o: BA/Syntax_Tree.cpp.o
+
+.PHONY : BA/Syntax_Tree.o
+
+# target to build an object file
+BA/Syntax_Tree.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/Syntax_Tree.cpp.o
+.PHONY : BA/Syntax_Tree.cpp.o
+
+BA/Syntax_Tree.i: BA/Syntax_Tree.cpp.i
+
+.PHONY : BA/Syntax_Tree.i
+
+# target to preprocess a source file
+BA/Syntax_Tree.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/Syntax_Tree.cpp.i
+.PHONY : BA/Syntax_Tree.cpp.i
+
+BA/Syntax_Tree.s: BA/Syntax_Tree.cpp.s
+
+.PHONY : BA/Syntax_Tree.s
+
+# target to generate assembly for a file
+BA/Syntax_Tree.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/Syntax_Tree.cpp.s
+.PHONY : BA/Syntax_Tree.cpp.s
+
+BA/TBA.o: BA/TBA.cpp.o
+
+.PHONY : BA/TBA.o
+
+# target to build an object file
+BA/TBA.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/TBA.cpp.o
+.PHONY : BA/TBA.cpp.o
+
+BA/TBA.i: BA/TBA.cpp.i
+
+.PHONY : BA/TBA.i
+
+# target to preprocess a source file
+BA/TBA.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/TBA.cpp.i
+.PHONY : BA/TBA.cpp.i
+
+BA/TBA.s: BA/TBA.cpp.s
+
+.PHONY : BA/TBA.s
+
+# target to generate assembly for a file
+BA/TBA.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/TBA.cpp.s
+.PHONY : BA/TBA.cpp.s
+
+BA/TGBA.o: BA/TGBA.cpp.o
+
+.PHONY : BA/TGBA.o
+
+# target to build an object file
+BA/TGBA.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/TGBA.cpp.o
+.PHONY : BA/TGBA.cpp.o
+
+BA/TGBA.i: BA/TGBA.cpp.i
+
+.PHONY : BA/TGBA.i
+
+# target to preprocess a source file
+BA/TGBA.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/TGBA.cpp.i
+.PHONY : BA/TGBA.cpp.i
+
+BA/TGBA.s: BA/TGBA.cpp.s
+
+.PHONY : BA/TGBA.s
+
+# target to generate assembly for a file
+BA/TGBA.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/TGBA.cpp.s
+.PHONY : BA/TGBA.cpp.s
+
+BA/tinystr.o: BA/tinystr.cpp.o
+
+.PHONY : BA/tinystr.o
+
+# target to build an object file
+BA/tinystr.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/tinystr.cpp.o
+.PHONY : BA/tinystr.cpp.o
+
+BA/tinystr.i: BA/tinystr.cpp.i
+
+.PHONY : BA/tinystr.i
+
+# target to preprocess a source file
+BA/tinystr.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/tinystr.cpp.i
+.PHONY : BA/tinystr.cpp.i
+
+BA/tinystr.s: BA/tinystr.cpp.s
+
+.PHONY : BA/tinystr.s
+
+# target to generate assembly for a file
+BA/tinystr.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/tinystr.cpp.s
+.PHONY : BA/tinystr.cpp.s
+
+BA/tinyxml.o: BA/tinyxml.cpp.o
+
+.PHONY : BA/tinyxml.o
+
+# target to build an object file
+BA/tinyxml.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/tinyxml.cpp.o
+.PHONY : BA/tinyxml.cpp.o
+
+BA/tinyxml.i: BA/tinyxml.cpp.i
+
+.PHONY : BA/tinyxml.i
+
+# target to preprocess a source file
+BA/tinyxml.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/tinyxml.cpp.i
+.PHONY : BA/tinyxml.cpp.i
+
+BA/tinyxml.s: BA/tinyxml.cpp.s
+
+.PHONY : BA/tinyxml.s
+
+# target to generate assembly for a file
+BA/tinyxml.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/tinyxml.cpp.s
+.PHONY : BA/tinyxml.cpp.s
+
+BA/tinyxmlerror.o: BA/tinyxmlerror.cpp.o
+
+.PHONY : BA/tinyxmlerror.o
+
+# target to build an object file
+BA/tinyxmlerror.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/tinyxmlerror.cpp.o
+.PHONY : BA/tinyxmlerror.cpp.o
+
+BA/tinyxmlerror.i: BA/tinyxmlerror.cpp.i
+
+.PHONY : BA/tinyxmlerror.i
+
+# target to preprocess a source file
+BA/tinyxmlerror.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/tinyxmlerror.cpp.i
+.PHONY : BA/tinyxmlerror.cpp.i
+
+BA/tinyxmlerror.s: BA/tinyxmlerror.cpp.s
+
+.PHONY : BA/tinyxmlerror.s
+
+# target to generate assembly for a file
+BA/tinyxmlerror.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/tinyxmlerror.cpp.s
+.PHONY : BA/tinyxmlerror.cpp.s
+
+BA/tinyxmlparser.o: BA/tinyxmlparser.cpp.o
+
+.PHONY : BA/tinyxmlparser.o
+
+# target to build an object file
+BA/tinyxmlparser.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/tinyxmlparser.cpp.o
+.PHONY : BA/tinyxmlparser.cpp.o
+
+BA/tinyxmlparser.i: BA/tinyxmlparser.cpp.i
+
+.PHONY : BA/tinyxmlparser.i
+
+# target to preprocess a source file
+BA/tinyxmlparser.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/tinyxmlparser.cpp.i
+.PHONY : BA/tinyxmlparser.cpp.i
+
+BA/tinyxmlparser.s: BA/tinyxmlparser.cpp.s
+
+.PHONY : BA/tinyxmlparser.s
+
+# target to generate assembly for a file
+BA/tinyxmlparser.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/tinyxmlparser.cpp.s
+.PHONY : BA/tinyxmlparser.cpp.s
+
+BA/xml2ltl.o: BA/xml2ltl.cpp.o
+
+.PHONY : BA/xml2ltl.o
+
+# target to build an object file
+BA/xml2ltl.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/xml2ltl.cpp.o
+.PHONY : BA/xml2ltl.cpp.o
+
+BA/xml2ltl.i: BA/xml2ltl.cpp.i
+
+.PHONY : BA/xml2ltl.i
+
+# target to preprocess a source file
+BA/xml2ltl.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/xml2ltl.cpp.i
+.PHONY : BA/xml2ltl.cpp.i
+
+BA/xml2ltl.s: BA/xml2ltl.cpp.s
+
+.PHONY : BA/xml2ltl.s
+
+# target to generate assembly for a file
+BA/xml2ltl.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/xml2ltl.cpp.s
+.PHONY : BA/xml2ltl.cpp.s
+
 base.o: base.cpp.o
 
 .PHONY : base.o
@@ -359,6 +656,33 @@ pre_process.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/pre_process.cpp.s
 .PHONY : pre_process.cpp.s
 
+slice.o: slice.cpp.o
+
+.PHONY : slice.o
+
+# target to build an object file
+slice.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/slice.cpp.o
+.PHONY : slice.cpp.o
+
+slice.i: slice.cpp.i
+
+.PHONY : slice.i
+
+# target to preprocess a source file
+slice.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/slice.cpp.i
+.PHONY : slice.cpp.i
+
+slice.s: slice.cpp.s
+
+.PHONY : slice.s
+
+# target to generate assembly for a file
+slice.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/slice.cpp.s
+.PHONY : slice.cpp.s
+
 y.tab.o: y.tab.cpp.o
 
 .PHONY : y.tab.o
@@ -398,6 +722,39 @@ help:
 	@echo "... AST.o"
 	@echo "... AST.i"
 	@echo "... AST.s"
+	@echo "... BA/Data_Structures.o"
+	@echo "... BA/Data_Structures.i"
+	@echo "... BA/Data_Structures.s"
+	@echo "... BA/Lexer.o"
+	@echo "... BA/Lexer.i"
+	@echo "... BA/Lexer.s"
+	@echo "... BA/SBA.o"
+	@echo "... BA/SBA.i"
+	@echo "... BA/SBA.s"
+	@echo "... BA/Syntax_Tree.o"
+	@echo "... BA/Syntax_Tree.i"
+	@echo "... BA/Syntax_Tree.s"
+	@echo "... BA/TBA.o"
+	@echo "... BA/TBA.i"
+	@echo "... BA/TBA.s"
+	@echo "... BA/TGBA.o"
+	@echo "... BA/TGBA.i"
+	@echo "... BA/TGBA.s"
+	@echo "... BA/tinystr.o"
+	@echo "... BA/tinystr.i"
+	@echo "... BA/tinystr.s"
+	@echo "... BA/tinyxml.o"
+	@echo "... BA/tinyxml.i"
+	@echo "... BA/tinyxml.s"
+	@echo "... BA/tinyxmlerror.o"
+	@echo "... BA/tinyxmlerror.i"
+	@echo "... BA/tinyxmlerror.s"
+	@echo "... BA/tinyxmlparser.o"
+	@echo "... BA/tinyxmlparser.i"
+	@echo "... BA/tinyxmlparser.s"
+	@echo "... BA/xml2ltl.o"
+	@echo "... BA/xml2ltl.i"
+	@echo "... BA/xml2ltl.s"
 	@echo "... base.o"
 	@echo "... base.i"
 	@echo "... base.s"
@@ -419,6 +776,9 @@ help:
 	@echo "... pre_process.o"
 	@echo "... pre_process.i"
 	@echo "... pre_process.s"
+	@echo "... slice.o"
+	@echo "... slice.i"
+	@echo "... slice.s"
 	@echo "... y.tab.o"
 	@echo "... y.tab.i"
 	@echo "... y.tab.s"

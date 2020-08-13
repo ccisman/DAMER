@@ -5,6 +5,59 @@ CMakeFiles/PDNet_checker.dir/AST.cpp.o: ../AST.cpp
 CMakeFiles/PDNet_checker.dir/AST.cpp.o: ../AST.h
 CMakeFiles/PDNet_checker.dir/AST.cpp.o: ../y.tab.h
 
+CMakeFiles/PDNet_checker.dir/BA/Data_Structures.cpp.o: ../BA/Data_Structures.cpp
+CMakeFiles/PDNet_checker.dir/BA/Data_Structures.cpp.o: ../BA/Data_Structures.h
+CMakeFiles/PDNet_checker.dir/BA/Data_Structures.cpp.o: ../BA/Lexer.h
+
+CMakeFiles/PDNet_checker.dir/BA/Lexer.cpp.o: ../BA/Lexer.cpp
+CMakeFiles/PDNet_checker.dir/BA/Lexer.cpp.o: ../BA/Lexer.h
+
+CMakeFiles/PDNet_checker.dir/BA/SBA.cpp.o: ../BA/Data_Structures.h
+CMakeFiles/PDNet_checker.dir/BA/SBA.cpp.o: ../BA/Lexer.h
+CMakeFiles/PDNet_checker.dir/BA/SBA.cpp.o: ../BA/SBA.cpp
+CMakeFiles/PDNet_checker.dir/BA/SBA.cpp.o: ../BA/SBA.h
+CMakeFiles/PDNet_checker.dir/BA/SBA.cpp.o: ../BA/Syntax_Tree.h
+CMakeFiles/PDNet_checker.dir/BA/SBA.cpp.o: ../BA/TBA.h
+CMakeFiles/PDNet_checker.dir/BA/SBA.cpp.o: ../BA/TGBA.h
+
+CMakeFiles/PDNet_checker.dir/BA/Syntax_Tree.cpp.o: ../BA/Data_Structures.h
+CMakeFiles/PDNet_checker.dir/BA/Syntax_Tree.cpp.o: ../BA/Lexer.h
+CMakeFiles/PDNet_checker.dir/BA/Syntax_Tree.cpp.o: ../BA/Syntax_Tree.cpp
+CMakeFiles/PDNet_checker.dir/BA/Syntax_Tree.cpp.o: ../BA/Syntax_Tree.h
+
+CMakeFiles/PDNet_checker.dir/BA/TBA.cpp.o: ../BA/Data_Structures.h
+CMakeFiles/PDNet_checker.dir/BA/TBA.cpp.o: ../BA/Lexer.h
+CMakeFiles/PDNet_checker.dir/BA/TBA.cpp.o: ../BA/Syntax_Tree.h
+CMakeFiles/PDNet_checker.dir/BA/TBA.cpp.o: ../BA/TBA.cpp
+CMakeFiles/PDNet_checker.dir/BA/TBA.cpp.o: ../BA/TBA.h
+CMakeFiles/PDNet_checker.dir/BA/TBA.cpp.o: ../BA/TGBA.h
+
+CMakeFiles/PDNet_checker.dir/BA/TGBA.cpp.o: ../BA/Data_Structures.h
+CMakeFiles/PDNet_checker.dir/BA/TGBA.cpp.o: ../BA/Lexer.h
+CMakeFiles/PDNet_checker.dir/BA/TGBA.cpp.o: ../BA/Syntax_Tree.h
+CMakeFiles/PDNet_checker.dir/BA/TGBA.cpp.o: ../BA/TGBA.cpp
+CMakeFiles/PDNet_checker.dir/BA/TGBA.cpp.o: ../BA/TGBA.h
+
+CMakeFiles/PDNet_checker.dir/BA/tinystr.cpp.o: ../BA/tinystr.cpp
+CMakeFiles/PDNet_checker.dir/BA/tinystr.cpp.o: ../BA/tinystr.h
+
+CMakeFiles/PDNet_checker.dir/BA/tinyxml.cpp.o: ../BA/tinystr.h
+CMakeFiles/PDNet_checker.dir/BA/tinyxml.cpp.o: ../BA/tinyxml.cpp
+CMakeFiles/PDNet_checker.dir/BA/tinyxml.cpp.o: ../BA/tinyxml.h
+
+CMakeFiles/PDNet_checker.dir/BA/tinyxmlerror.cpp.o: ../BA/tinystr.h
+CMakeFiles/PDNet_checker.dir/BA/tinyxmlerror.cpp.o: ../BA/tinyxml.h
+CMakeFiles/PDNet_checker.dir/BA/tinyxmlerror.cpp.o: ../BA/tinyxmlerror.cpp
+
+CMakeFiles/PDNet_checker.dir/BA/tinyxmlparser.cpp.o: ../BA/tinystr.h
+CMakeFiles/PDNet_checker.dir/BA/tinyxmlparser.cpp.o: ../BA/tinyxml.h
+CMakeFiles/PDNet_checker.dir/BA/tinyxmlparser.cpp.o: ../BA/tinyxmlparser.cpp
+
+CMakeFiles/PDNet_checker.dir/BA/xml2ltl.cpp.o: ../BA/tinystr.h
+CMakeFiles/PDNet_checker.dir/BA/xml2ltl.cpp.o: ../BA/tinyxml.h
+CMakeFiles/PDNet_checker.dir/BA/xml2ltl.cpp.o: ../BA/xml2ltl.cpp
+CMakeFiles/PDNet_checker.dir/BA/xml2ltl.cpp.o: ../BA/xml2ltl.h
+
 CMakeFiles/PDNet_checker.dir/base.cpp.o: ../base.cpp
 
 CMakeFiles/PDNet_checker.dir/condition_tree.cpp.o: ../AST.h
@@ -40,6 +93,15 @@ CMakeFiles/PDNet_checker.dir/main.cpp.o: ../main.cpp
 CMakeFiles/PDNet_checker.dir/main.cpp.o: ../y.tab.h
 
 CMakeFiles/PDNet_checker.dir/pre_process.cpp.o: ../pre_process.cpp
+
+CMakeFiles/PDNet_checker.dir/slice.cpp.o: ../AST.h
+CMakeFiles/PDNet_checker.dir/slice.cpp.o: ../BA/tinystr.h
+CMakeFiles/PDNet_checker.dir/slice.cpp.o: ../BA/tinyxml.h
+CMakeFiles/PDNet_checker.dir/slice.cpp.o: ../BA/xml2ltl.h
+CMakeFiles/PDNet_checker.dir/slice.cpp.o: ../condition_tree.h
+CMakeFiles/PDNet_checker.dir/slice.cpp.o: ../cpn.h
+CMakeFiles/PDNet_checker.dir/slice.cpp.o: ../slice.cpp
+CMakeFiles/PDNet_checker.dir/slice.cpp.o: ../y.tab.h
 
 CMakeFiles/PDNet_checker.dir/y.tab.cpp.o: ../AST.h
 CMakeFiles/PDNet_checker.dir/y.tab.cpp.o: ../y.tab.cpp
