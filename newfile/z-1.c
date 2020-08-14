@@ -1,15 +1,12 @@
-int add(int a,int b)
-{
-int temp;
-temp=a+b;
-return temp;
+int x, y, z;
+int f(int s) {
+z=s+1;
+return z;
 }
-
-int main()
-{
-int a,b;
-a=0;
-b=1;
-a=add(2,3);
-b=b-1;
+int main() {
+int q;
+x=1;
+y=f(x); 
+f(1);
+q=y;//q=y+1
 }

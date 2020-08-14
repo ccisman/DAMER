@@ -13,3 +13,5 @@
 extern int string_replace(std::string &s1, const std::string &s2, const std::string &s3);
 extern void readGraph(std::string input, std::string output);
 extern void makeGraph(std::string inputname, std::string outputname);
+template <class T>
+extern bool exist_in(vector<T> vec,T element);

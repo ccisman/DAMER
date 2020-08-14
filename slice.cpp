@@ -238,11 +238,11 @@ vector<CTransition *> find_previous_define(CTransition  *trans,index_t var_index
     Arc_Type exit_type,enter_type;
     if(arcType == call_enter) {
         exit_type = remain;
-        enter_type = call_enter;
+        enter_type = remain;
     }
     else if(arcType == call_exit) {
         exit_type = call_exit;
-        enter_type = remain;
+        enter_type = call_enter;
     }
     else
     {
@@ -302,10 +302,33 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
             for(unsigned int j=0;j<p->consumer.size();j++)
             {
                 if(p->consumer[j].arcType == control) {
-                    string temp_T = cpn->transition[p->consumer[j].idx].id;
-                    if(!exist_in(T,temp_T))
-                        T.push_back(temp_T);
+                    CTransition *temp_t = &cpn->transition[p->consumer[j].idx];
+                    if(!exist_in(T,temp_t->id)) {
+                        T.push_back(temp_t->id);
+                        for(unsigned int k=0;k<temp_t->producer.size();k++)
+                            if(temp_t->producer[k].arcType == control
+                            && cpn->place[temp_t->producer[k].idx].expression == executed_P_name)
+                                P.push_back(cpn->place[temp_t->producer[k].idx].id);
+                    }
                 }
+                vector<string> call_P = cpn->get_call_P(p->id);
+                for(unsigned int l=0;l<call_P.size();l++)
+                    if(!exist_in(P,call_P[l]))
+                    {
+                        P.push_back(call_P[l]);
+                        vector<string> call_T = cpn->get_enter_T(call_P[l]);
+                        //begin places' call have no call_T
+                        if(call_T.size()!=0) {
+                            T.push_back(call_T[0]);
+                            auto iter = cpn->mapTransition.find(call_T[0]);
+                            CTransition *tran = &cpn->transition[iter->second];
+                            for(unsigned int m=0;m<tran->producer.size();m++)
+                                if(tran->producer[m].arcType == control
+                                   && cpn->place[tran->producer[m].idx].expression == executed_P_name)
+                                    P.push_back(cpn->place[tran->producer[m].idx].id);
+
+                        }
+                    }
             }
             for(unsigned int j=0;j<p->producer.size();j++)
             {
@@ -335,14 +358,18 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
                         if(trans->producer[k].arcType == data)
                         {
                             vector<CTransition *> trans_vec;
+                            string var = cpn->place[trans->producer[k].idx].id;
+                            if (!exist_in(P,var))
+                                P.push_back(var);
                             trans_vec = find_previous_define(trans,trans->producer[k].idx,cpn,call_exit);
                             for(unsigned int l=0;l<trans_vec.size();l++)
                             {
-                                if (!exist_in(T, trans_vec[l]->id))
-                                    T.push_back(trans_vec[l]->id);
+//                                if (!exist_in(T, trans_vec[l]->id))
+//                                    T.push_back(trans_vec[l]->id);
                                 for(unsigned int m=0;m<trans_vec[l]->producer.size();m++)
                                 {
-                                    if(trans_vec[l]->producer[m].arcType == control) {
+                                    if(trans_vec[l]->producer[m].arcType == control
+                                    && cpn->place[trans_vec[l]->producer[m].idx].expression!=executed_P_name) {
                                         string temp_P = cpn->place[trans_vec[l]->producer[m].idx].id;
                                         if (!exist_in(P,temp_P))
                                             P.push_back(temp_P);
@@ -358,6 +385,7 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
     }
 
     //2.second phrase(no call_enter arcs)
+
     for(unsigned int i=0;i<P.size();i++)
     {
         auto iter = cpn->mapPlace.find(P[i]);
@@ -369,10 +397,25 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
             for(unsigned int j=0;j<p->consumer.size();j++)
             {
                 if(p->consumer[j].arcType == control) {
-                    string temp_T = cpn->transition[p->consumer[j].idx].id;
-                    if(!exist_in(T,temp_T))
-                        T.push_back(temp_T);
+                    CTransition *temp_t = &cpn->transition[p->consumer[j].idx];
+                    if(!exist_in(T,temp_t->id)) {
+                        T.push_back(temp_t->id);
+                        for(unsigned int k=0;k<temp_t->producer.size();k++)
+                            if(temp_t->producer[k].arcType == control
+                               && cpn->place[temp_t->producer[k].idx].expression == executed_P_name)
+                                P.push_back(cpn->place[temp_t->producer[k].idx].id);
+                    }
                 }
+                vector<string> call_P = cpn->get_call_P(p->id);
+                for(unsigned int l=0;l<call_P.size();l++)
+                    if(!exist_in(P,call_P[l]))
+                    {
+                        P.push_back(call_P[l]);
+                        vector<string> call_T = cpn->get_enter_T(call_P[l]);
+                        //begin places' call have no call_T
+                        if(call_T.size()!=0)
+                            T.push_back(call_T[0]);
+                    }
             }
             for(unsigned int j=0;j<p->producer.size();j++)
             {
@@ -402,14 +445,18 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
                         if(trans->producer[k].arcType == data)
                         {
                             vector<CTransition *> trans_vec;
+                            string var = cpn->place[trans->producer[k].idx].id;
+                            if (!exist_in(P,var))
+                                P.push_back(var);
                             trans_vec = find_previous_define(trans,trans->producer[k].idx,cpn,call_enter);
                             for(unsigned int l=0;l<trans_vec.size();l++)
                             {
-                                if (!exist_in(T, trans_vec[l]->id))
-                                    T.push_back(trans_vec[l]->id);
+//                                if (!exist_in(T, trans_vec[l]->id))
+//                                    T.push_back(trans_vec[l]->id);
                                 for(unsigned int m=0;m<trans_vec[l]->producer.size();m++)
                                 {
-                                    if(trans_vec[l]->producer[m].arcType == control) {
+                                    if(trans_vec[l]->producer[m].arcType == control
+                                       && cpn->place[trans_vec[l]->producer[m].idx].expression!=executed_P_name) {
                                         string temp_P = cpn->place[trans_vec[l]->producer[m].idx].id;
                                         if (!exist_in(P,temp_P))
                                             P.push_back(temp_P);
@@ -428,44 +475,64 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
     final_T = T;
 }
 
-//void post_process(C_Petri &petri, vector<string> change_P, vector<string> change_T, vector<Arc> &change_Arc)
-//{
-//    string main_begin = find_P_name(petri, "main begin");
-//    for (unsigned i = 0; i < change_P.size(); i++)
-//    {
-//        bool flag = false;
-//        if (change_P[i] != main_begin)
-//        {
-//            for (unsigned j = 0; j < change_Arc.size(); j++)
-//            {
-//                if (change_Arc[j].sourceP == false && change_Arc[j].target == change_P[i] && change_Arc[j].type != 6)
-//                {
-//                    flag = true;
-//                    break;
-//                }
-//            }
-//            if (flag == false)
-//            {
-//                vector<string> temp_v = forward_exist_T(petri, change_T, change_P[i]);
-//                bool flag1 = false;
-//                for (unsigned int j = 0; j < temp_v.size(); j++)
-//                {
-//                    Arc arc(temp_v[j], change_P[i], "executed", false);
-//
-//                    //in case of repeat add
-//                    for (int k = int(change_Arc.size() - 1); k >= 0; k--)
-//                        if (change_Arc[k].source == arc.source && change_Arc[k].target == arc.target)
-//                        {
-//                            flag1 = true;
-//                            break;
-//                        }
-//                    if (flag1 == false)
-//                    {
-//
-//                        change_Arc.push_back(arc);
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
+vector<CTransition *> find_previous_T(string executed_place,CPN *cpn,vector<string> transitions)
+{
+    vector<CTransition *> searched,res;
+    auto iter = cpn->mapPlace.find(executed_place);
+    CPlace *executed_P = &cpn->place[iter->second];
+    for(unsigned int i=0;i<executed_P->producer.size();i++)
+        searched.push_back(&cpn->transition[executed_P->producer[i].idx]);
+
+    for(unsigned int i=0;i<searched.size();i++)
+    {
+        if(exist_in(transitions,searched[i]->id)) {
+            res.push_back(searched[i]);
+            continue;
+        }
+        for(unsigned int j=0;j<searched[i]->producer.size();j++)
+        {
+            CPlace *place = &cpn->place[searched[i]->producer[j].idx];
+
+            if(place->control_P == true && searched[i]->producer[j].arcType != call_exit)
+            {
+                for(unsigned int k=0;k<place->producer.size();k++)
+                {
+                    if(place->producer[k].arcType == executed) {
+                        CTransition *t = &cpn->transition[place->producer[k].idx];
+                        if(!exist_in(searched,t))
+                            searched.push_back(t);
+                    }
+                }
+            }
+        }
+    }
+    return res;
+}
+
+void post_process(CPN *cpn,CPN *cpn_slice,vector<string> transitions)
+{
+
+    for(int i=0;i<cpn_slice->placecount;i++)
+    {
+        if(cpn_slice->place[i].expression == executed_P_name && cpn_slice->place[i].producer.size()==0)
+        {
+            vector<CTransition*> trans_vec;
+            trans_vec = find_previous_T(cpn_slice->place[i].id,cpn,transitions);
+            for(unsigned int j=0;j<trans_vec.size();j++) {
+                cpn_slice->Add_Arc(trans_vec[j]->id, cpn_slice->place[i].id, "", false, executed);
+                CSArc csArc1,csArc2;
+                csArc1.arcType = cpn_slice->arc[cpn_slice->arccount-1].arcType;
+                csArc1.arc_exp = cpn_slice->arc[cpn_slice->arccount-1].arc_exp;
+                csArc1.onlydot = cpn_slice->arc[cpn_slice->arccount-1].onlydot;
+                csArc2.arcType = cpn_slice->arc[cpn_slice->arccount-1].arcType;
+                csArc2.arc_exp = cpn_slice->arc[cpn_slice->arccount-1].arc_exp;
+                csArc2.onlydot = cpn_slice->arc[cpn_slice->arccount-1].onlydot;
+                csArc1.idx = cpn_slice->mapTransition.find(trans_vec[j]->id)->second;
+                csArc2.idx = i;
+                cpn_slice->place[i].producer.push_back(csArc1);
+                cpn_slice->transition[csArc1.idx].consumer.push_back(csArc2);
+
+            }
+        }
+    }
+}

@@ -55,3 +55,4 @@ public:
     }
 };
 
+extern vector<V_Table *> v_tables;//variable tables

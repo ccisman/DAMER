@@ -499,12 +499,15 @@ public:
     ~CPN();
     void print_CPN(string filename);
 
+    void copy_childtree(CPN *cpn,vector<string> places,vector<string> transitions);
     void create_PDNet(gtree *tree);
 private:
 };
 
 
 //void Tokenscopy(Tokens &t1,const Tokens &t2,type tid,int PSnum=0);
+extern string executed_P_name;
 extern string arr_suffix;
 extern map<string,type> map_build_in_type;
 extern void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P, vector<string>&final_T);
+extern void post_process(CPN *cpn,CPN *cpn_slice,vector<string> transitions);

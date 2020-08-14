@@ -1,0 +1,30 @@
+total node:9 nodes
+show them below
+
+node:0
+(q=y,)    (executed_P,)    (main begin,[1,dot] )    (y,[1,0] )    (y=f_v,)    (main end,)    (f(),)    (executed_P,)    (f_v,[1,0] )    (x,[1,0] )    (x=1,)    (executed_P,)    (jump0,)    (executed_P,)    (f begin,)    (z,[1,0] )    (z=s+1,)    (f end,)    (executed_P,)    (s,[1,0] )    
+successor node:T3 , 
+node:1
+(q=y,[1,dot] )    (executed_P,)    (main begin,)    (y,[1,0] )    (y=f_v,)    (main end,)    (f(),[1,dot] )    (executed_P,)    (f_v,[1,0] )    (x,[1,0] )    (x=1,[1,dot] )    (executed_P,[1,dot] )    (jump0,)    (executed_P,)    (f begin,)    (z,[1,0] )    (z=s+1,)    (f end,)    (executed_P,)    (s,[1,0] )    
+successor node:T4 , 
+node:2
+(q=y,[1,dot] )    (executed_P,)    (main begin,)    (y,[1,0] )    (y=f_v,)    (main end,)    (f(),[1,dot] )    (executed_P,[1,dot] )    (f_v,[1,0] )    (x,[1,1] )    (x=1,)    (executed_P,)    (jump0,)    (executed_P,)    (f begin,)    (z,[1,0] )    (z=s+1,)    (f end,)    (executed_P,)    (s,[1,0] )    
+successor node:T6 , 
+node:3
+(q=y,[1,dot] )    (executed_P,)    (main begin,)    (y,[1,0] )    (y=f_v,[1,dot] )    (main end,)    (f(),)    (executed_P,)    (f_v,[1,0] )    (x,[1,1] )    (x=1,)    (executed_P,)    (jump0,)    (executed_P,)    (f begin,[1,dot] )    (z,[1,0] )    (z=s+1,)    (f end,)    (executed_P,)    (s,[1,1] )    
+successor node:T0 , 
+node:4
+(q=y,[1,dot] )    (executed_P,)    (main begin,)    (y,[1,0] )    (y=f_v,[1,dot] )    (main end,)    (f(),)    (executed_P,)    (f_v,[1,0] )    (x,[1,1] )    (x=1,)    (executed_P,)    (jump0,[1,dot] )    (executed_P,)    (f begin,)    (z,[1,0] )    (z=s+1,[1,dot] )    (f end,)    (executed_P,[1,dot] )    (s,[1,1] )    
+successor node:T1 , 
+node:5
+(q=y,[1,dot] )    (executed_P,)    (main begin,)    (y,[1,0] )    (y=f_v,[1,dot] )    (main end,)    (f(),)    (executed_P,)    (f_v,[1,0] )    (x,[1,1] )    (x=1,)    (executed_P,)    (jump0,[1,dot] )    (executed_P,[1,dot] )    (f begin,)    (z,[1,2] )    (z=s+1,)    (f end,)    (executed_P,)    (s,[1,1] )    
+successor node:T2 , 
+node:6
+(q=y,[1,dot] )    (executed_P,)    (main begin,)    (y,[1,0] )    (y=f_v,[1,dot] )    (main end,)    (f(),)    (executed_P,)    (f_v,[1,2] )    (x,[1,1] )    (x=1,)    (executed_P,)    (jump0,)    (executed_P,)    (f begin,)    (z,[1,2] )    (z=s+1,)    (f end,[1,dot] )    (executed_P,)    (s,[1,1] )    
+successor node:T5 , 
+node:7
+(q=y,[1,dot] )    (executed_P,[1,dot] )    (main begin,)    (y,[1,2] )    (y=f_v,)    (main end,)    (f(),)    (executed_P,)    (f_v,[1,2] )    (x,[1,1] )    (x=1,)    (executed_P,)    (jump0,)    (executed_P,)    (f begin,)    (z,[1,2] )    (z=s+1,)    (f end,)    (executed_P,)    (s,[1,1] )    
+successor node:T9 , 
+node:8
+(q=y,)    (executed_P,)    (main begin,)    (y,[1,2] )    (y=f_v,)    (main end,[1,dot] )    (f(),)    (executed_P,)    (f_v,[1,2] )    (x,[1,1] )    (x=1,)    (executed_P,)    (jump0,)    (executed_P,)    (f begin,)    (z,[1,2] )    (z=s+1,)    (f end,)    (executed_P,)    (s,[1,1] )    
+successor node:

@@ -4,7 +4,7 @@
 
 #include "cpn.h"
 #include "v_table.h"
-
+#include "base.h"
 
 SortTable sorttable;
 SORTID SortTable::psptr = 0;
@@ -300,9 +300,12 @@ void inside_block(CPN *petri, gtree *tree1, string T)//tree1 indicates a compoun
 //                break;
 //            continue;
 //        }
-        for (unsigned int i = 0; i < call_P.size(); i++)
-            petri->Add_Arc(T, call_P[i], "", false,control);
-        petri->Add_Arc(T,_P,"",false,control);
+        if(call_P.size()!=0) {
+            for (unsigned int i = 0; i < call_P.size(); i++)
+                petri->Add_Arc(T, call_P[i], "", false, control);
+        }
+        else
+            petri->Add_Arc(T, _P, "", false, control);
         //int flag = petri.get_call_flag(_P);
 
         if(call_P.size()==0)
@@ -1462,8 +1465,6 @@ void CPN::Add_Variable(string id, string related_P) {
 
 void CPN::init() {
 
-    V_Table *table = new V_Table("global");
-    v_tables.push_back(table);
 
     sorttable.psptr = 0;
     gen_P_num = gen_T_num = 0;
@@ -2316,6 +2317,9 @@ void CPN::create_PDNet(gtree *p)
         string end_P = gen_P();
         Add_Place(end_P,"",0,true,func+ end_suffix);
         mapFunction.insert(make_pair(func + end_suffix,end_P));
+        vector<string> call_P;
+        call_P.push_back(end_P);
+        set_call_P(begin_P,call_P);
 
         //construct parameter_P
 
@@ -2776,6 +2780,7 @@ void CPN::create_PDNet(gtree *p)
         enter.push_back(call_T);
         set_enter_T(call_P,enter);
 
+
         // set enter_P
         gtree *statement = p;
         while(statement->type!=STATEMENT)
@@ -2830,6 +2835,13 @@ void CPN::create_PDNet(gtree *p)
         Add_Arc(call_T,called_begin_P,"",false,call_enter);
         for(unsigned int i=0;i<enter_T.size();i++)
             Add_Arc(called_end_P,enter_T[i],"",true,call_exit);
+
+        //construct executed_control arc
+//        string newP = gen_P();
+//        Add_Place(newP,"",0,true,executed_P_name);
+        Add_Arc(call_T,statement_P,"",false,executed);
+//        for(unsigned int i=0;i<enter_T.size();i++)
+//            Add_Arc(newP,enter_T[i],"",true,control);
     }
 
     create_PDNet(p->next);
@@ -2899,10 +2911,12 @@ void CPN::print_CPN(string filename) {
     //out << "-----------------------------------" << endl;
 
     for (int i = 0; i < arccount; i++) {
-        if (arc[i].arcType != executed)//隐式弧
-            out << "{" << arc[i].source_id << "," << arc[i].target_id << "}" << endl;
-        else if (arc[i].arcType == executed)
+        if (arc[i].arcType == executed)
             out << "{" << arc[i].source_id << "," << arc[i].target_id << "[style=\"dashed\"]}" << endl;
+        else if (arc[i].arcType == call_enter || arc[i].arcType == call_exit)
+            out << "{" << arc[i].source_id << "," << arc[i].target_id << "[color=\"blue\"]}" << endl;
+        else
+            out << "{" << arc[i].source_id << "," << arc[i].target_id << "}" << endl;
     }
     out.close();
 
@@ -2940,4 +2954,72 @@ void CPN::set_producer_consumer() {
         }
 
     }
+}
+
+void CPN::copy_childtree(CPN *cpnet,vector<string> places,vector<string> transitions) {
+
+    init();
+//    mapPlace = cpnet->mapPlace;
+    mapVariable = cpnet->mapVariable;
+//    mapTransition = cpnet->mapTransition;
+    mapFunction = cpnet->mapFunction;
+    vartable = cpnet->vartable;
+    for(unsigned int i=0;i<places.size();i++)
+    {
+        auto iter = cpnet->mapPlace.find(places[i]);
+        place[placecount++] = cpnet->place[iter->second];
+//        for(auto iter=place[placecount-1].producer.begin();iter!=place[placecount-1].producer.end();)
+//        {
+//            if(!exist_in(transitions,cpnet->transition[iter->idx].id))
+//                iter = place[placecount-1].producer.erase(iter);
+//            else
+//                iter++;
+//        }
+//        for(auto iter=place[placecount-1].consumer.begin();iter!=place[placecount-1].consumer.end();)
+//        {
+//            if(!exist_in(transitions,cpnet->transition[iter->idx].id))
+//                iter = place[placecount-1].consumer.erase(iter);
+//            else
+//                iter++;
+//        }
+        place[placecount-1].producer.clear();
+        place[placecount-1].consumer.clear();
+        mapPlace.insert(make_pair(places[i],placecount-1));
+    }
+    for(unsigned int i=0;i<transitions.size();i++)
+    {
+        auto iter = cpnet->mapTransition.find(transitions[i]);
+        transition[transitioncount++] = cpnet->transition[iter->second];
+//        for(auto iter=transition[transitioncount-1].producer.begin();iter!=transition[transitioncount-1].producer.end();)
+//        {
+//            if(!exist_in(transitions,cpnet->transition[iter->idx].id))
+//                iter = transition[transitioncount-1].producer.erase(iter);
+//            else
+//                iter++;
+//        }
+//        for(auto iter=transition[transitioncount-1].consumer.begin();iter!=transition[transitioncount-1].consumer.end();)
+//        {
+//            if(!exist_in(transitions,cpnet->transition[iter->idx].id))
+//                iter = transition[transitioncount-1].consumer.erase(iter);
+//            else
+//                iter++;
+//        }
+        transition[transitioncount-1].producer.clear();
+        transition[transitioncount-1].consumer.clear();
+        mapTransition.insert(make_pair(transitions[i],transitioncount-1));
+    }
+    for(unsigned int i=0;i<cpnet->arccount;i++)
+    {
+        if(cpnet->arc[i].isp2t)
+        {
+            if(exist_in(places,cpnet->arc[i].source_id) && exist_in(transitions,cpnet->arc[i].target_id))
+                arc[arccount++] = cpnet->arc[i];
+        }
+        else
+        {
+            if(exist_in(transitions,cpnet->arc[i].source_id) && exist_in(places,cpnet->arc[i].target_id))
+                arc[arccount++] = cpnet->arc[i];
+        }
+    }
+    set_producer_consumer();
 }
