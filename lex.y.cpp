@@ -967,7 +967,7 @@ YY_DECL
             case 35:
                 YY_RULE_SETUP
                 //#line 61 "hello.l"
-            { count(); yylval = newNode(yytext,IDENTIFIER); return(check_type()); }
+            { count(); yylval = newNode(yytext,check_type()); return(check_type()); }
                 YY_BREAK
             case 36:
                 YY_RULE_SETUP
@@ -2216,7 +2216,7 @@ gtree* newNode(std::string node_name, int type)
     if (p == NULL)
     {
         printf("Error:out of memory.\n");
-        exit(1);
+        exit(-1);
     }
     int len = int(node_name.size());
     std::cout << "size is " << len << std::endl;

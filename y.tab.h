@@ -135,7 +135,7 @@ enum yytokentype {
 #define AND_ASSIGN 280
 #define XOR_ASSIGN 281
 #define OR_ASSIGN 282
-//#define TYPE_NAME 283
+#define TYPE_NAME 283
 #define TYPEDEF 284
 #define EXTERN 285
 #define STATIC 286

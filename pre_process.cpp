@@ -149,6 +149,86 @@ void trans_plusplus_all(string &s)
     }
 }
 
+bool trans_subsub(string s, string &newtext)//true代表搜索到，false代表没搜索到，这里s是引用
+{
+    regex pattern("\\-\\-");
+    smatch result;
+
+    int position, insert_position;
+    int sum_num = 0, sum = 0;
+    string text, res1, res2, res3;
+    bool following_plus;
+    //string newtext, oldtext;
+
+    if (regex_search(s, result, pattern)) {
+        position = result.position();
+    }
+    else
+        return false;
+
+    newtext = "";
+    if (isalpha(s[position - 1]) || s[position - 1] == '_')
+    {
+        following_plus = true;
+        for (unsigned int i = position - 1; i > 0; i--)
+        {
+            if (s[i] == '_' || isalpha(s[i]))
+                text = s[i] + text;
+            else
+                break;
+            sum++;
+        }
+    }
+    else
+    {
+        following_plus = false;
+        for (unsigned int i = position + 2; i < s.length(); i++)
+        {
+            if (s[i] == '_' || isalpha(s[i]))
+                text = s[i] + text;
+            else
+                break;
+            sum++;
+        }
+    }
+    //cout << text << endl;
+    //cout << sum;
+    text = text + "=" + text + "-1;\n";
+    if (!following_plus)
+    {
+        for (unsigned int i = position; i >= 0; i--)
+            if (s[i] == ';' || s[i] == '}')
+            {
+                insert_position = i + 1;
+                break;
+            }
+        newtext = s.substr(0, insert_position) + text + s.substr(insert_position, position - insert_position) + s.substr(position + 2);
+    }
+    else
+    {
+        for (unsigned int i = position; i < s.length(); i++)
+            if (s[i] == ';')
+            {
+                insert_position = i + 1;
+                break;
+            }
+        newtext = s.substr(0, position) + s.substr(position + 2, insert_position - position - 2) + text + s.substr(insert_position);
+    }
+
+    return true;
+}
+
+void trans_subsub(string &s)
+{
+    string newtext;
+    while (1)
+    {
+        if (!trans_subsub(s, newtext))
+            break;
+        s = newtext;
+    }
+}
+
 bool trans_assign(string &s)
 {
     vector<string> sign_list;
@@ -521,6 +601,7 @@ void pre_process(string &s)
     trans_define_all(s);
     for_to_while_all(s);
     trans_plusplus_all(s);
+    trans_subsub(s);
     trans_some_function(s);
     trans_assign(s);
     trans_switch_all(s);

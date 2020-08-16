@@ -245,15 +245,19 @@ void RG::createNode(RG_NODE *node,CPN *cpn) {
     FireTranQ *tranQ = node->tranQ->next;
     while(tranQ)
     {
+        if(tranQ->transition->id == "T16")
+        {
+            int a=a+1;
+        }
         RG_NODE *newnode = new RG_NODE;
         newnode->marking.init_marking(node->marking);
         Marking_after_fire(newnode->marking,tranQ->transition,tranQ->bindings,cpn);
-        if(nodeExist(newnode))
-            ;
-        else {
+        //if(nodeExist(newnode))
+        //    ;
+        //else {
             addRGNode(newnode);
             createNode(newnode, cpn);
-        }
+        //}
         tranQ = tranQ->next;
     }
 }

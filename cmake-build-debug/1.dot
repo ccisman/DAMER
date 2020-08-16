@@ -1,30 +1,59 @@
 digraph G{
 rankdir = LR
-subgraph cluster_P0{label="x"color="white"P0[shape=circle, style="filled",color="black",fillcolor="chartreuse"]}
-subgraph cluster_P1{label="y"color="white"P1[shape=circle, style="filled",color="black",fillcolor="chartreuse"]}
-subgraph cluster_P2{label="z"color="white"P2[shape=circle, style="filled",color="black",fillcolor="chartreuse"]}
-P3[shape=circle,label="f begin"]
-P4[shape=circle,label="f end"]
-subgraph cluster_P5{label="s"color="white"P5[shape=circle, style="filled",color="black",fillcolor="chartreuse"]}
-subgraph cluster_P6{label="f_v"color="white"P6[shape=circle, style="filled",color="black",fillcolor="chartreuse"]}
-P7[shape=circle,label="z=s+1"]
-P8[shape=circle,label="jump0"]
-P9[shape=circle,label="executed_P"]
-P10[shape=circle,label="executed_P"]
-P11[shape=circle,label="main begin"]
-P12[shape=circle,label="main end"]
-subgraph cluster_P13{label="main_v"color="white"P13[shape=circle, style="filled",color="black",fillcolor="chartreuse"]}
-subgraph cluster_P14{label="q"color="white"P14[shape=circle, style="filled",color="black",fillcolor="chartreuse"]}
-P15[shape=circle,label="x=1"]
-P16[shape=circle,label="y=f_v"]
-P17[shape=circle,label="f()"]
-P18[shape=circle,label="f_call"]
-P19[shape=circle,label="f()"]
-P20[shape=circle,label="q=y"]
-P21[shape=circle,label="executed_P"]
-P22[shape=circle,label="executed_P"]
-P23[shape=circle,label="executed_P"]
-P24[shape=circle,label="executed_P"]
+P0[shape=circle,label="mutex"]
+subgraph cluster_P1{label="data"color="white"P1[shape=circle, style="filled",color="black",fillcolor="chartreuse"]}
+P2[shape=circle,label="reach_error begin"]
+P3[shape=circle,label="reach_error end"]
+P4[shape=circle,label="jump0"]
+P5[shape=circle,label="executed_P"]
+P6[shape=circle,label="thread1 begin"]
+P7[shape=circle,label="thread1 end"]
+subgraph cluster_P8{label="thread1_v"color="white"P8[shape=circle, style="filled",color="black",fillcolor="chartreuse"]}
+P9[shape=circle,label="pthread_mutex_lock_call"]
+P10[shape=circle,label="data"]
+P11[shape=circle,label="data=data+1"]
+P12[shape=circle,label="pthread_mutex_unlock_call"]
+P13[shape=circle,label="jump1"]
+P14[shape=circle,label="executed_P"]
+P15[shape=circle,label="executed_P"]
+P16[shape=circle,label="executed_P"]
+P17[shape=circle,label="executed_P"]
+P18[shape=circle,label="executed_P"]
+P19[shape=circle,label="thread2 begin"]
+P20[shape=circle,label="thread2 end"]
+subgraph cluster_P21{label="thread2_v"color="white"P21[shape=circle, style="filled",color="black",fillcolor="chartreuse"]}
+P22[shape=circle,label="pthread_mutex_lock_call"]
+P23[shape=circle,label="data=data+3"]
+P24[shape=circle,label="pthread_mutex_unlock_call"]
+P25[shape=circle,label="jump2"]
+P26[shape=circle,label="executed_P"]
+P27[shape=circle,label="executed_P"]
+P28[shape=circle,label="executed_P"]
+P29[shape=circle,label="executed_P"]
+P30[shape=circle,label="thread3 begin"]
+P31[shape=circle,label="thread3 end"]
+subgraph cluster_P32{label="thread3_v"color="white"P32[shape=circle, style="filled",color="black",fillcolor="chartreuse"]}
+P33[shape=circle,label="jump3"]
+P34[shape=circle,label="executed_P"]
+P35[shape=circle,label="main begin"]
+P36[shape=circle,label="main end"]
+subgraph cluster_P37{label="main_v"color="white"P37[shape=circle, style="filled",color="black",fillcolor="chartreuse"]}
+P38[shape=circle,label="pthread_mutex_init_call"]
+P39[shape=circle,label="pthread_create_call"]
+P40[shape=circle,label="pthread_create_call"]
+P41[shape=circle,label="pthread_create_call"]
+P42[shape=circle,label="pthread_join_call"]
+P43[shape=circle,label="pthread_join_call"]
+P44[shape=circle,label="pthread_join_call"]
+P45[shape=circle,label="jump4"]
+P46[shape=circle,label="executed_P"]
+P47[shape=circle,label="executed_P"]
+P48[shape=circle,label="executed_P"]
+P49[shape=circle,label="executed_P"]
+P50[shape=circle,label="executed_P"]
+P51[shape=circle,label="executed_P"]
+P52[shape=circle,label="executed_P"]
+P53[shape=circle,label="executed_P"]
 T0[shape=box]
 T1[shape=box]
 T2[shape=box]
@@ -35,64 +64,127 @@ T6[shape=box]
 T7[shape=box]
 T8[shape=box]
 T9[shape=box]
-P3->T0
-P7->T1
+T10[shape=box]
+T11[shape=box]
+T12[shape=box]
+T13[shape=box]
+T14[shape=box]
+T15[shape=box]
+T16[shape=box]
+T17[shape=box]
+T18[shape=box]
+T19[shape=box]
+T20[shape=box]
+T21[shape=box]
+T22[shape=box]
+T23[shape=box]
+P2->T0
+P4->T1
+T1->P3[style="dashed"]
+T0->P4
+T0->P5[style="dashed"]
 P5->T1
-T1->P5
-T1->P2
-P2->T1
-P8->T2
-T2->P4[style="dashed"]
-T2->P6
 P6->T2
-P2->T2
-T2->P2
-T0->P7
-T0->P9[style="dashed"]
-P9->T1
-T0->P8
-T1->P10[style="dashed"]
-P10->T2
-P11->T3
-P15->T4
-T4->P0
-P0->T4
-P16->T5
-P17->T6
-T6->P5
-P5->T6
-P0->T6
-T6->P0
-T6->P3[color="blue"]
-P4->T5[color="blue"]
-T6->P16[style="dashed"]
-P6->T5
-T5->P6
-T5->P1
+P9->T3
+P0->T3
+P10->T4
+P11->T5
 P1->T5
+T5->P1
+P12->T6
+T6->P0
+P13->T7
+T7->P7[style="dashed"]
+T7->P8
+P8->T7
+T2->P9
+T2->P14[style="dashed"]
+P14->T3
+T3->P10
+T3->P15[style="dashed"]
+P15->T4
+T3->P11
+T4->P16[style="dashed"]
+P16->T5
+T2->P12
+T5->P17[style="dashed"]
+P17->T6
+T2->P13
+T6->P18[style="dashed"]
 P18->T7
 P19->T8
-T8->P5
-P5->T8
-T8->P3[color="blue"]
-P4->T7[color="blue"]
-T8->P18[style="dashed"]
-P20->T9
-P1->T9
-T9->P1
-T9->P14
-P14->T9
-T3->P15
-T3->P21[style="dashed"]
-P21->T4
-T3->P17
-T4->P22[style="dashed"]
-P22->T6
-T3->P19
-T5->P23[style="dashed"]
-P23->T8
-T3->P20
-T7->P24[style="dashed"]
-P24->T9
-T9->P12[style="dashed"]
+P22->T9
+P0->T9
+P23->T10
+P1->T10
+T10->P1
+P24->T11
+T11->P0
+P25->T12
+T12->P20[style="dashed"]
+T12->P21
+P21->T12
+T8->P22
+T8->P26[style="dashed"]
+P26->T9
+T9->P23
+T9->P27[style="dashed"]
+P27->T10
+T8->P24
+T10->P28[style="dashed"]
+P28->T11
+T8->P25
+T11->P29[style="dashed"]
+P29->T12
+P30->T13
+P33->T14
+T14->P31[style="dashed"]
+T14->P32
+P32->T14
+T13->P33
+T13->P34[style="dashed"]
+P34->T14
+P35->T15
+P38->T16
+T16->P0
+P39->T17
+T17->P6
+P40->T18
+T18->P19
+P41->T19
+T19->P30
+P42->T20
+P7->T20
+P43->T21
+P20->T21
+P44->T22
+P31->T22
+P45->T23
+T23->P36[style="dashed"]
+T23->P37
+P37->T23
+T15->P38
+T15->P46[style="dashed"]
+P46->T16
+T15->P39
+T16->P47[style="dashed"]
+P47->T17
+T15->P40
+T17->P48[style="dashed"]
+P48->T18
+T15->P41
+T18->P49[style="dashed"]
+P49->T19
+T15->P42
+T19->P50[style="dashed"]
+P50->T20
+T15->P43
+T20->P51[style="dashed"]
+P51->T21
+T15->P44
+T21->P52[style="dashed"]
+P52->T22
+T15->P45
+T22->P53[style="dashed"]
+P53->T23
 }

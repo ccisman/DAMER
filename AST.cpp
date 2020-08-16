@@ -57,8 +57,10 @@ string gen_com()
 
 bool judge_assign_statement(gtree *statement1)
 {
-    if (statement1->type==STATEMENT && statement1->child->type == EXPRESSION_STATEMENT && statement1->child->child->type == EXPRESSION
-        && statement1->child->child->child->type == ASSIGNMENT_EXPRESSION && statement1->child->child->child->child->type != CONDITIONAL_EXPRESSION)
+    if (statement1->type==STATEMENT && statement1->child->type == EXPRESSION_STATEMENT
+    && statement1->child->child && statement1->child->child->type == EXPRESSION
+    && statement1->child->child->child && statement1->child->child->child->type == ASSIGNMENT_EXPRESSION
+    && statement1->child->child->child->child && statement1->child->child->child->child->type != CONDITIONAL_EXPRESSION)
         return true;
     else
         return false;
@@ -118,15 +120,19 @@ bool judge_break_statement(gtree *statement1)
     return false;
 }
 
+
 bool judge_statement(gtree *p)
 {
-    if((p->type == ASSIGNMENT_EXPRESSION && p->child->next!=NULL)
-       || p->type == SELECTION_STATEMENT
-       || p->type == ITERATION_STATEMENT
+    if(judge_assign_statement(p)
+    ||judge_compound_statement(p)
+       || (p->child && p->child->type == SELECTION_STATEMENT)
+       || (p->child && p->child->type == ITERATION_STATEMENT)
        || judge_return_statement(p)
        || judge_break_statement(p)
        || judge_goto_statement(p)
-       ||judge_label_statement(p))
+       ||judge_label_statement(p)
+       ||judge_expression_statement(p)
+       )
         return true;
     else
         return false;
@@ -135,10 +141,18 @@ bool judge_statement(gtree *p)
 bool judge_expression_statement(gtree *statement1)
 {
     if (statement1->type == STATEMENT && statement1->child->type == EXPRESSION_STATEMENT
-        && statement1->child->child->type == EXPRESSION
+        && ((statement1->child->child->type == EXPRESSION
         && statement1->child->child->child->type == ASSIGNMENT_EXPRESSION
-        && statement1->child->child->child->child->type == CONDITIONAL_EXPRESSION
+        && (statement1->child->child->child->child == NULL
+        || statement1->child->child->child->child->next == NULL)) || statement1->child->child->place == ";")
         )
+        return true;
+    return false;
+}
+
+bool judge_compound_statement(gtree *statement1)
+{
+    if(statement1->type == STATEMENT && statement1->child->type == COMPOUND_STATEMENT &&  statement1->parent->type == STATEMENT_LIST)
         return true;
     return false;
 }
@@ -200,10 +214,7 @@ void TraverseTree2(gtree *p)
     }
     else if (p->type == STORAGE_CLASS_SPECIFIER)
     {
-        if (p->child->place == "extern")
-            p->place = "e";
-        else
-            p->place = p->child->place;
+        p->place = p->child->place;
     }
     else if (p->type == TYPE_SPECIFIER)
     {
@@ -226,10 +237,7 @@ void TraverseTree2(gtree *p)
     }
     else if (p->type == TYPE_QUALIFIER)
     {
-        if (p->child->place == "const")
-            p->place = "c";
-        else if (p->child->place == "volatile")
-            p->place = "v";
+        p->place = p->child->place;
     }
     else if (p->type == FUNCTION_DEFINITION)
     {
@@ -277,9 +285,11 @@ void TraverseTree2(gtree *p)
                         temp_postfix_expression = temp;
                     temp = temp->child;
                 }
-                p->place = temp->place + "_call";
-                temp_postfix_expression->place = temp->place + "_call";
+                p->place = temp->place + call_statement_suffix;
+                temp_postfix_expression->place = temp->place + call_statement_suffix;
             }
+            else if(p->child->child->place == ";")// ';' expression
+                p->place = p->child->child->place;
             else
                 p->place = p->child->child->child->place;
         }
@@ -342,7 +352,7 @@ gtree *&create_tree(string filename, bool pre_process_flag)
         if (!fin.is_open())
         {
             cout << filename << " not exist" << endl;
-            exit(1);
+            exit(-1);
         }
         string temp_s;
         istreambuf_iterator<char> beg(fin), end;
@@ -360,7 +370,7 @@ gtree *&create_tree(string filename, bool pre_process_flag)
         else
         {
             cout << filename1 << " not exist" << endl;
-            exit(1);
+            exit(-1);
         }
 
 
@@ -373,7 +383,7 @@ gtree *&create_tree(string filename, bool pre_process_flag)
         else
         {
             cout << filename << " not exist" << endl;
-            exit(1);
+            exit(-1);
         }
     }
     yyparse();
@@ -393,4 +403,27 @@ void Traverse(gtree *p)
         cout << p->place << endl;
     Traverse(p->child);
     Traverse(p->next);
+}
+
+void cut_tree(gtree *p)
+{
+    if(p==NULL)return;
+
+    cut_tree(p->child);
+    cut_tree(p->next);
+    if(p && p->child && p->child->next==NULL && p->next == NULL
+    && p->place == p->child->place
+    && p->type != STATEMENT && p->child->type != POSTFIX_EXPRESSION)
+    {
+        gtree *temp = p->child;
+        p->child = temp->child;
+        if(temp->child) {
+            gtree *temp1 = temp->child;
+            while (temp1) {
+                temp1->parent = p;
+                temp1 = temp1->next;
+            }
+        }
+        delete temp;
+    }
 }

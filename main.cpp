@@ -10,7 +10,10 @@ string rg_dirname = "../rg/";
 string rg_sliceOnly_dirname = "../rg_sliceOnly/";
 string origin_dirname = "../test/";
 string newfile_dirname = "../newfile/";
-
+vector<string> pthread_type = {"pthread_t","pthread_mutex_t","pthread_cond_t"};
+vector<string> pthread_func_type = {"pthread_create","pthread_join",
+                                    "pthread_mutex_init","pthread_mutex_lock","pthread_mutex_unlock",
+                                    "pthread_cond_init","pthread_cond_signal","pthread_cond_wait"};
 
 void travel_tree(gtree *tree,ofstream &out,vector<pair<string,int>> &list)
 {
@@ -51,19 +54,33 @@ void intofile_tree(gtree *tree)
 
 }
 
+void init_pthread_type()
+{
+
+    aka temp;
+    for(unsigned int i=0;i<pthread_type.size();i++) {
+        temp.origin_name = "";
+        temp.aka_name = pthread_type[i];
+        temp.level = 0;
+        aka_type_array.push_back(temp);
+    }
+}
+
 int main() {
     cout << "=================================================" << endl;
     cout << "=====This is our tool-enPAC for the MCC'2020=====" << endl;
     cout << "=================================================" << endl;
 
-
+    init_pthread_type();
     gtree * tree = create_tree("1.c",true);
+    cut_tree(tree);
     intofile_tree(tree);
     makeGraph("tree.dot","tree.png");
 
     CPN *cpnet = new CPN;
 
     V_Table *table = new V_Table("global");
+    table->fa == NULL;
     v_tables.push_back(table);
 
     cpnet->init();
@@ -79,24 +96,24 @@ int main() {
 
     vector<string> final_P,final_T,criteria;
     criteria.push_back("P20");
-    two_phrase_slicing(cpnet,criteria,final_P,final_T);
+//    two_phrase_slicing(cpnet,criteria,final_P,final_T);
 
-    CPN *cpnet_slice = new CPN;
-    cpnet_slice->copy_childtree(cpnet,final_P,final_T);
-    post_process(cpnet,cpnet_slice,final_T);
-    filename_prefix = "2";
-    cpnet_slice->print_CPN(filename_prefix + ".txt");
-    readGraph(filename_prefix + ".txt",filename_prefix + ".dot");
-    makeGraph(filename_prefix + ".dot",filename_prefix + ".png");
+//    CPN *cpnet_slice = new CPN;
+//    cpnet_slice->copy_childtree(cpnet,final_P,final_T);
+//    post_process(cpnet,cpnet_slice,final_T);
+//    filename_prefix = "2";
+//    cpnet_slice->print_CPN(filename_prefix + ".txt");
+//    readGraph(filename_prefix + ".txt",filename_prefix + ".dot");
+//    makeGraph(filename_prefix + ".dot",filename_prefix + ".png");
 
     RG rg;
     rg.init(cpnet);
     rg.GENERATE(cpnet);
     rg.print_RG("rg.txt",cpnet);
 
-    RG rg1;
-    rg1.init(cpnet_slice);
-    rg1.GENERATE(cpnet_slice);
-    rg1.print_RG("rg1.txt",cpnet_slice);
+//    RG rg1;
+//    rg1.init(cpnet_slice);
+//    rg1.GENERATE(cpnet_slice);
+//    rg1.print_RG("rg1.txt",cpnet_slice);
     return 0;
 }

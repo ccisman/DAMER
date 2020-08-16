@@ -4434,7 +4434,7 @@ int yyerror(char *s)
     cout << "actually error!" << endl;
     fflush(stdout);
 
-    exit(1);
+    exit(-1);
     return 1;
 }
 

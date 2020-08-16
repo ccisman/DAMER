@@ -145,6 +145,7 @@ void condition_tree::construct(string s) {
             if (temp_s != "")
             {
                 node = new condition_tree_node;
+                node->left = node->right = NULL;
                 if(temp_s[0]=='_'||isalpha(temp_s[0]))
                     node->node_type = variable;
                 else

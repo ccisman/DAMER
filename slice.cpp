@@ -311,12 +311,12 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
                                 P.push_back(cpn->place[temp_t->producer[k].idx].id);
                     }
                 }
-                vector<string> call_P = cpn->get_call_P(p->id);
-                for(unsigned int l=0;l<call_P.size();l++)
-                    if(!exist_in(P,call_P[l]))
+                vector<string> correspond_P = cpn->get_correspond_P(p->id);
+                for(unsigned int l=0;l<correspond_P.size();l++)
+                    if(!exist_in(P,correspond_P[l]))
                     {
-                        P.push_back(call_P[l]);
-                        vector<string> call_T = cpn->get_enter_T(call_P[l]);
+                        P.push_back(correspond_P[l]);
+                        vector<string> call_T = cpn->get_enter_T(correspond_P[l]);
                         //begin places' call have no call_T
                         if(call_T.size()!=0) {
                             T.push_back(call_T[0]);
@@ -406,15 +406,23 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
                                 P.push_back(cpn->place[temp_t->producer[k].idx].id);
                     }
                 }
-                vector<string> call_P = cpn->get_call_P(p->id);
-                for(unsigned int l=0;l<call_P.size();l++)
-                    if(!exist_in(P,call_P[l]))
+                vector<string> correspond_P = cpn->get_correspond_P(p->id);
+                for(unsigned int l=0;l<correspond_P.size();l++)
+                    if(!exist_in(P,correspond_P[l]))
                     {
-                        P.push_back(call_P[l]);
-                        vector<string> call_T = cpn->get_enter_T(call_P[l]);
+                        P.push_back(correspond_P[l]);
+                        vector<string> call_T = cpn->get_enter_T(correspond_P[l]);
                         //begin places' call have no call_T
-                        if(call_T.size()!=0)
+                        if(call_T.size()!=0) {
                             T.push_back(call_T[0]);
+                            auto iter = cpn->mapTransition.find(call_T[0]);
+                            CTransition *tran = &cpn->transition[iter->second];
+                            for(unsigned int m=0;m<tran->producer.size();m++)
+                                if(tran->producer[m].arcType == control
+                                   && cpn->place[tran->producer[m].idx].expression == executed_P_name)
+                                    P.push_back(cpn->place[tran->producer[m].idx].id);
+
+                        }
                     }
             }
             for(unsigned int j=0;j<p->producer.size();j++)

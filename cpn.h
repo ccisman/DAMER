@@ -400,6 +400,7 @@ typedef struct CPN_Place
     vector<string> exit;
     vector<string> false_exit;
     vector<string> call_P;
+    vector<string> correspond_P;
     vector<pair<string,string>> para_list;
     //***PDNet added end***/
 
@@ -460,6 +461,7 @@ public:
     map<string,index_t> mapTransition;
     map<string,VARID> mapVariable;
     map<string,string> mapFunction;
+    map<string,string> mapPthread;
 
     //***PDNet added start***/
     void CTN_cal(condition_tree_node *CTN);
@@ -488,6 +490,8 @@ public:
     void set_producer_consumer();
     void set_call_P(string p_name,vector<string> enter_P);
     vector<string> get_call_P(string p_name);
+    void set_correspond_P(string p_name,vector<string> correspond_P);
+    vector<string> get_correspond_P(string p_name);
     void set_exit_T(string p_name,vector<string> exit_T);
     vector<string> get_exit_T(string p_name);
     void set_falseexit_T(string p_name,vector<string> exit_T);
