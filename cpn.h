@@ -27,7 +27,7 @@ using namespace std;
 typedef unsigned short VARID;
 typedef unsigned short SORTID;
 //typedef unsigned short COLORID;
-typedef unsigned short NUM_t;
+typedef unsigned int NUM_t;
 typedef int Integer_t;
 typedef double Real_t;
 typedef string String_t;

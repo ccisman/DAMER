@@ -46,6 +46,9 @@ public:
     Marking marking;
     FireTranQ *tranQ;
     RG_NODE *next;
+    string last_tran;
+    NUM_t num;
+    NUM_t fathernum;
     NUM_t firenum;
 
     index_t Hash();

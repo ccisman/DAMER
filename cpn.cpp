@@ -424,8 +424,8 @@ vector<string> get_statement_exit(gtree *statement1, CPN *petri)
         }
         else
         {
-            statement_P = last_statement->matched_P;
-            temp_v1 = petri->get_enter_T(statement_P);
+            cout<<"error in get_statement_exit!"<<endl;
+            exit(-1);
         }
     }
     else if (statement1->child->type == ITERATION_STATEMENT || statement1->child->type == SELECTION_STATEMENT
@@ -434,14 +434,14 @@ vector<string> get_statement_exit(gtree *statement1, CPN *petri)
         while(last_statement->type!=STATEMENT)
             last_statement = last_statement->parent;
         statement_P = last_statement->matched_P;
-        temp_v1 = petri->get_enter_T(statement_P);
+        temp_v1 = petri->get_exit_T(statement_P);
     }
     else if (judge_assign_statement(statement1))
     {
         while(last_statement->type!=STATEMENT)
             last_statement = last_statement->parent;
         statement_P = last_statement->matched_P;
-        temp_v1 = petri->get_enter_T(statement_P);
+        temp_v1 = petri->get_exit_T(statement_P);
     }
     return temp_v1;
 }
@@ -1126,8 +1126,10 @@ index_t MultiSet::Hash() {
     {
         hv = color_count*H1FACTOR*H1FACTOR*H1FACTOR;
         Tokens *p = tokenQ->next;
+
         for(p;p!=NULL;p=p->next)
         {
+
             Integer_t cid;
             p->color->getColor(cid);
             hv += p->tokencount*H1FACTOR*H1FACTOR+(cid+1)*H1FACTOR;
@@ -1296,7 +1298,10 @@ bool MultiSet::operator==(const MultiSet &ms) {
     }
     else if(tid == dot)
     {
-        if(t1 == NULL||t2==NULL)
+
+        if(t1 == NULL && t2 == NULL)
+            return true;
+        else if(t1 == NULL || t2 == NULL)
             return false;
         if(t1->tokencount != t2->tokencount)
             return false;
@@ -3025,92 +3030,6 @@ void CPN::create_PDNet(gtree *p)
 
                 gtree *tr = statement->parent->next;
 
-//                //construct mutex critical section
-//                vector<string> now;
-//                vector<string> last;
-//                string T = enter_T[0];
-//                int sum = 0;
-//                bool mutex_flag=false;
-//
-//                while (tr) {
-//
-//                    if(tr->child->place == "pthread_mutex_unlock" + call_statement_suffix)
-//                        break;
-//                    now.clear();
-//                    /*if (tr->child->type == SELECTION_STATEMENT || tr->child->type == ITERATION_STATEMENT
-//                        || judge_assign_statement(tr) || judge_call_statement(tr) || judge_return_statement(tr))*/
-//                    if (!judge_statement(tr)) {
-//                        tr = tr->parent->next;
-//                        continue;
-//                    }
-//
-//                    bool control_P, t;
-//                    int n1 = 0;
-//                    double d = 0.0;
-//                    string tag;
-//                    string _P = tr->matched_P;
-//                    vector<string> call_P = get_call_P(_P);
-//
-//                    if(tr->place == "pthread_mutex_unlock" + call_statement_suffix)
-//                        mutex_flag = false;
-//
-//                    if(mutex_flag==false) {
-//                        if (call_P.size() != 0) {
-//                            for (unsigned int i = 0; i < call_P.size(); i++)
-//                                Add_Arc(T, call_P[i], "", false, control);
-//                        } else
-//                            Add_Arc(T, _P, "", false, control);
-//                        //int flag = petri.get_call_flag(_P);
-//                    }
-//
-//                    if (call_P.size() == 0)
-//                        now = get_enter_T(_P);
-//                    else
-//                        now = get_enter_T(call_P[0]);
-//
-//                    if(mutex_flag == false) {
-//                        if (sum == 0) {
-//                            sum++;
-//                            string newP = gen_P();
-//
-//                            Add_Place(newP, "", 0, true, executed_P_name);
-//                            Add_Arc(T, newP, "", false, executed);
-//                            for (unsigned int i = 0; i < now.size(); i++)
-//                                Add_Arc(newP, now[i], "", true, control);//it's under consideration
-//                        } else {
-//                            string newP = gen_P();
-//
-//                            Add_Place(newP, "", 0, true, executed_P_name);
-//
-//                            for (unsigned int i = 0; i < last.size(); i++)
-//                                Add_Arc(last[i], newP, "", false, executed);
-//
-//                            //if (tr->child->type == break语句)
-//                            //	break;
-//
-//
-//                            for (unsigned int i = 0; i < now.size(); i++)
-//                                Add_Arc(newP, now[i], "", true, control);//it's under consideration
-//                            if (tr->child->type == ITERATION_STATEMENT)//while statement
-//                            {
-//                                vector<string> false_exit = get_falseexit_T(_P);
-//                                for (unsigned int i = 0; i < false_exit.size(); i++)
-//                                    Add_Arc(false_exit[i], newP, "", false, executed);
-//                            }
-//                        }
-//                    }
-//
-//                    last = get_exit_T(_P);
-//
-//                    if(tr->place == "pthread_mutex_lock" + call_statement_suffix)
-//                        mutex_flag = true;
-//
-//                    if (tr->parent->next->type == STATEMENT)
-//                        tr = tr->parent->next;
-//                    else
-//                        break;
-//
-//                }
             }
             else if(p->child->place == "pthread_mutex_unlock")
             {
@@ -3126,7 +3045,67 @@ void CPN::create_PDNet(gtree *p)
                 vector<string> enter_T = get_enter_T(statement_P);
                 Add_Arc(enter_T[0],mutex_P,"",false,control);
             }
+            else if(p->child->place == "pthread_cond_signal")
+            {
+                string cond_v = paras[0];
+                if (cond_v[0] == '&')
+                    cond_v = cond_v.substr(1);
+                gtree *com = p;
+                while(com->type!=COMPOUND_STATEMENT)
+                    com = com->parent;
+                string base = com->place;
 
+                string cond_P = find_P_name(cond_v,base);
+                vector<string> enter_T = get_enter_T(statement_P);
+                Add_Arc(enter_T[0],cond_P,"",false,control);
+            }
+            else if(p->child->place == "pthread_cond_wait")
+            {
+                string cond_v = paras[0],mutex_v = paras[1];
+                if (cond_v[0] == '&')
+                    cond_v = cond_v.substr(1);
+                if(mutex_v[0] == '&')
+                    mutex_v = mutex_v.substr(1);
+                gtree *com = p;
+                while(com->type!=COMPOUND_STATEMENT)
+                    com = com->parent;
+                string base = com->place;
+
+                string cond_P = find_P_name(cond_v,base);
+                string mutex_P = find_P_name(mutex_v,base);
+                vector<string> enter_T = get_enter_T(statement_P);
+
+
+                //construct P、T
+                string P1,P2,P3,T1,T2;
+                P1 = gen_P();
+                P2 = gen_P();
+                P3 = gen_P();
+                T1 = gen_T();
+                T2 = gen_T();
+
+                Add_Place(P1,"",0,true,"signalP1");
+                Add_Place(P2,"",0,true,"signalP2");
+                Add_Place(P3,"",0,true,"signalP3");
+                Add_Transition(T1,"","signalT1");
+                Add_Transition(T2,"","signalT2");
+
+                //construct arcs
+                Add_Arc(enter_T[0],P1,"",false,control);
+                Add_Arc(enter_T[0],P3,"",false,executed);
+                Add_Arc(enter_T[0],mutex_P,"",false,control);
+                Add_Arc(cond_P,T1,"",true,control);
+                Add_Arc(P1,T1,"",true,control);
+                Add_Arc(T1,P2,"",false,control);
+                Add_Arc(mutex_P,T2,"",true,control);
+                Add_Arc(P2,T2,"",true,control);
+                Add_Arc(P3,T2,"",true,executed);
+
+                //set exit
+                vector<string> exit_T;
+                exit_T.push_back(T2);
+                set_exit_T(statement_P,exit_T);
+            }
         }
         else {
             gtree *com = p;

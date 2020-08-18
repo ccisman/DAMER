@@ -71,6 +71,9 @@ int main() {
     cout << "=====This is our tool-enPAC for the MCC'2020=====" << endl;
     cout << "=================================================" << endl;
 
+
+    cout<<"size="<<sizeof(MultiSet)<<endl;
+
     init_pthread_type();
     gtree * tree = create_tree("1.c",true);
     cut_tree(tree);
@@ -108,6 +111,13 @@ int main() {
 
     RG rg;
     rg.init(cpnet);
+//    unsigned long count=0;
+//    while(1) {
+//        RG_NODE *newnode = new RG_NODE;
+//        newnode->marking.init_marking(cpnet->place, cpnet->placecount);
+//        count++;
+//        cout<<"count="<<count<<endl;
+//    }
     rg.GENERATE(cpnet);
     rg.print_RG("rg.txt",cpnet);
 

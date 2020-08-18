@@ -152,7 +152,7 @@ index_t RG_NODE::Hash() {
     for(int i=0;i<marking.placecount;i++)
     {
         marking.mss[i].Hash();
-        hv += marking.mss[i].hash_value;
+        hv += i * marking.mss[i].hash_value;
     }
     return hv;
 }
@@ -239,25 +239,28 @@ void Marking_after_fire(Marking &marking,CTransition *transition,vector<Binding 
         marking.mss[idx].PLUS(*ms);
     }
 }
-
+unsigned long count=0;
 void RG::createNode(RG_NODE *node,CPN *cpn) {
     node->get_FireTranQ(cpn);
     FireTranQ *tranQ = node->tranQ->next;
     while(tranQ)
     {
-        if(tranQ->transition->id == "T16")
-        {
-            int a=a+1;
-        }
+
         RG_NODE *newnode = new RG_NODE;
+        newnode->fathernum = node->num;
+        newnode->last_tran = tranQ->transition->id;
         newnode->marking.init_marking(node->marking);
         Marking_after_fire(newnode->marking,tranQ->transition,tranQ->bindings,cpn);
-        //if(nodeExist(newnode))
-        //    ;
-        //else {
+        if(nodeExist(newnode))
+            ;
+        else
+        {
+            cout<<"count = "<<count++<<endl;
             addRGNode(newnode);
+//            if(count<=5000)
             createNode(newnode, cpn);
-        //}
+        }
+
         tranQ = tranQ->next;
     }
 }
@@ -282,12 +285,14 @@ void RG::addRGNode(RG_NODE *node) {
         rgnodetable[hv] = node;
         rgnodetable[hv]->next = NULL;
         rgnodevec.push_back(node);
+        node->num = node_num;
         node_num++;
         return;
     }
     node->next = rgnodetable[hv];
     rgnodetable[hv] = node;
     rgnodevec.push_back(node);
+    node->num = node_num;
     node_num++;
 }
 
@@ -308,8 +313,8 @@ void RG::print_RG(string filename,CPN *cpn) {
     {
 
         node = rgnodevec[i];
-        fout << "node:" << i << endl;
-        cout << "node:" << i << endl;
+        fout << "node:" << node->num << endl;
+        cout << "node:" << node->num << endl;
         for (int j = 0; j < node->marking.placecount; j++)
         {
             tokenQ = node->marking.mss[j].tokenQ->next;
@@ -365,7 +370,9 @@ void RG::print_RG(string filename,CPN *cpn) {
         cout << endl;
 
         fout << "successor node:";
-        cout << endl;
+        cout << "successor node:";
+
+
         FireTranQ *tranQ = node->tranQ->next;
         while(tranQ)
         {
@@ -376,6 +383,12 @@ void RG::print_RG(string filename,CPN *cpn) {
         }
         cout << endl;
         fout << endl;
+
+        fout <<"father node:"<<node->fathernum<<"    last Tran:"<<node->last_tran;
+        cout <<"father node:"<<node->fathernum<<"    last Tran:"<<node->last_tran;
+
+        cout << endl<<endl;
+        fout << endl<<endl;
     }
 
     fout.close();
