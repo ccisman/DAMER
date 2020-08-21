@@ -30,6 +30,13 @@ public:
     void erase(std::string v) {
         v_map.erase(v);
     }
+    bool find_P(string s){
+        auto iter = v_map.begin();
+        for(;iter!=v_map.end();iter++)
+            if(iter->second == s)
+                return true;
+        return false;
+    }
     void connect(V_Table *&father) { fa = father;}
     std::string get_place(std::string v) {
         map_1::iterator iter;

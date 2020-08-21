@@ -169,8 +169,18 @@ void FireTranQ::insert(CTransition *transition) {
 void RG::init(CPN *cpn) {
 
     auto iter = cpn->mapFunction.find("main" + begin_suffix);
+    if(iter == cpn->mapFunction.end())
+    {
+        cout<<"can't find main func"<<endl;
+        exit(-1);
+    }
     string main_P = iter->second;
     auto iter2 = cpn->mapPlace.find(main_P);
+    if(iter2 == cpn->mapPlace.end())
+    {
+        cout<<"can't find main place"<<endl;
+        exit(-1);
+    }
     Tokens *token = new Tokens;
     token->tokencount = 1;
     cpn->place[iter2->second].initMarking.insert(token);

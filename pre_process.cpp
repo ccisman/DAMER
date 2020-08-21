@@ -35,7 +35,7 @@ bool for_to_while(string s, string &oldtext, string &newtext)//true代表搜索�
     }
     else
         return false;
-    newtext = "if(1>0){\n" + res1 + ';' + "\nwhile(" + res2 + ')';
+    newtext = "{\n" + res1 + ';' + "\nwhile(" + res2 + ')';
     for (unsigned int i = position; i < s.length(); i++)
     {
         if (s[i] == '{')
@@ -292,6 +292,7 @@ bool trans_define(string &s)
         else
             break;
     }
+    return true;
 }
 
 void trans_define_all(string &s)
@@ -389,6 +390,20 @@ void trans_some_function(string &s)
         s = "int nondet_num_long=" + init_num + ";\n" + s;
     if (s.find("int nondet_num_double") == string::npos&&s.find(newnondet_double) != string::npos)
         s = "int nondet_num_double=" + init_num + ";\n" + s;
+
+    string pthread_library = "#include <pthread.h>";
+    string_replace(s,  pthread_library, "");
+
+    string atomic_begin = "extern void __VERIFIER_atomic_begin();";
+    string atomic_begin_rp = "void __VERIFIER_atomic_begin(){}";
+    string atomic_end = "extern void __VERIFIER_atomic_end();";
+    string atomic_end_rp = "void __VERIFIER_atomic_end(){}";
+    string abort = "extern void abort(void); ";
+    string abort_rp = "void abort(){}";
+    string_replace(s,  atomic_begin, atomic_begin_rp);
+    string_replace(s,  atomic_end, atomic_end_rp);
+    string_replace(s,  abort, abort_rp);
+
 }
 
 bool trans_switch(string &s)

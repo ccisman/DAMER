@@ -1,4 +1,54 @@
 digraph G{
 rankdir = LR
-subgraph cluster_P20{label="thread2_v"color="white"P20[shape=circle, style="filled",color="black",fillcolor="chartreuse"]}
+P10[shape=circle,label="t1 begin"]
+P11[shape=circle,label="t1 end"]
+subgraph cluster_P13{label="k"color="white"P13[shape=circle, style="filled",color="black",fillcolor="chartreuse"]}
+P14[shape=circle,label="iter0"]
+P17[shape=circle,label="k=k+1"]
+P20[shape=circle,label="executed_P"]
+P21[shape=circle,label="com5"]
+P22[shape=circle,label="executed_P"]
+P24[shape=circle,label="executed_P"]
+P42[shape=circle,label="main begin"]
+P43[shape=circle,label="main end"]
+P49[shape=circle,label="pthread_create_call"]
+P63[shape=circle,label="executed_P"]
+T4[shape=box]
+T5[shape=box]
+T6[shape=box]
+T9[shape=box]
+T10[shape=box]
+T20[shape=box]
+T21[shape=box]
+P10->T4
+P14->T5
+P14->T6
+P17->T9
+P13->T9
+T9->P13
+P13->T5
+T5->P13
+P13->T6
+T6->P13
+T9->P14[style="dashed"]
+T5->P17
+P20->T9
+P21->T10
+T10->P14
+T10->P22[style="dashed"]
+P22->T5
+P22->T6
+T9->P22[style="dashed"]
+T4->P21
+T4->P24[style="dashed"]
+P24->T10
+P42->T20
+P49->T21
+T21->P10
+T20->P49
+T20->P63[style="dashed"]
+P63->T21
+T6->P11[style="dashed"]
+T5->P20[style="dashed"]
+T21->P43[style="dashed"]
 }

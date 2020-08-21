@@ -211,6 +211,8 @@ void copy_condition_tree(condition_tree_node *&des,condition_tree_node *src)
         des->node_name = src->node_name;
         des->node_type = src->node_type;
         des->value = src->value;
+        des->left = NULL;
+        des->right = NULL;
         if(src->left) {
             des->left = new condition_tree_node;
             copy_condition_tree(des->left,src->left);

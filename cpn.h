@@ -395,6 +395,8 @@ typedef struct CPN_Place
 
     //***PDNet added start***/
     bool control_P;
+    bool is_mutex;
+    bool is_cond;
     string expression;
     vector<string> enter;
     vector<string> exit;

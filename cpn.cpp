@@ -28,7 +28,9 @@ string arr_suffix = "_arr",begin_suffix = " begin"
         ,end_suffix = " end",return_suffix = "_v",
         call_suffix = "()",para_suffix = "_para",call_statement_suffix = "_call";
 string executed_P_name = "executed_P";
+
 extern int string_replace(std::string &s1, const std::string &s2, const std::string &s3);
+vector<string> extract_paras(gtree *p);
 string gen_P()
 {
     string temp = "";
@@ -266,6 +268,10 @@ void inside_block(CPN *petri, gtree *tree1, string T)//tree1 indicates a compoun
     {
         tr = tree1->child->next;
     }
+    else if(tree1->child->next->next == NULL)
+    {
+        return;
+    }
     else if (tree1->child->next->next->type == STATEMENT_LIST)
     {
         tr = tree1->child->next->next;
@@ -273,7 +279,8 @@ void inside_block(CPN *petri, gtree *tree1, string T)//tree1 indicates a compoun
     else//只有定义
     {
         cout << "only have declaration!" << endl;
-        exit(-1);
+        return;
+        //exit(-1);
     }
     while (tr->type != STATEMENT)
         tr = tr->child;
@@ -281,7 +288,10 @@ void inside_block(CPN *petri, gtree *tree1, string T)//tree1 indicates a compoun
     vector<string> now;
     vector<string> last;
     bool mutex_flag=false;
+    string mutex_P;
     string mutex_T;
+//    string create_P;
+    map<string,string> create_P_list;
 
     while (tr) {
         now.clear();
@@ -299,24 +309,40 @@ void inside_block(CPN *petri, gtree *tree1, string T)//tree1 indicates a compoun
         string _P = tr->matched_P;
         vector<string> call_P = petri->get_call_P(_P);
 
-        if(tr->place == "pthread_mutex_unlock" + call_statement_suffix)
+        if (tr->place == "pthread_mutex_unlock" + call_statement_suffix) {
             mutex_flag = false;
-
-
-            if (call_P.size() != 0) {
-                for (unsigned int i = 0; i < call_P.size(); i++) {
-                    if(mutex_flag == false)
-                        petri->Add_Arc(T, call_P[i], "", false, control);
-                    else
-                        petri->Add_Arc(mutex_T, call_P[i], "", false, control);
-                }
-            } else {
-                if (mutex_flag == false)
-                    petri->Add_Arc(T, _P, "", false, control);
-                else
-                    petri->Add_Arc(mutex_T, _P, "", false, control);
+            vector<string> cor_P;
+            cor_P.push_back(_P);
+            petri->set_correspond_P(mutex_P, cor_P);
+            cor_P.clear();
+            cor_P.push_back(mutex_P);
+            petri->set_correspond_P(_P, cor_P);
+        } else if (tr->place == "pthread_join" + call_statement_suffix) {
+            vector<string> paras = extract_paras(tr->child->child->child->child);
+            auto iter = create_P_list.find(paras[0]);
+            if (iter == create_P_list.end()) {
+                cout << "can't find matched pthread_create" << endl;
+                exit(-1);
             }
-            //int flag = petri.get_call_flag(_P);
+            vector<string> cor_P;
+            cor_P.push_back(_P);
+            petri->set_correspond_P(iter->second, cor_P);
+        }
+
+        if (call_P.size() != 0) {
+            for (unsigned int i = 0; i < call_P.size(); i++) {
+                if (mutex_flag == false)
+                    petri->Add_Arc(T, call_P[i], "", false, control);
+                else
+                    petri->Add_Arc(mutex_T, call_P[i], "", false, control);
+            }
+        } else {
+            if (mutex_flag == false)
+                petri->Add_Arc(T, _P, "", false, control);
+            else
+                petri->Add_Arc(mutex_T, _P, "", false, control);
+        }
+        //int flag = petri.get_call_flag(_P);
 
 
         if (call_P.size() == 0)
@@ -325,47 +351,57 @@ void inside_block(CPN *petri, gtree *tree1, string T)//tree1 indicates a compoun
             now = petri->get_enter_T(call_P[0]);
 
 
-            if (sum == 0) {
-                sum++;
-                string newP = gen_P();
+        if (sum == 0) {
+            sum++;
+            string newP = gen_P();
 
-                petri->Add_Place(newP, "", 0, true, executed_P_name);
-                if(mutex_flag == false)
-                    petri->Add_Arc(T, newP, "", false, executed);
-                else
-                    petri->Add_Arc(mutex_T, newP, "", false, executed);
-                for (unsigned int i = 0; i < now.size(); i++)
-                    petri->Add_Arc(newP, now[i], "", true, control);//it's under consideration
-            } else {
-                string newP = gen_P();
-
-                petri->Add_Place(newP, "", 0, true, executed_P_name);
-
-                for (unsigned int i = 0; i < last.size(); i++)
-                    petri->Add_Arc(last[i], newP, "", false, executed);
-
-                //if (tr->child->type == break语句)
-                //	break;
-
-
-                for (unsigned int i = 0; i < now.size(); i++)
-                    petri->Add_Arc(newP, now[i], "", true, control);//it's under consideration
-                if (tr->child->type == ITERATION_STATEMENT)//while statement
-                {
-                    vector<string> false_exit = petri->get_falseexit_T(_P);
-                    for (unsigned int i = 0; i < false_exit.size(); i++)
-                        petri->Add_Arc(false_exit[i], newP, "", false, executed);
-                }
+            petri->Add_Place(newP, "", 0, true, executed_P_name);
+            if (mutex_flag == false)
+                petri->Add_Arc(T, newP, "", false, executed);
+            else
+                petri->Add_Arc(mutex_T, newP, "", false, executed);
+            for (unsigned int i = 0; i < now.size(); i++)
+                petri->Add_Arc(newP, now[i], "", true, control);//it's under consideration
+            if (tr->child->type == ITERATION_STATEMENT)//while statement
+            {
+                vector<string> false_exit = petri->get_falseexit_T(_P);
+                for (unsigned int i = 0; i < false_exit.size(); i++)
+                    petri->Add_Arc(false_exit[i], newP, "", false, executed);
             }
+        } else {
+            string newP = gen_P();
+
+            petri->Add_Place(newP, "", 0, true, executed_P_name);
+
+            for (unsigned int i = 0; i < last.size(); i++)
+                petri->Add_Arc(last[i], newP, "", false, executed);
+
+            //if (tr->child->type == break语句)
+            //	break;
+
+
+            for (unsigned int i = 0; i < now.size(); i++)
+                petri->Add_Arc(newP, now[i], "", true, control);//it's under consideration
+            if (tr->child->type == ITERATION_STATEMENT)//while statement
+            {
+                vector<string> false_exit = petri->get_falseexit_T(_P);
+                for (unsigned int i = 0; i < false_exit.size(); i++)
+                    petri->Add_Arc(false_exit[i], newP, "", false, executed);
+            }
+        }
 
 
         last = petri->get_exit_T(_P);
 
-        if(tr->place == "pthread_mutex_lock"+ call_statement_suffix) {
+        if (tr->place == "pthread_mutex_lock" + call_statement_suffix) {
             mutex_flag = true;
-            string lock_P = tr->matched_P;
-            vector<string> lock_T = petri->get_enter_T(lock_P);
+            mutex_P = tr->matched_P;
+            vector<string> lock_T = petri->get_enter_T(mutex_P);
             mutex_T = lock_T[0];
+        } else if (tr->place == "pthread_create" + call_statement_suffix) {
+            //simplely process
+            vector<string> paras = extract_paras(tr->child->child->child->child);
+            create_P_list.insert(make_pair(paras[0].substr(1), tr->matched_P));
         }
 
         if (tr->parent->next->type == STATEMENT)
@@ -397,6 +433,10 @@ vector<string> get_statement_exit(gtree *statement1, CPN *petri)
                 //temp_v1 = petri.get_exit(statement_P);
             }
         }
+        else if(statement1->child->child->next->next == NULL)
+        {
+            return temp_v1;
+        }
         else if (statement1->child->child->next->type == DECLARATION_LIST && statement1->child->child->next->next->type == STATEMENT_LIST)//有语句有定义
         {
             if (statement1->child->child->next->next->child->type == STATEMENT)
@@ -415,7 +455,8 @@ vector<string> get_statement_exit(gtree *statement1, CPN *petri)
         else//只有定义
         {
             cout << "only have definition!" << endl;
-            exit(-1);
+            return temp_v1;
+//            exit(-1);
         }
         if (last_statement != NULL)
         {
@@ -1316,6 +1357,8 @@ void CPN::Add_Place(string id, string Type_name, int size,bool control_P,string 
     pp->control_P = control_P;//pthread_mutex should be redifine
     pp->expression = exp;
     pp->id = id;
+    pp->is_cond = false;
+    pp->is_mutex = false;
 
     //dot type
     if(Type_name == "") {
@@ -1334,6 +1377,10 @@ void CPN::Add_Place(string id, string Type_name, int size,bool control_P,string 
         pp->control_P = true;
         pp->initMarking.tid = dot;
         pp->initMarking.sid = 0;
+        if(Type_name == "pthread_mutex_t")
+            pp->is_mutex = true;
+        else if(Type_name == "pthread_cond_t")
+            pp->is_cond = true;
 
         mapPlace.insert(make_pair(id, placecount - 1));
         return;
@@ -1437,7 +1484,7 @@ void CPN::Add_Arc(string source, string target, string exp, bool sourceP,Arc_Typ
     CArc *aa = &arc[arccount++];
     aa->arcType = arcType;
     if(exp != "") {
-        aa->arc_exp.deconstruct();
+        //aa->arc_exp.deconstruct();
         aa->arc_exp.construct(exp);
         aa->onlydot = false;
     }
@@ -2339,6 +2386,7 @@ vector<string> CPN::get_correspond_P(string p_name) {
 
 vector<string> extract_paras(gtree *p)
 {
+    //p must be a postfix_expression
     vector<string> res;
     if(p->type!=POSTFIX_EXPRESSION || p->child->type != POSTFIX_EXPRESSION || p->child->next->place!="(")
     {
@@ -2503,6 +2551,7 @@ void CPN::create_PDNet(gtree *p)
     }
     else if(judge_statement(p))
     {
+
         //handle it first because call statement needs them
         if(p->child->type == SELECTION_STATEMENT || p->child->type == ITERATION_STATEMENT)
         {
@@ -2641,8 +2690,14 @@ void CPN::create_PDNet(gtree *p)
         }
         else
             temp2.push_back(control_T2);
-        exit_T.insert(exit_T.end(),temp1.begin(),temp1.end());
-        exit_T.insert(exit_T.end(),temp2.begin(),temp2.end());
+        if(temp1.size()!=0)
+            exit_T.insert(exit_T.end(),temp1.begin(),temp1.end());
+        else
+            exit_T.push_back(control_T1);
+        if(temp2.size()!=0)
+            exit_T.insert(exit_T.end(),temp2.begin(),temp2.end());
+        else
+            exit_T.push_back(control_T2);
         set_exit_T(control_P,exit_T);
 
         //create_connection
@@ -2708,7 +2763,10 @@ void CPN::create_PDNet(gtree *p)
         gtree *statement1 = p->child->next->next->next->next;
         temp1 = get_statement_exit(statement1,this);
 
-        falseexit.insert(falseexit.end(),temp1.begin(),temp1.end());
+        if(temp1.size()!=0)
+            falseexit.insert(falseexit.end(),temp1.begin(),temp1.end());
+        else
+            falseexit.push_back(control_T1);
         exit_T.push_back(control_T2);
         set_exit_T(control_P,exit_T);
         set_falseexit_T(control_P, falseexit);
@@ -2782,10 +2840,15 @@ void CPN::create_PDNet(gtree *p)
         gtree *statement_list = compound_statement->child;
         while (statement_list != NULL && statement_list->type != STATEMENT_LIST)
             statement_list = statement_list->next;
-        if (statement_list == NULL)
-        {
-            cout << "there is no sentences!" << endl;
-            exit(-1);
+        if (statement_list == NULL) {
+
+            string identifier = p->place;
+            auto iter1 = mapFunction.find(identifier + begin_suffix);
+            vector<string> enter_T = get_enter_T(iter1->second);
+            auto iter2 = mapFunction.find(identifier + end_suffix);
+
+            Add_Arc(enter_T[0], iter2->second, "", false, executed);
+            return;
         }
         gtree *statement = statement_list;
         while (statement->type != STATEMENT)
@@ -2865,7 +2928,11 @@ void CPN::create_PDNet(gtree *p)
         set_enter_T(control_P, enter);
 
 //        petri.set_control_T(P1, v);//设置控制变迁
-        exit_T = get_statement_exit(p, this);
+        vector<string> temp = get_statement_exit(p, this);
+        if(temp.size()!=0)
+            exit_T.insert(exit_T.end(),temp.begin(),temp.end());
+        else
+            exit_T.push_back(control_T);
         set_exit_T(control_P,exit_T);
 
 
@@ -2886,7 +2953,7 @@ void CPN::create_PDNet(gtree *p)
         set_enter_T(control_P,enter);
         set_exit_T(control_P,exit_T);
         //string last_sentence;
-        string last_func;
+
         gtree *find_func = p->child;
 
 
@@ -2894,13 +2961,7 @@ void CPN::create_PDNet(gtree *p)
             find_func = find_func->parent;
 
         string identifier = find_func->place;
-        auto iter = mapFunction.find(identifier + begin_suffix);
-        if(iter == mapFunction.end())
-        {
-            cout << "can't find begin_P in create_PDNet" << endl;
-            exit(-1);
-        }
-        last_func = iter->second;
+
         string expression;
         if (p->child->child->next->type == EXPRESSION)
             expression = p->child->child->next->place;
@@ -2999,6 +3060,24 @@ void CPN::create_PDNet(gtree *p)
                 //add thread arc
                 vector<string> enter_T = get_enter_T(statement_P);
                 Add_Arc(func_end_P,enter_T[0], "", true, control);
+            }
+            else if(p->child->place == "pthread_exit")
+            {
+                gtree *find_func = p;
+
+                while (find_func->type != FUNCTION_DEFINITION)
+                    find_func = find_func->parent;
+                string identifier = find_func->place;
+
+                auto iter1 = mapFunction.find(identifier + end_suffix);
+                if(iter1 == mapFunction.end())
+                {
+                    cout<<"can't find end_P in create_CPN"<<endl;
+                    exit(-1);
+                }
+                string last_func_end = iter1->second;
+                vector<string> enter_T = get_enter_T(statement_P);
+                Add_Arc(enter_T[0], last_func_end, "", false,executed);
             }
             else if(p->child->place == "pthread_mutex_init")
             {
@@ -3099,12 +3178,18 @@ void CPN::create_PDNet(gtree *p)
                 Add_Arc(T1,P2,"",false,control);
                 Add_Arc(mutex_P,T2,"",true,control);
                 Add_Arc(P2,T2,"",true,control);
-                Add_Arc(P3,T2,"",true,executed);
+                Add_Arc(P3,T2,"",true,control);
 
                 //set exit
                 vector<string> exit_T;
                 exit_T.push_back(T2);
                 set_exit_T(statement_P,exit_T);
+
+                vector<string> cor_P;
+                cor_P.push_back(P1);
+                cor_P.push_back(P2);
+                cor_P.push_back(P3);
+                set_correspond_P(statement_P,cor_P);
             }
         }
         else {

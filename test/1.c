@@ -1,39 +1,53 @@
-int  num;
-pthread_mutex_t  m;
-pthread_cond_t  empty, full;
-void reach_error(){return;}
-void abort(){return;}
-void * thread1(void * arg){  
-            pthread_mutex_lock(&m);  
-            while (num > 0)     
-                        pthread_cond_wait(&empty, &m);    
-            num++;  
-            pthread_mutex_unlock(&m);  
-            pthread_cond_signal(&full);  
-            return 0;
+#include <pthread.h>
+
+extern void __VERIFIER_atomic_begin();
+extern void __VERIFIER_atomic_end();
+
+extern void abort(void); 
+void reach_error(){}
+
+int i = 3, j = 6;
+
+#define NUM 4
+#define LIMIT (2*NUM+6)
+
+void *t1(void *arg) {
+  for (int k = 0; k < NUM; k++) {
+    //__VERIFIER_atomic_begin();
+    i = j + 1;
+    //__VERIFIER_atomic_end();
+  }
+  pthread_exit(NULL);
 }
-void * thread2(void * arg){  
-            pthread_mutex_lock(&m);  
-            while (num == 0)
-                        pthread_cond_wait(&full, &m);  
-            num--;    
-            pthread_mutex_unlock(&m);  
-            pthread_cond_signal(&empty);  
-            return 0;
+
+void *t2(void *arg) {
+  for (int k = 0; k < NUM; k++) {
+    //__VERIFIER_atomic_begin();
+    j = i + 1;
+    //__VERIFIER_atomic_end();
+  }
+  pthread_exit(NULL);
 }
-int main(){  
-            pthread_t  t1, t2;  
-            num = 1;  
-            pthread_mutex_init(&m, 0);  
-            pthread_cond_init(&empty, 0);  
-            pthread_cond_init(&full, 0);    
-            pthread_create(&t1, 0, thread1, 0);  
-            pthread_create(&t2, 0, thread2, 0);    
-            pthread_join(t1, 0);  
-            pthread_join(t2, 0);  
-            if (num!=1)  {    
-                ERROR: {reach_error();abort();}    
-                ;  
-            }  
-            return 0;  
+
+int main(int argc, char **argv) {
+  pthread_t id1, id2;
+  int condI,condJ;
+
+  pthread_create(&id1, NULL, t1, NULL);
+  pthread_create(&id2, NULL, t2, NULL);
+
+  //__VERIFIER_atomic_begin();
+  condI = i > LIMIT;
+  //__VERIFIER_atomic_end();
+
+  //__VERIFIER_atomic_begin();
+  condJ = j > LIMIT;
+  //__VERIFIER_atomic_end();
+
+  if (condI || condJ) {
+    ERROR: {reach_error();abort();}
+  }
+
+  return 0;
 }
+
