@@ -116,7 +116,7 @@ int main() {
     makeGraph(filename_prefix + ".dot",filename_prefix + ".png");
 
     vector<string> final_P,final_T,criteria;
-    criteria.push_back("P22");
+    criteria.push_back("P15");
     two_phrase_slicing(cpnet,criteria,final_P,final_T);
     sort_change(final_T);
     sort_change(final_P);

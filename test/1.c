@@ -8,7 +8,7 @@ void reach_error(){}
 
 int i = 3, j = 6;
 
-#define NUM 4
+#define NUM 2
 #define LIMIT (2*NUM+6)
 
 void *t1(void *arg) {
@@ -36,13 +36,13 @@ int main(int argc, char **argv) {
   pthread_create(&id1, NULL, t1, NULL);
   pthread_create(&id2, NULL, t2, NULL);
 
-  //__VERIFIER_atomic_begin();
-  condI = i > LIMIT;
-  //__VERIFIER_atomic_end();
+  __VERIFIER_atomic_begin();
+  condI = i >= LIMIT;
+  __VERIFIER_atomic_end();
 
-  //__VERIFIER_atomic_begin();
-  condJ = j > LIMIT;
-  //__VERIFIER_atomic_end();
+  __VERIFIER_atomic_begin();
+  condJ = j >= LIMIT;
+  __VERIFIER_atomic_end();
 
   if (condI || condJ) {
     ERROR: {reach_error();abort();}
@@ -50,4 +50,3 @@ int main(int argc, char **argv) {
 
   return 0;
 }
-

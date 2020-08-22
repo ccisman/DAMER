@@ -46,7 +46,7 @@ extern SortTable sorttable;
 extern CPN *cpnet;
 
 enum type{dot,finiteintrange,productsort,usersort,Integer,Real,String};
-enum Arc_Type{executed,control,call_enter,call_exit,data,write,remain};
+enum Arc_Type{executed,control,call_enter,call_exit,data,write,call_connect,remain};
 
 
 /*========================Sort==========================*/
@@ -397,6 +397,7 @@ typedef struct CPN_Place
     bool control_P;
     bool is_mutex;
     bool is_cond;
+    bool is_executed;
     string expression;
     vector<string> enter;
     vector<string> exit;

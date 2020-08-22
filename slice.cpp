@@ -7,6 +7,7 @@
 #include "v_table.h"
 
 extern vector<V_Table *> v_tables;
+extern string end_suffix,return_suffix;
 template <class T>
 bool exist_in(vector<T> vec,T element)
 {
@@ -237,14 +238,12 @@ vector<CTransition *> find_previous_define(CTransition  *trans,index_t var_index
 {
     vector<CTransition *> searched,res;
     searched.push_back(trans);
-    Arc_Type exit_type,enter_type;
+    Arc_Type allowed_type;
     if(arcType == call_enter) {
-        exit_type = remain;
-        enter_type = remain;
+        allowed_type = call_exit;
     }
     else if(arcType == call_exit) {
-        exit_type = call_exit;
-        enter_type = call_enter;
+        allowed_type = call_enter;
     }
     else
     {
@@ -269,11 +268,13 @@ vector<CTransition *> find_previous_define(CTransition  *trans,index_t var_index
         {
             CPlace *place = &cpn->place[searched[i]->producer[j].idx];
 
-            if(place->control_P == true && searched[i]->producer[j].arcType != exit_type)
+            if(place->control_P == true)
             {
                 for(unsigned int k=0;k<place->producer.size();k++)
                 {
-                    if(place->producer[k].arcType == executed || place->producer[k].arcType == enter_type) {
+                    if(place->producer[k].arcType == executed
+                    || place->producer[k].arcType == call_connect
+                    || place->producer[k].arcType == allowed_type) {
                         CTransition *t = &cpn->transition[place->producer[k].idx];
                         if(!exist_in(searched,t))
                             searched.push_back(t);
@@ -286,19 +287,30 @@ vector<CTransition *> find_previous_define(CTransition  *trans,index_t var_index
 
 }
 
-bool contain_path(CTransition *src,CTransition *tgt,CPN *cpn)
+bool contain_path(CTransition *src,CTransition *tgt,CPN *cpn,string global_P)
 {
     vector<CTransition *> searched,res;
     searched.push_back(src);
 
+    auto iter = cpn->mapPlace.find(global_P);
+    index_t idx = iter->second;
+
     for(unsigned int i=0;i<searched.size();i++)
     {
+        for(unsigned int j=0;j<searched[i]->consumer.size();j++)
+        {
+            if(searched[i]->consumer[j].arcType == write
+                    && searched[i]->consumer[j].idx == idx)
+                return false;
+        }
         if(searched[i] == tgt)
             return true;
         CTransition *tran = searched[i];
         for(unsigned int j=0;j>tran->consumer.size();j++)
         {
-            if(tran->consumer[j].arcType!=data && tran->consumer[j].arcType!=write)
+            if(tran->consumer[j].arcType == executed
+            || tran->consumer[j].arcType == call_enter
+            || tran->consumer[j].arcType == call_exit)
             {
                 CPlace *place = &cpn->place[tran->consumer[j].idx];
                 for(unsigned int k=0;k<place->consumer.size();k++)
@@ -312,65 +324,86 @@ bool contain_path(CTransition *src,CTransition *tgt,CPN *cpn)
     return false;
 }
 
+bool is_global(string var)
+{
+    if(var.find(return_suffix)!=string::npos)
+        return false;
+    if (v_tables[0]->find_P(var))
+        return true;
+    else
+        return false;
+}
+
+bool in_a_thread(CTransition *t1,CTransition *t2)
+{
+    return false;
+}
+
 void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P, vector<string>&final_T)
 {
     vector<string> P, P_done, T;// , P_read;
     P = place;
     CPlace *p;
-    //1.first phrase(not call_exit arcs)
 
-    for(unsigned int i=0;i<P.size();i++)
+    for(unsigned int i=0;i<place.size();i++)
     {
         auto iter = cpn->mapPlace.find(P[i]);
         p = &cpn->place[iter->second];
 
-        if(p->control_P)
+        //T'=T' U {p.}
+        for(unsigned int j=0;j<p->consumer.size();j++)
         {
-            //1 control dependence
+            CTransition *tran = &cpn->transition[p->consumer[j].idx];
+            T.push_back(tran->id);
+            for(unsigned int k=0;k<tran->producer.size();k++)
+            {
+                if(tran->producer[k].arcType == control)
+                    if(!exist_in(P,cpn->place[tran->producer[k].idx].id))
+                        P.push_back(cpn->place[tran->producer[k].idx].id);
+            }
+        }
+    }
+
+    //first phrase
+    for(unsigned int i=0;i<P.size();i++)
+    {
+        auto iter = cpn->mapPlace.find(P[i]);
+        p = &cpn->place[iter->second];
+        if(p->control_P && p->is_executed == false)
+            ;
+        else
+            continue;
+        //control dependence
+
+        for(unsigned int j=0;j<p->producer.size();j++)
+        {
+            if(p->producer[j].arcType == control
+            || p->producer[j].arcType == call_connect) {
+                CTransition *trans = &cpn->transition[p->producer[j].idx];
+                if(!exist_in(T,trans->id))
+                    T.push_back(trans->id);
+                for(unsigned int k=0;k<trans->producer.size();k++)
+                {
+                    if(trans->producer[k].arcType == control) {
+                        string temp_P = cpn->place[trans->producer[k].idx].id;
+                        if (!exist_in(P, temp_P))
+                            P.push_back(temp_P);
+                    }
+                }
+            }
+        }
+
+        if(p->is_mutex)
+        {
             for(unsigned int j=0;j<p->consumer.size();j++)
             {
                 if(p->consumer[j].arcType == control) {
-                    CTransition *temp_t = &cpn->transition[p->consumer[j].idx];
-                    if(!exist_in(T,temp_t->id)) {
-                        T.push_back(temp_t->id);
-                    }
-                    for(unsigned int k=0;k<temp_t->producer.size();k++)
-                        if(temp_t->producer[k].arcType == control
-                        && cpn->place[temp_t->producer[k].idx].expression == executed_P_name)
-                            if(!exist_in(P,cpn->place[temp_t->producer[k].idx].id)) {
-                                P.push_back(cpn->place[temp_t->producer[k].idx].id);
-                            }
-
-                }
-                vector<string> correspond_P = cpn->get_correspond_P(p->id);
-                for(unsigned int l=0;l<correspond_P.size();l++)
-                    if(!exist_in(P,correspond_P[l]))
-                    {
-                        P.push_back(correspond_P[l]);
-//                        vector<string> call_T = cpn->get_enter_T(correspond_P[l]);
-//                        //begin places' call have no call_T
-//                        if(call_T.size()!=0) {
-//                            T.push_back(call_T[0]);
-//                            auto iter = cpn->mapTransition.find(call_T[0]);
-//                            CTransition *tran = &cpn->transition[iter->second];
-//                            for(unsigned int m=0;m<tran->producer.size();m++)
-//                                if(tran->producer[m].arcType == control
-//                                   && cpn->place[tran->producer[m].idx].expression == executed_P_name)
-//                                    P.push_back(cpn->place[tran->producer[m].idx].id);
-//
-//                        }
-                    }
-            }
-            for(unsigned int j=0;j<p->producer.size();j++)
-            {
-                if(p->producer[j].arcType == control) {
-                    CTransition *trans = &cpn->transition[p->producer[j].idx];
+                    CTransition *trans = &cpn->transition[p->consumer[j].idx];
                     if(!exist_in(T,trans->id))
                         T.push_back(trans->id);
                     for(unsigned int k=0;k<trans->producer.size();k++)
                     {
-                        if(trans->producer[k].arcType == control
-                        && cpn->place[trans->producer[k].idx].expression != executed_P_name) {
+                        if(trans->producer[k].arcType == control) {
                             string temp_P = cpn->place[trans->producer[k].idx].id;
                             if (!exist_in(P, temp_P))
                                 P.push_back(temp_P);
@@ -378,137 +411,117 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
                     }
                 }
             }
-            //2 data dependence
-            for(unsigned int j=0;j<p->consumer.size();j++)
-            {
-                if(p->consumer[j].arcType == control)
-                {
-                    CTransition *trans = &cpn->transition[p->consumer[j].idx];
-//                    vector<index_t> index_vec;
-                    for(unsigned int k=0;k<trans->producer.size();k++)
-                    {
-                        if(trans->producer[k].arcType == data)
-                        {
-                            vector<CTransition *> trans_vec;
-                            string var = cpn->place[trans->producer[k].idx].id;
-                            trans_vec = find_previous_define(trans,trans->producer[k].idx,cpn,call_exit);
-                            if (trans_vec.size()!=0 && !exist_in(P,var))
-                                P.push_back(var);
-                            for(unsigned int l=0;l<trans_vec.size();l++)
-                            {
-//                                if (!exist_in(T, trans_vec[l]->id))
-//                                    T.push_back(trans_vec[l]->id);
-                                for(unsigned int m=0;m<trans_vec[l]->producer.size();m++)
-                                {
-                                    if(trans_vec[l]->producer[m].arcType == control
-                                    && cpn->place[trans_vec[l]->producer[m].idx].expression!=executed_P_name) {
-                                        string temp_P = cpn->place[trans_vec[l]->producer[m].idx].id;
-                                        if (!exist_in(P,temp_P))
-                                            P.push_back(temp_P);
-                                    }
-                                }
-                            }
-                        }
-                    }
+        }
 
-                }
-            }
-            //3. interfere dependence
-            for(unsigned int j=0;j<p->consumer.size();j++)
-            {
-                if(p->consumer[j].arcType == control)
-                {
-                    CTransition *trans = &cpn->transition[p->consumer[j].idx];
+        //data dependence
+        for(unsigned int j=0;j<p->consumer.size();j++) {
+            if (p->consumer[j].arcType == control) {
+                CTransition *trans = &cpn->transition[p->consumer[j].idx];
 //                    vector<index_t> index_vec;
-                    for(unsigned int k=0;k<trans->producer.size();k++)
-                    {
-                        if(trans->producer[k].arcType == data)
+                if(!exist_in(T,trans->id))
+                    T.push_back(trans->id);
+                for (unsigned int k = 0; k < trans->producer.size(); k++) {
+                    if (trans->producer[k].arcType == data) {
+                        vector<CTransition *> trans_vec;
+                        string var = cpn->place[trans->producer[k].idx].id;
+                        if (is_global(var))
                         {
-                            if(v_tables[0]->find_P(cpn->place[trans->producer[k].idx].id)) {
-                                CPlace *global_v_P = &cpn->place[trans->producer[k].idx];
-                                if(!exist_in(P,global_v_P->id))
-                                    P.push_back(global_v_P->id);
-                                for(unsigned int l=0;l<global_v_P->producer.size();l++)
-                                {
-                                    if(global_v_P->producer[l].arcType == write)
-                                    {
-                                        CTransition *t = &cpn->transition[global_v_P->producer[l].idx];
-                                        if(contain_path(trans,t,cpn))
-                                            ;
-                                        else {
+                            CPlace *global_v_P = &cpn->place[trans->producer[k].idx];
+                            if (!exist_in(P, global_v_P->id))
+                                P.push_back(global_v_P->id);
+                            for (unsigned int l = 0; l < global_v_P->producer.size(); l++) {
+                                if (global_v_P->producer[l].arcType == write) {
+                                    CTransition *t = &cpn->transition[global_v_P->producer[l].idx];
+                                    if(in_a_thread(t,trans)) {
+                                        if (contain_path(t, trans, cpn, global_v_P->id)) {
+                                            if (!exist_in(T, t->id))
+                                                T.push_back(t->id);
                                             for (unsigned int m = 0; m < t->producer.size(); m++) {
                                                 if (t->producer[m].arcType == control
-                                                    && cpn->place[t->producer[m].idx].expression != executed_P_name) {
+                                                    || t->producer[m].arcType == call_connect) {
                                                     if (!exist_in(P, cpn->place[t->producer[m].idx].id))
                                                         P.push_back(cpn->place[t->producer[m].idx].id);
                                                 }
                                             }
                                         }
                                     }
+                                    else
+                                    {
+                                        if (!exist_in(T, t->id))
+                                            T.push_back(t->id);
+                                        for (unsigned int m = 0; m < t->producer.size(); m++) {
+                                            if (t->producer[m].arcType == control
+                                                || t->producer[m].arcType == call_connect) {
+                                                if (!exist_in(P, cpn->place[t->producer[m].idx].id))
+                                                    P.push_back(cpn->place[t->producer[m].idx].id);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else {
+                            trans_vec = find_previous_define(trans, trans->producer[k].idx, cpn, call_exit);
+                            if (trans_vec.size() != 0 && !exist_in(P, var))
+                                P.push_back(var);
+                            for (unsigned int l = 0; l < trans_vec.size(); l++) {
+                                if (!exist_in(T, trans_vec[l]->id))
+                                    T.push_back(trans_vec[l]->id);
+                                for (unsigned int m = 0; m < trans_vec[l]->producer.size(); m++) {
+                                    if (trans_vec[l]->producer[m].arcType == control) {
+                                        string temp_P = cpn->place[trans_vec[l]->producer[m].idx].id;
+                                        if (!exist_in(P, temp_P))
+                                            P.push_back(temp_P);
+                                    }
                                 }
                             }
                         }
                     }
-
                 }
             }
         }
     }
 
-    //2.second phrase(no call_enter arcs)
-
+    //second phrase
     for(unsigned int i=0;i<P.size();i++)
     {
         auto iter = cpn->mapPlace.find(P[i]);
         p = &cpn->place[iter->second];
+        if(p->control_P && p->is_executed == false)
+            ;
+        else
+            continue;
+        //control dependence
 
-        if(p->control_P)
+        for(unsigned int j=0;j<p->producer.size();j++)
         {
-            //1 control dependence
+            if(p->producer[j].arcType == control
+               || p->producer[j].arcType == call_connect) {
+                CTransition *trans = &cpn->transition[p->producer[j].idx];
+                if(!exist_in(T,trans->id))
+                    T.push_back(trans->id);
+                for(unsigned int k=0;k<trans->producer.size();k++)
+                {
+                    if(trans->producer[k].arcType == control) {
+                        string temp_P = cpn->place[trans->producer[k].idx].id;
+                        if (!exist_in(P, temp_P))
+                            P.push_back(temp_P);
+                    }
+                }
+            }
+        }
+
+        if(p->is_mutex)
+        {
             for(unsigned int j=0;j<p->consumer.size();j++)
             {
                 if(p->consumer[j].arcType == control) {
-                    CTransition *temp_t = &cpn->transition[p->consumer[j].idx];
-                    if(!exist_in(T,temp_t->id)) {
-                        T.push_back(temp_t->id);
-                    }
-                    for(unsigned int k=0;k<temp_t->producer.size();k++)
-                        if(temp_t->producer[k].arcType == control
-                           && cpn->place[temp_t->producer[k].idx].expression == executed_P_name)
-                            if(!exist_in(P,cpn->place[temp_t->producer[k].idx].id)) {
-                                P.push_back(cpn->place[temp_t->producer[k].idx].id);
-                            }
-
-                }
-                vector<string> correspond_P = cpn->get_correspond_P(p->id);
-                for(unsigned int l=0;l<correspond_P.size();l++)
-                    if(!exist_in(P,correspond_P[l]))
-                    {
-                        P.push_back(correspond_P[l]);
-//                        vector<string> call_T = cpn->get_enter_T(correspond_P[l]);
-//                        //begin places' call have no call_T
-//                        if(call_T.size()!=0) {
-//                            T.push_back(call_T[0]);
-//                            auto iter = cpn->mapTransition.find(call_T[0]);
-//                            CTransition *tran = &cpn->transition[iter->second];
-//                            for(unsigned int m=0;m<tran->producer.size();m++)
-//                                if(tran->producer[m].arcType == control
-//                                   && cpn->place[tran->producer[m].idx].expression == executed_P_name)
-//                                    P.push_back(cpn->place[tran->producer[m].idx].id);
-//
-//                        }
-                    }
-            }
-            for(unsigned int j=0;j<p->producer.size();j++)
-            {
-                if(p->producer[j].arcType == control) {
-                    CTransition *trans = &cpn->transition[p->producer[j].idx];
+                    CTransition *trans = &cpn->transition[p->consumer[j].idx];
                     if(!exist_in(T,trans->id))
                         T.push_back(trans->id);
                     for(unsigned int k=0;k<trans->producer.size();k++)
                     {
-                        if(trans->producer[k].arcType == control
-                           && cpn->place[trans->producer[k].idx].expression != executed_P_name) {
+                        if(trans->producer[k].arcType == control) {
                             string temp_P = cpn->place[trans->producer[k].idx].id;
                             if (!exist_in(P, temp_P))
                                 P.push_back(temp_P);
@@ -516,88 +529,83 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
                     }
                 }
             }
-            //2 data dependence
-            for(unsigned int j=0;j<p->consumer.size();j++)
-            {
-                if(p->consumer[j].arcType == control)
-                {
-                    CTransition *trans = &cpn->transition[p->consumer[j].idx];
-//                    vector<index_t> index_vec;
-                    for(unsigned int k=0;k<trans->producer.size();k++)
-                    {
-                        if(trans->producer[k].arcType == data)
-                        {
-                            vector<CTransition *> trans_vec;
-                            string var = cpn->place[trans->producer[k].idx].id;
-                            trans_vec = find_previous_define(trans,trans->producer[k].idx,cpn,call_enter);
-                            if (trans_vec.size()!=0 && !exist_in(P,var))
-                                P.push_back(var);
-                            for(unsigned int l=0;l<trans_vec.size();l++)
-                            {
-//                                if (!exist_in(T, trans_vec[l]->id))
-//                                    T.push_back(trans_vec[l]->id);
-                                for(unsigned int m=0;m<trans_vec[l]->producer.size();m++)
-                                {
-                                    if(trans_vec[l]->producer[m].arcType == control
-                                       && cpn->place[trans_vec[l]->producer[m].idx].expression!=executed_P_name) {
-                                        string temp_P = cpn->place[trans_vec[l]->producer[m].idx].id;
-                                        if (!exist_in(P,temp_P))
-                                            P.push_back(temp_P);
-                                    }
-                                }
-                            }
-                        }
-                    }
+        }
 
-                }
-            }
-            //3. interfere dependence
-            for(unsigned int j=0;j<p->consumer.size();j++)
-            {
-                if(p->consumer[j].arcType == control)
-                {
-                    CTransition *trans = &cpn->transition[p->consumer[j].idx];
+        //data dependence
+        for(unsigned int j=0;j<p->consumer.size();j++) {
+            if (p->consumer[j].arcType == control) {
+                CTransition *trans = &cpn->transition[p->consumer[j].idx];
 //                    vector<index_t> index_vec;
-                    for(unsigned int k=0;k<trans->producer.size();k++)
-                    {
-                        if(trans->producer[k].arcType == data)
+                if(!exist_in(T,trans->id))
+                    T.push_back(trans->id);
+                for (unsigned int k = 0; k < trans->producer.size(); k++) {
+                    if (trans->producer[k].arcType == data) {
+                        vector<CTransition *> trans_vec;
+                        string var = cpn->place[trans->producer[k].idx].id;
+                        if (is_global(var))
                         {
-                            if(v_tables[0]->find_P(cpn->place[trans->producer[k].idx].id)) {
-                                CPlace *global_v_P = &cpn->place[trans->producer[k].idx];
-                                if(!exist_in(P,global_v_P->id))
-                                    P.push_back(global_v_P->id);
-                                for(unsigned int l=0;l<global_v_P->producer.size();l++)
-                                {
-                                    if(global_v_P->producer[l].arcType == write)
-                                    {
-                                        CTransition *t = &cpn->transition[global_v_P->producer[l].idx];
-                                        if(contain_path(trans,t,cpn))
-                                            ;
-                                        else {
+                            CPlace *global_v_P = &cpn->place[trans->producer[k].idx];
+                            if (!exist_in(P, global_v_P->id))
+                                P.push_back(global_v_P->id);
+                            for (unsigned int l = 0; l < global_v_P->producer.size(); l++) {
+                                if (global_v_P->producer[l].arcType == write) {
+                                    CTransition *t = &cpn->transition[global_v_P->producer[l].idx];
+                                    if(in_a_thread(t,trans)) {
+                                        if (contain_path(t, trans, cpn, global_v_P->id)) {
+                                            if (!exist_in(T, t->id))
+                                                T.push_back(t->id);
                                             for (unsigned int m = 0; m < t->producer.size(); m++) {
                                                 if (t->producer[m].arcType == control
-                                                    && cpn->place[t->producer[m].idx].expression != executed_P_name) {
+                                                    || t->producer[m].arcType == call_connect) {
                                                     if (!exist_in(P, cpn->place[t->producer[m].idx].id))
                                                         P.push_back(cpn->place[t->producer[m].idx].id);
                                                 }
                                             }
                                         }
                                     }
+                                    else
+                                    {
+                                        if (!exist_in(T, t->id))
+                                            T.push_back(t->id);
+                                        for (unsigned int m = 0; m < t->producer.size(); m++) {
+                                            if (t->producer[m].arcType == control
+                                                || t->producer[m].arcType == call_connect) {
+                                                if (!exist_in(P, cpn->place[t->producer[m].idx].id))
+                                                    P.push_back(cpn->place[t->producer[m].idx].id);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else {
+                            trans_vec = find_previous_define(trans, trans->producer[k].idx, cpn, call_enter);
+                            if (trans_vec.size() != 0 && !exist_in(P, var))
+                                P.push_back(var);
+                            for (unsigned int l = 0; l < trans_vec.size(); l++) {
+                                if (!exist_in(T, trans_vec[l]->id))
+                                    T.push_back(trans_vec[l]->id);
+                                for (unsigned int m = 0; m < trans_vec[l]->producer.size(); m++) {
+                                    if (trans_vec[l]->producer[m].arcType == control) {
+                                        string temp_P = cpn->place[trans_vec[l]->producer[m].idx].id;
+                                        if (!exist_in(P, temp_P))
+                                            P.push_back(temp_P);
+                                    }
                                 }
                             }
                         }
                     }
-
                 }
             }
         }
     }
+
 
     final_P = P;
     final_T = T;
 }
 
-vector<CTransition *> find_previous_T(string executed_place,CPN *cpn,vector<string> transitions)
+vector<CTransition *> find_previous_T(string executed_place,CPN *cpn,vector<string> transitions,bool underprocedure)
 {
     vector<CTransition *> searched,res;
     auto iter = cpn->mapPlace.find(executed_place);
@@ -615,13 +623,20 @@ vector<CTransition *> find_previous_T(string executed_place,CPN *cpn,vector<stri
         {
             CPlace *place = &cpn->place[searched[i]->producer[j].idx];
 
-            if(place->control_P == true && searched[i]->producer[j].arcType != call_exit)
+            if(place->control_P == true)
             {
-                for(unsigned int k=0;k<place->producer.size();k++)
-                {
-                    if(place->producer[k].arcType == executed) {
+                for(unsigned int k=0;k<place->producer.size();k++) {
+                    if (underprocedure) {
+                        if (place->producer[k].arcType == executed
+                            || place->producer[k].arcType == call_connect) {
+                            CTransition *t = &cpn->transition[place->producer[k].idx];
+                            if (!exist_in(searched, t))
+                                searched.push_back(t);
+                        }
+                    } else if (place->producer[k].arcType == executed
+                               || place->producer[k].arcType == call_exit) {
                         CTransition *t = &cpn->transition[place->producer[k].idx];
-                        if(!exist_in(searched,t))
+                        if (!exist_in(searched, t))
                             searched.push_back(t);
                     }
                 }
@@ -640,7 +655,13 @@ void post_process(CPN *cpn,CPN *cpn_slice,vector<string> transitions)
 //            if(cpn_slice->place[i].expression == executed_P_name && cpn_slice->place[i].producer.size()==0)
         {
             vector<CTransition*> trans_vec;
-            trans_vec = find_previous_T(cpn_slice->place[i].id,cpn,transitions);
+            string suffix = cpn_slice->place[i].expression;
+
+            if(suffix.length()>end_suffix.length()
+            && suffix.substr(suffix.length()-end_suffix.length()) == end_suffix)
+                trans_vec = find_previous_T(cpn_slice->place[i].id,cpn,transitions,false);
+            else
+                trans_vec = find_previous_T(cpn_slice->place[i].id,cpn,transitions,true);
             for(unsigned int j=0;j<trans_vec.size();j++) {
                 cpn_slice->Add_Arc(trans_vec[j]->id, cpn_slice->place[i].id, "", false, executed);
                 CSArc csArc1,csArc2;

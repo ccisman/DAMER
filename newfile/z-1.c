@@ -12,7 +12,7 @@ int i = 3, j = 6;
 void *t1(void *arg) {
   {
 int k = 0;
-while( k < 4){
+while( k < 2){
     //__VERIFIER_atomic_begin();
     i = j + 1;
     //__VERIFIER_atomic_end();
@@ -25,7 +25,7 @@ while( k < 4){
 void *t2(void *arg) {
   {
 int k = 0;
-while( k < 4){
+while( k < 2){
     //__VERIFIER_atomic_begin();
     j = i + 1;
     //__VERIFIER_atomic_end();
@@ -42,13 +42,13 @@ int main(int argc, char **argv) {
   pthread_create(&id1, NULL, t1, NULL);
   pthread_create(&id2, NULL, t2, NULL);
 
-  //__VERIFIER_atomic_begin();
-  condI = i > (2*4+6);
-  //__VERIFIER_atomic_end();
+  __VERIFIER_atomic_begin();
+  condI = i >= (2*2+6);
+  __VERIFIER_atomic_end();
 
-  //__VERIFIER_atomic_begin();
-  condJ = j > (2*4+6);
-  //__VERIFIER_atomic_end();
+  __VERIFIER_atomic_begin();
+  condJ = j >= (2*2+6);
+  __VERIFIER_atomic_end();
 
   if (condI || condJ) {
      {reach_error();abort();}
@@ -56,4 +56,3 @@ int main(int argc, char **argv) {
 
   return 0;
 }
-

@@ -1360,6 +1360,14 @@ void CPN::Add_Place(string id, string Type_name, int size,bool control_P,string 
     pp->is_cond = false;
     pp->is_mutex = false;
 
+
+    if(exp == executed_P_name)
+        pp->is_executed = true;
+    else if(exp.length()>4 && exp.substr(exp.length()-end_suffix.length()) == end_suffix)
+        pp->is_executed = true;
+    else
+        pp->is_executed = false;
+
     //dot type
     if(Type_name == "") {
         Tokens *token = new Tokens;
@@ -2895,7 +2903,7 @@ void CPN::create_PDNet(gtree *p)
             for (unsigned int i = 0; i < v.size(); i++)
             {
 
-                Add_Arc_override(v[i], func_end, "", false,executed);
+                Add_Arc_override(v[i], func_end, "", false,call_exit);
 //                if (func_v != "")
 //                {
 //                    petri.Add_Arc(v[i], func_v, "0", false);
@@ -2975,7 +2983,7 @@ void CPN::create_PDNet(gtree *p)
             exit(-1);
         }
         string last_func_end = iter1->second;
-        Add_Arc(control_T, last_func_end, "", false,executed);
+        Add_Arc(control_T, last_func_end, "", false,call_exit);
 
         if (expression != "") {
 
@@ -3287,12 +3295,12 @@ void CPN::create_PDNet(gtree *p)
             string called_end_P = iter1->second;
             Add_Arc(call_T, called_begin_P, "", false, call_enter);
             for (unsigned int i = 0; i < enter_T.size(); i++)
-                Add_Arc(called_end_P, enter_T[i], "", true, call_exit);
+                Add_Arc(called_end_P, enter_T[i], "", true, control);
 
             //construct executed_control arc
 //        string newP = gen_P();
 //        Add_Place(newP,"",0,true,executed_P_name);
-            Add_Arc(call_T, statement_P, "", false, executed);
+            Add_Arc(call_T, statement_P, "", false, call_connect);
 //        for(unsigned int i=0;i<enter_T.size();i++)
 //            Add_Arc(newP,enter_T[i],"",true,control);
         }
@@ -3367,8 +3375,10 @@ void CPN::print_CPN(string filename) {
     for (int i = 0; i < arccount; i++) {
         if (arc[i].arcType == executed)
             out << "{" << arc[i].source_id << "," << arc[i].target_id << "[style=\"dashed\"]}" << endl;
-        else if (arc[i].arcType == call_enter || arc[i].arcType == call_exit)
+        else if (arc[i].arcType == call_enter)
             out << "{" << arc[i].source_id << "," << arc[i].target_id << "[color=\"blue\"]}" << endl;
+        else if (arc[i].arcType == call_exit)
+            out << "{" << arc[i].source_id << "," << arc[i].target_id << "[color=\"green\"]}" << endl;
         else
             out << "{" << arc[i].source_id << "," << arc[i].target_id << "}" << endl;
     }
