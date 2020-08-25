@@ -8,194 +8,182 @@
 		<Option virtualFolders="CMake Files\;"/>
 		<Build>
 			<Target title="all">
-				<Option working_dir="/home/cc/CLionProjects/PDNet_checker/cmake-build-debug"/>
+				<Option working_dir="/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="rebuild_cache">
-				<Option working_dir="/home/cc/CLionProjects/PDNet_checker/cmake-build-debug"/>
+				<Option working_dir="/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
-			<Target title="edit_cache">
-				<Option working_dir="/home/cc/CLionProjects/PDNet_checker/cmake-build-debug"/>
-				<Option type="4"/>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="PDNet_checker">
-				<Option output="/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/PDNet_checker" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/cc/CLionProjects/PDNet_checker/cmake-build-debug"/>
+				<Option output="/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/PDNet_checker" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/usr/include/c++/7"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
-					<Add directory="/usr/include/c++/7/backward"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/include/c++/6"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/6"/>
+					<Add directory="/usr/include/c++/6/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/6/include"/>
 					<Add directory="/usr/local/include"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed"/>
 					<Add directory="/usr/include/x86_64-linux-gnu"/>
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 PDNet_checker"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 PDNet_checker"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="PDNet_checker/fast">
-				<Option output="/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/PDNet_checker" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/cc/CLionProjects/PDNet_checker/cmake-build-debug"/>
+				<Option output="/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/PDNet_checker" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/usr/include/c++/7"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
-					<Add directory="/usr/include/c++/7/backward"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/include/c++/6"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/6"/>
+					<Add directory="/usr/include/c++/6/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/6/include"/>
 					<Add directory="/usr/local/include"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed"/>
 					<Add directory="/usr/include/x86_64-linux-gnu"/>
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 PDNet_checker/fast"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/home/cc/CLionProjects/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 PDNet_checker/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/AST.cpp">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/AST.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/AST.h">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/AST.h">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/Data_Structures.cpp">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/BA/Syntax_Tree.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/Data_Structures.h">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/BA/Syntax_Tree.h">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/Lexer.cpp">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/BA/VWAA.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/Lexer.h">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/BA/VWAA.h">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/SBA.cpp">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/BA/buchi.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/SBA.h">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/BA/buchi.h">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/Syntax_Tree.cpp">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/BA/set.h">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/Syntax_Tree.h">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/BA/tinystr.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/TBA.cpp">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/BA/tinystr.h">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/TBA.h">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/BA/tinyxml.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/TGBA.cpp">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/BA/tinyxml.h">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/TGBA.h">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/BA/tinyxmlerror.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/tinystr.cpp">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/BA/tinyxmlparser.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/tinystr.h">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/LTL2PT.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/tinyxml.cpp">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/base.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/tinyxml.h">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/base.h">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/tinyxmlerror.cpp">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/condition_tree.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/tinyxmlparser.cpp">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/condition_tree.h">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/xml2ltl.cpp">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/cpn.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/BA/xml2ltl.h">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/cpn.h">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/base.cpp">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/cpn_rg.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/base.h">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/cpn_rg.h">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/condition_tree.cpp">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/lex.y.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/condition_tree.h">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/main.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/cpn.cpp">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/pre_process.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/cpn.h">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/product.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/cpn_rg.cpp">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/product.h">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/cpn_rg.h">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/slice.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/lex.y.cpp">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/v_table.h">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/main.cpp">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/y.tab.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/pre_process.cpp">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/y.tab.h">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/slice.cpp">
-			<Option target="PDNet_checker"/>
-		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/v_table.h">
-			<Option target="PDNet_checker"/>
-		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/y.tab.cpp">
-			<Option target="PDNet_checker"/>
-		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/y.tab.h">
-			<Option target="PDNet_checker"/>
-		</Unit>
-		<Unit filename="/home/cc/CLionProjects/PDNet_checker/CMakeLists.txt">
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
 	</Project>

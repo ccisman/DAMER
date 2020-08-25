@@ -3,7 +3,7 @@
 //
 
 #include "cpn.h"
-#include "BA/xml2ltl.h"
+#include "BA/tinyxml.h"
 #include "v_table.h"
 
 extern vector<V_Table *> v_tables;

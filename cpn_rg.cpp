@@ -103,7 +103,7 @@ bool is_Fireable(CTransition *transition,CPN *cpn,vector<Binding *>&bindings,con
     //2.judge guard
     if(transition->hasguard) {
         cpn->CTN_cal(transition->guard.root);
-        if (transition->guard.root->value == "0")
+        if (atoi(transition->guard.root->value.c_str()) == 0)
             return false;
     }
     //3.judge producers
@@ -136,6 +136,7 @@ bool is_Fireable(CTransition *transition,CPN *cpn,vector<Binding *>&bindings,con
 
 void RG_NODE::get_FireTranQ(CPN *cpn) {
 
+    tranQ_obtained = true;
     for(int i=0;i<cpn->transitioncount;i++)
     {
         vector<Binding *>bindings;
@@ -157,6 +158,15 @@ index_t RG_NODE::Hash() {
     return hv;
 }
 
+bool RG_NODE::fireable(string transname) {
+    FireTranQ *p = tranQ->next;
+    while (p) {
+        if(p->transition->id == transname)
+            return true;
+        p=p->next;
+    }
+    return false;
+}
 
 void FireTranQ::insert(CTransition *transition) {
     FireTranQ *temp = next,*newnode;
@@ -188,7 +198,9 @@ void RG::init(CPN *cpn) {
     init_node = new RG_NODE;
     init_node->marking.init_marking(cpn->place,cpn->placecount);
     rgnodetable = new RG_NODE*[CPNRGTABLE_SIZE]();
+    init_node->get_FireTranQ(cpn);
     addRGNode(init_node);
+
 }
 
 void Marking_after_fire(Marking &marking,CTransition *transition,vector<Binding *>bindings,CPN *cpn)
@@ -275,16 +287,16 @@ void RG::createNode(RG_NODE *node,CPN *cpn) {
     }
 }
 
-bool RG::nodeExist(RG_NODE *node) {
+RG_NODE* RG::nodeExist(RG_NODE *node) {
     index_t hv = node->Hash() % CPNRGTABLE_SIZE;
     RG_NODE *exist = rgnodetable[hv];
     while(exist)
     {
         if(node->marking == exist->marking)
-            return true;
+            return exist;
         exist = exist->next;
     }
-    return false;
+    return NULL;
 }
 
 void RG::addRGNode(RG_NODE *node) {

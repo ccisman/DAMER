@@ -17,3 +17,5 @@ template <class T>
 extern bool exist_in(vector<T> vec,T element);
 extern vector<string> pthread_type;
 extern vector<string> pthread_func_type;
+template<class T>
+void Bubble_sort(std::vector<T> &change_P);

@@ -2,6 +2,7 @@
 // Created by cc on 2020/8/4.
 //
 
+#include <vector>
 #include <string>
 #include <fstream>
 
@@ -78,4 +79,23 @@ void makeGraph(std::string inputname, std::string outputname) //generate .png
     const char* cmd = s.data();
     const char* iname = inputname.data();
     system(cmd);
+}
+
+template <class T>
+void Bubble_sort(std::vector<T> &change_P)
+{
+    for (unsigned int i = 0; i < change_P.size(); i++)
+    {
+        for (unsigned int j = 0; j < change_P.size() - 1 - i; j++)
+        {
+            int num1 = atoi(change_P[j].substr(1).c_str());
+            int num2 = atoi(change_P[j + 1].substr(1).c_str());
+            if (num1 > num2)
+            {
+                T temp = change_P[j];
+                change_P[j] = change_P[j + 1];
+                change_P[j + 1] = temp;
+            }
+        }
+    }
 }

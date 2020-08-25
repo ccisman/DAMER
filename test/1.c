@@ -6,25 +6,25 @@ extern void __VERIFIER_atomic_end();
 extern void abort(void); 
 void reach_error(){}
 
-int i = 3, j = 6;
+double i = 3.1, j = 6.1;
 
 #define NUM 2
 #define LIMIT (2*NUM+6)
 
 void *t1(void *arg) {
   for (int k = 0; k < NUM; k++) {
-    //__VERIFIER_atomic_begin();
+    __VERIFIER_atomic_begin();
     i = j + 1;
-    //__VERIFIER_atomic_end();
+    __VERIFIER_atomic_end();
   }
   pthread_exit(NULL);
 }
 
 void *t2(void *arg) {
   for (int k = 0; k < NUM; k++) {
-    //__VERIFIER_atomic_begin();
+    __VERIFIER_atomic_begin();
     j = i + 1;
-    //__VERIFIER_atomic_end();
+    __VERIFIER_atomic_end();
   }
   pthread_exit(NULL);
 }

@@ -5,8 +5,6 @@
 #ifndef PDNET_CHECKER_CPN_H
 #define PDNET_CHECKER_CPN_H
 
-#endif //PDNET_CHECKER_CPN_H
-
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -33,7 +31,7 @@ typedef double Real_t;
 typedef string String_t;
 typedef unsigned short MS_size_t;
 typedef unsigned short token_count_t;
-typedef unsigned short index_t;
+typedef unsigned int index_t;
 
 
 class CPN;
@@ -319,6 +317,8 @@ public:
     void MINUS(MultiSet &ms);
     void PLUS(MultiSet &ms);
 
+    NUM_t tokennum();
+
 };
 
 /*===========================================================*/
@@ -518,3 +518,5 @@ extern string arr_suffix;
 extern map<string,type> map_build_in_type;
 extern void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P, vector<string>&final_T);
 extern void post_process(CPN *cpn,CPN *cpn_slice,vector<string> transitions);
+
+#endif //PDNET_CHECKER_CPN_H

@@ -83,3 +83,4 @@ bool judge_compound_statement(gtree *statement1);
 
 void cut_tree(gtree *p);
 extern string call_statement_suffix;
+void intofile_tree(gtree *tree);

@@ -5,11 +5,11 @@
 #ifndef PDNET_CHECKER_CPN_RG_H
 #define PDNET_CHECKER_CPN_RG_H
 
-#endif //PDNET_CHECKER_CPN_RG_H
-
 #include "cpn.h"
 #define CPNRGTABLE_SIZE sizeof(Integer_t)
-
+class Marking;
+class Binding;
+void Marking_after_fire(Marking &marking,CTransition *transition,vector<Binding *>bindings,CPN *cpn);
 class Marking
 {
 public:
@@ -51,9 +51,11 @@ public:
     NUM_t fathernum;
     NUM_t firenum;
 
+    bool tranQ_obtained;
     index_t Hash();
-    RG_NODE(){tranQ = new FireTranQ;tranQ->next=NULL;firenum = 0;}
+    RG_NODE(){tranQ = new FireTranQ;tranQ->next=NULL;firenum = 0;tranQ_obtained = false;}
     void get_FireTranQ(CPN *cpn);
+    bool fireable(string transname);
 };
 
 class RG
@@ -67,8 +69,9 @@ public:
     void init(CPN *cpn);
     void createNode(RG_NODE *node,CPN *cpn);
     void addRGNode(RG_NODE *node);
-    bool nodeExist(RG_NODE *node);
+    RG_NODE* nodeExist(RG_NODE *node);
     void GENERATE(CPN *cpn);
     void print_RG(string filename,CPN *cpn);
     RG(){node_num=0;}
 };
+#endif //PDNET_CHECKER_CPN_RG_H

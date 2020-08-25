@@ -6,8 +6,6 @@
 #ifndef PDNET_CHECKER_CONDITION_TREE_H
 #define PDNET_CHECKER_CONDITION_TREE_H
 
-#endif //PDNET_CHECKER_CONDITION_TREE_H
-
 #include<string>
 #include<map>
 using namespace std;
@@ -40,3 +38,4 @@ public:
     void deconstruct();
     void operator=(condition_tree ct);
 };
+#endif //PDNET_CHECKER_CONDITION_TREE_H

@@ -5,7 +5,7 @@
 #ifndef CPN_PNML_PARSE_Y_TAB_H
 #define CPN_PNML_PARSE_Y_TAB_H
 
-#endif //CPN_PNML_PARSE_Y_TAB_H
+
 
 
 /* A Bison parser, made by GNU Bison 2.4.1.  */
@@ -327,3 +327,4 @@ public:
 extern std::vector<aka> aka_type_array;
 extern int now_level;
 gtree* newNode(std::string node_name, int type);
+#endif //CPN_PNML_PARSE_Y_TAB_H

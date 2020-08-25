@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/cc/CLionProjects/PDNet_checker/AST.h
+/home/lewis/Documents/noBA/PDNet_checker/AST.h
 iostream
 -
 string
@@ -16,13 +16,45 @@ vector
 set
 -
 
-/home/cc/CLionProjects/PDNet_checker/BA/tinystr.h
+/home/lewis/Documents/noBA/PDNet_checker/BA/Syntax_Tree.h
+iostream
+-
+fstream
+-
+iomanip
+-
+string
+-
+tinyxml.h
+/home/lewis/Documents/noBA/PDNet_checker/BA/tinyxml.h
+VWAA.h
+/home/lewis/Documents/noBA/PDNet_checker/BA/VWAA.h
+
+/home/lewis/Documents/noBA/PDNet_checker/BA/VWAA.h
+set.h
+/home/lewis/Documents/noBA/PDNet_checker/BA/set.h
+vector
+-
+
+/home/lewis/Documents/noBA/PDNet_checker/BA/buchi.h
+Syntax_Tree.h
+/home/lewis/Documents/noBA/PDNet_checker/BA/Syntax_Tree.h
+
+/home/lewis/Documents/noBA/PDNet_checker/BA/set.h
+set
+-
+iostream
+-
+vector
+-
+
+/home/lewis/Documents/noBA/PDNet_checker/BA/tinystr.h
 assert.h
 -
 string.h
 -
 
-/home/cc/CLionProjects/PDNet_checker/BA/tinyxml.h
+/home/lewis/Documents/noBA/PDNet_checker/BA/tinyxml.h
 ctype.h
 -
 stdio.h
@@ -40,21 +72,21 @@ iostream
 sstream
 -
 tinystr.h
-/home/cc/CLionProjects/PDNet_checker/BA/tinystr.h
+/home/lewis/Documents/noBA/PDNet_checker/BA/tinystr.h
 
-/home/cc/CLionProjects/PDNet_checker/BA/xml2ltl.h
-tinyxml.h
-/home/cc/CLionProjects/PDNet_checker/BA/tinyxml.h
+/home/lewis/Documents/noBA/PDNet_checker/base.h
+string
+-
 fstream
 -
 
-/home/cc/CLionProjects/PDNet_checker/condition_tree.h
+/home/lewis/Documents/noBA/PDNet_checker/condition_tree.h
 string
 -
 map
 -
 
-/home/cc/CLionProjects/PDNet_checker/cpn.h
+/home/lewis/Documents/noBA/PDNet_checker/cpn.h
 iostream
 -
 fstream
@@ -70,25 +102,49 @@ sstream
 string.h
 -
 AST.h
-/home/cc/CLionProjects/PDNet_checker/AST.h
+/home/lewis/Documents/noBA/PDNet_checker/AST.h
 y.tab.h
-/home/cc/CLionProjects/PDNet_checker/y.tab.h
+/home/lewis/Documents/noBA/PDNet_checker/y.tab.h
 condition_tree.h
-/home/cc/CLionProjects/PDNet_checker/condition_tree.h
+/home/lewis/Documents/noBA/PDNet_checker/condition_tree.h
 gperftools/tcmalloc.h
 -
 gperftools/malloc_extension.h
 -
 
-/home/cc/CLionProjects/PDNet_checker/slice.cpp
+/home/lewis/Documents/noBA/PDNet_checker/cpn_rg.h
 cpn.h
-/home/cc/CLionProjects/PDNet_checker/cpn.h
-BA/xml2ltl.h
-/home/cc/CLionProjects/PDNet_checker/BA/xml2ltl.h
-v_table.h
-/home/cc/CLionProjects/PDNet_checker/v_table.h
+/home/lewis/Documents/noBA/PDNet_checker/cpn.h
 
-/home/cc/CLionProjects/PDNet_checker/v_table.h
+/home/lewis/Documents/noBA/PDNet_checker/main.cpp
+iostream
+-
+AST.h
+/home/lewis/Documents/noBA/PDNet_checker/AST.h
+base.h
+/home/lewis/Documents/noBA/PDNet_checker/base.h
+cpn_rg.h
+/home/lewis/Documents/noBA/PDNet_checker/cpn_rg.h
+v_table.h
+/home/lewis/Documents/noBA/PDNet_checker/v_table.h
+product.h
+/home/lewis/Documents/noBA/PDNet_checker/product.h
+string.h
+-
+
+/home/lewis/Documents/noBA/PDNet_checker/product.cpp
+product.h
+/home/lewis/Documents/noBA/PDNet_checker/product.h
+
+/home/lewis/Documents/noBA/PDNet_checker/product.h
+cpn_rg.h
+/home/lewis/Documents/noBA/PDNet_checker/cpn_rg.h
+base.h
+/home/lewis/Documents/noBA/PDNet_checker/base.h
+BA/buchi.h
+/home/lewis/Documents/noBA/PDNet_checker/BA/buchi.h
+
+/home/lewis/Documents/noBA/PDNet_checker/v_table.h
 string
 -
 map
@@ -96,11 +152,11 @@ map
 iostream
 -
 
-/home/cc/CLionProjects/PDNet_checker/y.tab.h
+/home/lewis/Documents/noBA/PDNet_checker/y.tab.h
 vector
 -
 string
 -
 AST.h
-/home/cc/CLionProjects/PDNet_checker/AST.h
+/home/lewis/Documents/noBA/PDNet_checker/AST.h
 

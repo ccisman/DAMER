@@ -31,6 +31,44 @@ int sort_num = 0;
 int gen_sel_num, gen_iter_num, gen_jump_num, gen_com_num;
 
 
+void travel_tree(gtree *tree,ofstream &out,vector<pair<string,int>> &list)
+{
+
+    if (tree == NULL)
+        return;
+    string parent_place, child_place;
+    int parent_no, child_no;
+    if (tree->parent != NULL)
+    {
+
+        parent_place = tree->parent->place;
+        parent_no = tree->parent->num;
+        child_place = tree->place;
+        child_no = tree->num;
+        out << "node" << to_string(parent_no) << "[label=\"" << parent_place << "\"]" << endl;
+        out << "node" << to_string(child_no) << "[label=\"" << child_place << "\"]" << endl;
+        out << "node" << to_string(parent_no) << "->" << "node" << to_string(child_no) << ";" << endl;
+
+    }
+    travel_tree(tree->child, out, list);
+    travel_tree(tree->next, out, list);
+
+
+    //out.close();
+}
+
+void intofile_tree(gtree *tree)
+{
+    ofstream out;
+    vector<pair<string,int>> list;
+    out.open("tree.dot", ios::out);
+
+    out << "digraph G{" << endl;
+    travel_tree(tree, out, list);
+    out << "}" << endl;
+    out.close();
+
+}
 string gen_sel()
 {
     string temp = "";

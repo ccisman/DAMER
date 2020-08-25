@@ -5,6 +5,7 @@
 #include "cpn.h"
 #include "v_table.h"
 #include "base.h"
+#include<cmath>
 
 SortTable sorttable;
 SORTID SortTable::psptr = 0;
@@ -1822,7 +1823,7 @@ void CPN::CTN_cal(condition_tree_node *CTN) {
         if(CTN->right->node_type == variable)
         {
             string var2 = CTN->left->node_name;
-            map<string,index_t>::iterator iter = mapVariable.find(var2);
+            auto iter = mapVariable.find(var2);
             if(iter == mapVariable.end())
             {
                 cout<<"can't find var in CTN_cal"<<endl;
@@ -1860,7 +1861,7 @@ void CPN::CTN_cal(condition_tree_node *CTN) {
             if(CTN->left->node_type == variable)
             {
                 string var1 = CTN->left->node_name;
-                map<string,index_t>::iterator iter = mapVariable.find(var1);
+                auto iter = mapVariable.find(var1);
                 if(iter == mapVariable.end())
                 {
                     cout<<"can't find var in CTN_cal"<<endl;
@@ -1883,7 +1884,7 @@ void CPN::CTN_cal(condition_tree_node *CTN) {
             if(CTN->right->node_type == variable)
             {
                 string var2 = CTN->right->node_name;
-                map<string,index_t>::iterator iter = mapVariable.find(var2);
+                auto iter = mapVariable.find(var2);
                 if(iter == mapVariable.end())
                 {
                     cout<<"can't find var in CTN_cal"<<endl;
@@ -1913,7 +1914,7 @@ void CPN::CTN_cal(condition_tree_node *CTN) {
             if(CTN->left->node_type == variable)
             {
                 string var1 = CTN->left->node_name;
-                map<string,index_t>::iterator iter = mapVariable.find(var1);
+                auto iter = mapVariable.find(var1);
                 if(iter == mapVariable.end())
                 {
                     cout<<"can't find var in CTN_cal"<<endl;
@@ -1945,7 +1946,7 @@ void CPN::CTN_cal(condition_tree_node *CTN) {
     else if(CTN->node_type == variable)
     {
         string var1 = CTN->node_name;
-        map<string,index_t>::iterator iter = mapVariable.find(var1);
+        auto iter = mapVariable.find(var1);
         if(iter == mapVariable.end())
         {
             cout<<"can't find var in CTN_cal"<<endl;
@@ -3346,6 +3347,8 @@ void Tokens::init_a_token(type tid, String_t value) {
     color->setColor(value);
 }
 
+
+
 void CPN::print_CPN(string filename) {
     ofstream out;
     out.open(filename, ios::out);
@@ -3516,4 +3519,13 @@ void CPN::copy_childtree(CPN *cpnet,vector<string> places,vector<string> transit
         }
     }
     set_producer_consumer();
+}
+
+NUM_t MultiSet::tokennum() {
+    int sum = 0;
+    Tokens *p=this->tokenQ->next;
+    while(p) {
+        sum += p->tokencount;
+        p=p->next;
+    }
 }

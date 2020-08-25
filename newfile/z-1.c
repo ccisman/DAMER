@@ -6,16 +6,16 @@ void __VERIFIER_atomic_end(){}
 void abort(){}
 void reach_error(){}
 
-int i = 3, j = 6;
+double i = 3.1, j = 6.1;
 
 
 void *t1(void *arg) {
   {
 int k = 0;
 while( k < 2){
-    //__VERIFIER_atomic_begin();
+    __VERIFIER_atomic_begin();
     i = j + 1;
-    //__VERIFIER_atomic_end();
+    __VERIFIER_atomic_end();
    k;k=k+1;
 }
 }
@@ -26,9 +26,9 @@ void *t2(void *arg) {
   {
 int k = 0;
 while( k < 2){
-    //__VERIFIER_atomic_begin();
+    __VERIFIER_atomic_begin();
     j = i + 1;
-    //__VERIFIER_atomic_end();
+    __VERIFIER_atomic_end();
    k;k=k+1;
 }
 }

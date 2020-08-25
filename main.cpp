@@ -3,6 +3,7 @@
 #include "base.h"
 #include "cpn_rg.h"
 #include "v_table.h"
+#include "product.h"
 #include<string.h>
 
 
@@ -15,45 +16,6 @@ vector<string> pthread_func_type = {"pthread_create","pthread_join","pthread_exi
                                     "pthread_mutex_init","pthread_mutex_lock","pthread_mutex_unlock",
                                     "pthread_cond_init","pthread_cond_signal","pthread_cond_wait"};
 
-void travel_tree(gtree *tree,ofstream &out,vector<pair<string,int>> &list)
-{
-
-    if (tree == NULL)
-        return;
-    string parent_place, child_place;
-    int parent_no, child_no;
-    if (tree->parent != NULL)
-    {
-
-        parent_place = tree->parent->place;
-        parent_no = tree->parent->num;
-        child_place = tree->place;
-        child_no = tree->num;
-        out << "node" << to_string(parent_no) << "[label=\"" << parent_place << "\"]" << endl;
-        out << "node" << to_string(child_no) << "[label=\"" << child_place << "\"]" << endl;
-        out << "node" << to_string(parent_no) << "->" << "node" << to_string(child_no) << ";" << endl;
-
-    }
-    travel_tree(tree->child, out, list);
-    travel_tree(tree->next, out, list);
-
-
-    //out.close();
-}
-
-void intofile_tree(gtree *tree)
-{
-    ofstream out;
-    vector<pair<string,int>> list;
-    out.open("tree.dot", ios::out);
-
-    out << "digraph G{" << endl;
-    travel_tree(tree, out, list);
-    out << "}" << endl;
-    out.close();
-
-}
-
 void init_pthread_type()
 {
 
@@ -65,32 +27,74 @@ void init_pthread_type()
         aka_type_array.push_back(temp);
     }
 }
+void CHECKLTL(CPN *cpnet, bool cardinality,int num) {
+    RG *graph = new RG;
+    graph->init(cpnet);
 
-void sort_change(vector<string> &change_P)
-{
-    for (unsigned int i = 0; i < change_P.size(); i++)
-    {
-        for (unsigned int j = 0; j < change_P.size() - 1 - i; j++)
-        {
-            int num1 = atoi(change_P[j].substr(1).c_str());
-            int num2 = atoi(change_P[j + 1].substr(1).c_str());
-            if (num1 > num2)
-            {
-                string temp = change_P[j];
-                change_P[j] = change_P[j + 1];
-                change_P[j + 1] = temp;
-            }
-        }
-    }
+    string propertyid;
+    char ff[]="LTLFireability.xml";
+    char cc[]="LTLCardinality.xml";
+    Syntax_Tree syntaxTree;
+    if(cardinality)
+        syntaxTree.ParseXML(cc,propertyid,num);
+    else
+        syntaxTree.ParseXML(ff,propertyid,num);
+        cout<<"original tree:"<<endl;
+        syntaxTree.PrintTree();
+        cout<<"-----------------------------------"<<endl;
+    syntaxTree.Push_Negation(syntaxTree.root);
+//        cout<<"after negation:"<<endl;
+//        syntaxTree.PrintTree();
+//        cout<<"-----------------------------------"<<endl;
+    syntaxTree.SimplifyLTL();
+//        cout<<"after simplification:"<<endl;
+//        syntaxTree.PrintTree();
+//        cout<<"-----------------------------------"<<endl;
+    syntaxTree.Universe(syntaxTree.root);
+//        cout<<"after universe"<<endl;
+//        syntaxTree.PrintTree();
+//        cout<<"-----------------------------------"<<endl;
+
+    syntaxTree.Get_DNF(syntaxTree.root);
+    syntaxTree.Build_VWAA();
+    syntaxTree.VWAA_Simplify();
+
+    General GBA;
+    GBA.Build_GBA(syntaxTree);
+    GBA.Simplify();
+    GBA.self_check();
+
+    Buchi BA;
+    BA.Build_BA(GBA);
+    BA.Simplify();
+    BA.self_check();
+    BA.Backward_chaining();
+        BA.PrintBuchi("BA.dot");
+
+    StateBuchi SBA;
+    SBA.Build_SBA(BA);
+    SBA.Simplify();
+    SBA.Tarjan();
+    SBA.Complete1();
+    SBA.Add_heuristic();
+    SBA.Complete2();
+    SBA.self_check();
+        SBA.PrintStateBuchi();
+/*******************************************************/
+    //cout << "begin:ON-THE-FLY" << endl;
+
+    CPN_Product_Automata *product;
+    product = new CPN_Product_Automata(cpnet, &SBA, graph);
+    product->GetProduct();
+    product->printresult(propertyid);
+    //cout<<" "<<graph->nodecount<<endl;
+
+    delete product;
+    delete graph;
 }
 
+
 int main() {
-    cout << "=================================================" << endl;
-    cout << "=====This is our tool-enPAC for the MCC'2020=====" << endl;
-    cout << "=================================================" << endl;
-
-
-    cout<<"size="<<sizeof(MultiSet)<<endl;
 
     init_pthread_type();
     gtree * tree = create_tree("1.c",true);
@@ -115,28 +119,28 @@ int main() {
     readGraph(filename_prefix + ".txt",filename_prefix + ".dot");
     makeGraph(filename_prefix + ".dot",filename_prefix + ".png");
 
-    vector<string> final_P,final_T,criteria;
-    criteria.push_back("P15");
-    two_phrase_slicing(cpnet,criteria,final_P,final_T);
-    sort_change(final_T);
-    sort_change(final_P);
+//    vector<string> final_P,final_T,criteria;
+//    criteria.push_back("P15");
+//    two_phrase_slicing(cpnet,criteria,final_P,final_T);
+//    Bubble_sort(final_T);
+//    Bubble_sort(final_P);
+//
+//    CPN *cpnet_slice = new CPN;
+//    cpnet_slice->copy_childtree(cpnet,final_P,final_T);
+//    post_process(cpnet,cpnet_slice,final_T);
+//    filename_prefix = "2";
+//    cpnet_slice->print_CPN(filename_prefix + ".txt");
+//    readGraph(filename_prefix + ".txt",filename_prefix + ".dot");
+//    makeGraph(filename_prefix + ".dot",filename_prefix + ".png");
 
-    CPN *cpnet_slice = new CPN;
-    cpnet_slice->copy_childtree(cpnet,final_P,final_T);
-    post_process(cpnet,cpnet_slice,final_T);
-    filename_prefix = "2";
-    cpnet_slice->print_CPN(filename_prefix + ".txt");
-    readGraph(filename_prefix + ".txt",filename_prefix + ".dot");
-    makeGraph(filename_prefix + ".dot",filename_prefix + ".png");
-
-    RG rg;
-    rg.init(cpnet);
-    rg.GENERATE(cpnet);
-    rg.print_RG("rg.txt",cpnet);
-
-    RG rg1;
-    rg1.init(cpnet_slice);
-    rg1.GENERATE(cpnet_slice);
-    rg1.print_RG("rg1.txt",cpnet_slice);
+    CHECKLTL(cpnet,0,2);
+//    RG rg;
+//    rg.init(cpnet);
+//    rg.GENERATE(cpnet);
+//    rg.print_RG("rg.txt",cpnet);
+//    RG rg1;
+//    rg1.init(cpnet_slice);
+//    rg1.GENERATE(cpnet_slice);
+//    rg1.print_RG("rg1.txt",cpnet_slice);
     return 0;
 }
