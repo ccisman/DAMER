@@ -7,7 +7,7 @@
 #include "v_table.h"
 
 extern vector<V_Table *> v_tables;
-extern string end_suffix,return_suffix;
+extern string end_suffix,return_suffix,begin_suffix,join_suffix;
 template <class T>
 bool exist_in(vector<T> vec,T element)
 {
@@ -17,6 +17,8 @@ bool exist_in(vector<T> vec,T element)
 
     return false;
 }
+
+
 
 void GetLTLC(CPN *cpn, TiXmlElement *p, vector<string> &criteria)
 {
@@ -378,7 +380,8 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
         for(unsigned int j=0;j<p->producer.size();j++)
         {
             if(p->producer[j].arcType == control
-            || p->producer[j].arcType == call_connect) {
+            || p->producer[j].arcType == call_connect
+            || p->producer[j].arcType == call_enter) {
                 CTransition *trans = &cpn->transition[p->producer[j].idx];
                 if(!exist_in(T,trans->id))
                     T.push_back(trans->id);
@@ -496,7 +499,8 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
         for(unsigned int j=0;j<p->producer.size();j++)
         {
             if(p->producer[j].arcType == control
-               || p->producer[j].arcType == call_connect) {
+               || p->producer[j].arcType == call_connect
+               || p->producer[j].arcType == call_enter) {
                 CTransition *trans = &cpn->transition[p->producer[j].idx];
                 if(!exist_in(T,trans->id))
                     T.push_back(trans->id);
@@ -600,7 +604,27 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
         }
     }
 
+    for(unsigned int i=0;i<P.size();i++) {
+        auto iter = cpn->mapJoin.find(P[i]);
+        if (iter != cpn->mapJoin.end()) {
+            auto pier = cpn->mapPlace.find(iter->second);
+            CPlace *pp = &cpn->place[pier->second];
+            for (unsigned int j = 0; j < pp->consumer.size(); j++) {
+                if (pp->consumer[j].arcType == control) {
+                    CTransition *tt = &cpn->transition[pp->consumer[j].idx];
+                    if (!exist_in(T, tt->id))
+                        T.push_back(tt->id);
+                    for (unsigned int k = 0; k < tt->producer.size(); k++)
+                        if (tt->producer[k].arcType == control) {
+                            string temp_p = cpn->place[tt->producer[k].idx].id;
 
+                            if (!exist_in(P, temp_p))
+                                P.push_back(temp_p);
+                        }
+                }
+            }
+        }
+    }
     final_P = P;
     final_T = T;
 }

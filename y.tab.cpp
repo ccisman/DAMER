@@ -4431,7 +4431,7 @@ extern int column;
 
 int yyerror(char *s)
 {
-    cout << "actually error!" << endl;
+    cout << "syntax error when parsing program!" << endl;
     fflush(stdout);
 
     exit(-1);

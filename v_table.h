@@ -11,6 +11,7 @@
 #include<string>
 #include<map>
 #include<iostream>
+#include<vector>
 
 typedef std::map<std::string, std::string> map_1;
 
@@ -30,36 +31,11 @@ public:
     void erase(std::string v) {
         v_map.erase(v);
     }
-    bool find_P(string s){
-        auto iter = v_map.begin();
-        for(;iter!=v_map.end();iter++)
-            if(iter->second == s)
-                return true;
-        return false;
-    }
+    bool find_P(std::string s);
     void connect(V_Table *&father) { fa = father;}
-    std::string get_place(std::string v) {
-        map_1::iterator iter;
-        iter = v_map.find(v);
-        if (iter != v_map.end())
-        {
-            return iter->second;
-        }
-        else
-        {
-            V_Table *temp_fa = fa;
-            while (temp_fa != NULL)
-            {
-                iter = temp_fa->v_map.find(v);
-                if (iter != temp_fa->v_map.end())
-                    return iter->second;
-                else
-                    temp_fa = temp_fa->fa;
-            }
-            std::cout << "can't find variable " << v << std::endl;
-            //exit(-1);
-        }
-    }
+    std::string get_place(std::string v);
 };
 
-extern vector<V_Table *> v_tables;//variable tables
+extern std::vector<V_Table *> v_tables;//variable tables
+void init_v_table();
+void release_v_table();

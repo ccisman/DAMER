@@ -3,7 +3,7 @@ project(PDNet_checker)
 
 set(CMAKE_CXX_STANDARD 14)
 set(LINK_DIR /usr/local/lib)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -pthread")
 link_directories(${LINK_DIR})
 link_libraries(tcmalloc)
 
@@ -21,5 +21,5 @@ add_executable(PDNet_checker main.cpp AST.cpp y.tab.cpp lex.y.cpp y.tab.h AST.h 
         BA/buchi.h
         BA/buchi.cpp
         BA/set.h
-        LTL2PT.cpp)
+        criteria.cpp v_table.cpp)
 target_link_libraries(PDNet_checker tcmalloc)

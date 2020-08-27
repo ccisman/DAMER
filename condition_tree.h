@@ -27,6 +27,7 @@ public:
     string value;
     condition_tree_node *left;
     condition_tree_node *right;
+    condition_tree_node(){left=right=NULL;}
 };
 
 class condition_tree
@@ -36,6 +37,8 @@ public:
     string exp;
     void construct(string s);
     void deconstruct();
+    condition_tree(){root = NULL;}
     void operator=(condition_tree ct);
+//    ~condition_tree(){deconstruct();}
 };
 #endif //PDNET_CHECKER_CONDITION_TREE_H

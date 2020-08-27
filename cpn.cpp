@@ -27,7 +27,8 @@ map<string,type> map_build_in_type {
 };
 string arr_suffix = "_arr",begin_suffix = " begin"
         ,end_suffix = " end",return_suffix = "_v",
-        call_suffix = "()",para_suffix = "_para",call_statement_suffix = "_call";
+        call_suffix = "()",para_suffix = "_para",
+        call_statement_suffix = "_call",join_suffix = " join";
 string executed_P_name = "executed_P";
 
 extern int string_replace(std::string &s1, const std::string &s2, const std::string &s3);
@@ -1159,7 +1160,7 @@ index_t MultiSet::Hash() {
     }
     else if(tid == dot)
     {
-        hv = color_count*H1FACTOR*H1FACTOR*H1FACTOR*H1FACTOR*H1FACTOR*H1FACTOR*H1FACTOR;
+        hv = color_count*H1FACTOR*H1FACTOR*H1FACTOR*H1FACTOR*H1FACTOR;
         Tokens *p = tokenQ->next;
         if(p!=NULL)
             hv += p->tokencount*H1FACTOR*H1FACTOR;
@@ -1770,6 +1771,7 @@ bool operate_reloperator(string s1,string s2,string Operator)
     Real_t v1,v2;
     v1 = atof(s1.c_str());
     v2 = atof(s2.c_str());
+
     if(Operator == ">")
         return v1>v2;
     else if(Operator == "<")
@@ -1783,9 +1785,10 @@ bool operate_reloperator(string s1,string s2,string Operator)
     else if(Operator == "!=")
         return v1!=v2;
     else if(Operator == "&&")
-        return v1&&v2;
+        return v1 && v2;
     else if(Operator == "||")
-        return v1||v2;
+        return v1 || v2;
+
 }
 
 void CPN::CTN_cal(condition_tree_node *CTN) {
@@ -1822,7 +1825,7 @@ void CPN::CTN_cal(condition_tree_node *CTN) {
             value1 = CTN->left->value;
         if(CTN->right->node_type == variable)
         {
-            string var2 = CTN->left->node_name;
+            string var2 = CTN->right->node_name;
             auto iter = mapVariable.find(var2);
             if(iter == mapVariable.end())
             {
@@ -1843,6 +1846,7 @@ void CPN::CTN_cal(condition_tree_node *CTN) {
         }
         else
             value2 = CTN->right->value;
+
         bool res = operate_reloperator(value1,value2,CTN->node_name);
         if(res == true)
             CTN->value = "1";
@@ -3048,6 +3052,7 @@ void CPN::create_PDNet(gtree *p)
                 mapPthread.insert(make_pair(thread_v + begin_suffix, func_begin_P));
                 mapPthread.insert(make_pair(thread_v + end_suffix, func_end_P));
 
+
                 //add thread arc
                 vector<string> enter_T = get_enter_T(statement_P);
                 Add_Arc(enter_T[0], func_begin_P, "", false, control);
@@ -3065,6 +3070,15 @@ void CPN::create_PDNet(gtree *p)
                     exit(-1);
                 }
                 string func_end_P = iter->second;
+
+                //add map
+                auto biter = mapPthread.find(thread_v + begin_suffix);
+                if(biter == mapPthread.end())
+                {
+                    cout<<"can't find pthread_begin when pthread_join"<<endl;
+                    exit(-1);
+                }
+                mapJoin.insert(make_pair(biter->second,statement_P));
 
                 //add thread arc
                 vector<string> enter_T = get_enter_T(statement_P);
@@ -3347,8 +3361,6 @@ void Tokens::init_a_token(type tid, String_t value) {
     color->setColor(value);
 }
 
-
-
 void CPN::print_CPN(string filename) {
     ofstream out;
     out.open(filename, ios::out);
@@ -3443,7 +3455,7 @@ void CPN::set_producer_consumer() {
     }
 }
 
-void CPN::copy_childtree(CPN *cpnet,vector<string> places,vector<string> transitions) {
+void CPN::copy_childNet(CPN *cpnet,vector<string> places,vector<string> transitions) {
 
     init();
 //    mapPlace = cpnet->mapPlace;
@@ -3459,7 +3471,8 @@ void CPN::copy_childtree(CPN *cpnet,vector<string> places,vector<string> transit
             cout<<"can't find place in copy_childtree"<<endl;
             exit(-1);
         }
-        place[placecount++] = cpnet->place[iter->second];
+        memcpy(&place[placecount++],&cpnet->place[iter->second],sizeof(CPlace));
+//        place[placecount++] = cpnet->place[iter->second];
 //        for(auto iter=place[placecount-1].producer.begin();iter!=place[placecount-1].producer.end();)
 //        {
 //            if(!exist_in(transitions,cpnet->transition[iter->idx].id))
@@ -3486,7 +3499,8 @@ void CPN::copy_childtree(CPN *cpnet,vector<string> places,vector<string> transit
             cout<<"can't find transition in copy_childtree"<<endl;
             exit(-1);
         }
-        transition[transitioncount++] = cpnet->transition[iter->second];
+        memcpy(&transition[transitioncount++],&cpnet->transition[iter->second],sizeof(CTransition));
+//        transition[transitioncount++] = cpnet->transition[iter->second];
 //        for(auto iter=transition[transitioncount-1].producer.begin();iter!=transition[transitioncount-1].producer.end();)
 //        {
 //            if(!exist_in(transitions,cpnet->transition[iter->idx].id))

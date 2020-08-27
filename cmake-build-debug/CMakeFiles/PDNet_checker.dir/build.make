@@ -291,18 +291,31 @@ CMakeFiles/PDNet_checker.dir/BA/buchi.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PDNet_checker.dir/BA/buchi.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lewis/Documents/noBA/PDNet_checker/BA/buchi.cpp -o CMakeFiles/PDNet_checker.dir/BA/buchi.cpp.s
 
-CMakeFiles/PDNet_checker.dir/LTL2PT.cpp.o: CMakeFiles/PDNet_checker.dir/flags.make
-CMakeFiles/PDNet_checker.dir/LTL2PT.cpp.o: ../LTL2PT.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/PDNet_checker.dir/LTL2PT.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PDNet_checker.dir/LTL2PT.cpp.o -c /home/lewis/Documents/noBA/PDNet_checker/LTL2PT.cpp
+CMakeFiles/PDNet_checker.dir/criteria.cpp.o: CMakeFiles/PDNet_checker.dir/flags.make
+CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../criteria.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/PDNet_checker.dir/criteria.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PDNet_checker.dir/criteria.cpp.o -c /home/lewis/Documents/noBA/PDNet_checker/criteria.cpp
 
-CMakeFiles/PDNet_checker.dir/LTL2PT.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/PDNet_checker.dir/LTL2PT.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lewis/Documents/noBA/PDNet_checker/LTL2PT.cpp > CMakeFiles/PDNet_checker.dir/LTL2PT.cpp.i
+CMakeFiles/PDNet_checker.dir/criteria.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/PDNet_checker.dir/criteria.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lewis/Documents/noBA/PDNet_checker/criteria.cpp > CMakeFiles/PDNet_checker.dir/criteria.cpp.i
 
-CMakeFiles/PDNet_checker.dir/LTL2PT.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PDNet_checker.dir/LTL2PT.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lewis/Documents/noBA/PDNet_checker/LTL2PT.cpp -o CMakeFiles/PDNet_checker.dir/LTL2PT.cpp.s
+CMakeFiles/PDNet_checker.dir/criteria.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PDNet_checker.dir/criteria.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lewis/Documents/noBA/PDNet_checker/criteria.cpp -o CMakeFiles/PDNet_checker.dir/criteria.cpp.s
+
+CMakeFiles/PDNet_checker.dir/v_table.cpp.o: CMakeFiles/PDNet_checker.dir/flags.make
+CMakeFiles/PDNet_checker.dir/v_table.cpp.o: ../v_table.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object CMakeFiles/PDNet_checker.dir/v_table.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PDNet_checker.dir/v_table.cpp.o -c /home/lewis/Documents/noBA/PDNet_checker/v_table.cpp
+
+CMakeFiles/PDNet_checker.dir/v_table.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/PDNet_checker.dir/v_table.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lewis/Documents/noBA/PDNet_checker/v_table.cpp > CMakeFiles/PDNet_checker.dir/v_table.cpp.i
+
+CMakeFiles/PDNet_checker.dir/v_table.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PDNet_checker.dir/v_table.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lewis/Documents/noBA/PDNet_checker/v_table.cpp -o CMakeFiles/PDNet_checker.dir/v_table.cpp.s
 
 # Object files for target PDNet_checker
 PDNet_checker_OBJECTS = \
@@ -324,7 +337,8 @@ PDNet_checker_OBJECTS = \
 "CMakeFiles/PDNet_checker.dir/BA/Syntax_Tree.cpp.o" \
 "CMakeFiles/PDNet_checker.dir/BA/VWAA.cpp.o" \
 "CMakeFiles/PDNet_checker.dir/BA/buchi.cpp.o" \
-"CMakeFiles/PDNet_checker.dir/LTL2PT.cpp.o"
+"CMakeFiles/PDNet_checker.dir/criteria.cpp.o" \
+"CMakeFiles/PDNet_checker.dir/v_table.cpp.o"
 
 # External object files for target PDNet_checker
 PDNet_checker_EXTERNAL_OBJECTS =
@@ -347,10 +361,11 @@ PDNet_checker: CMakeFiles/PDNet_checker.dir/BA/tinyxmlparser.cpp.o
 PDNet_checker: CMakeFiles/PDNet_checker.dir/BA/Syntax_Tree.cpp.o
 PDNet_checker: CMakeFiles/PDNet_checker.dir/BA/VWAA.cpp.o
 PDNet_checker: CMakeFiles/PDNet_checker.dir/BA/buchi.cpp.o
-PDNet_checker: CMakeFiles/PDNet_checker.dir/LTL2PT.cpp.o
+PDNet_checker: CMakeFiles/PDNet_checker.dir/criteria.cpp.o
+PDNet_checker: CMakeFiles/PDNet_checker.dir/v_table.cpp.o
 PDNet_checker: CMakeFiles/PDNet_checker.dir/build.make
 PDNet_checker: CMakeFiles/PDNet_checker.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Linking CXX executable PDNet_checker"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Linking CXX executable PDNet_checker"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/PDNet_checker.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

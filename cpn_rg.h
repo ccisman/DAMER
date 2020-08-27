@@ -6,7 +6,7 @@
 #define PDNET_CHECKER_CPN_RG_H
 
 #include "cpn.h"
-#define CPNRGTABLE_SIZE sizeof(Integer_t)
+#define CPNRGTABLE_SIZE 10000
 class Marking;
 class Binding;
 void Marking_after_fire(Marking &marking,CTransition *transition,vector<Binding *>bindings,CPN *cpn);
@@ -73,5 +73,6 @@ public:
     void GENERATE(CPN *cpn);
     void print_RG(string filename,CPN *cpn);
     RG(){node_num=0;}
+    ~RG(){if(init_node)delete init_node;if(rgnodetable)delete rgnodetable;}
 };
 #endif //PDNET_CHECKER_CPN_RG_H

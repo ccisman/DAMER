@@ -39,10 +39,6 @@ CMakeFiles/PDNet_checker.dir/BA/tinyxmlparser.cpp.o: ../BA/tinystr.h
 CMakeFiles/PDNet_checker.dir/BA/tinyxmlparser.cpp.o: ../BA/tinyxml.h
 CMakeFiles/PDNet_checker.dir/BA/tinyxmlparser.cpp.o: ../BA/tinyxmlparser.cpp
 
-CMakeFiles/PDNet_checker.dir/LTL2PT.cpp.o: ../BA/tinystr.h
-CMakeFiles/PDNet_checker.dir/LTL2PT.cpp.o: ../BA/tinyxml.h
-CMakeFiles/PDNet_checker.dir/LTL2PT.cpp.o: ../LTL2PT.cpp
-
 CMakeFiles/PDNet_checker.dir/base.cpp.o: ../base.cpp
 
 CMakeFiles/PDNet_checker.dir/condition_tree.cpp.o: ../AST.h
@@ -65,6 +61,21 @@ CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o: ../cpn.h
 CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o: ../cpn_rg.cpp
 CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o: ../cpn_rg.h
 CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o: ../y.tab.h
+
+CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../AST.h
+CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../BA/Syntax_Tree.h
+CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../BA/VWAA.h
+CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../BA/buchi.h
+CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../BA/set.h
+CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../BA/tinystr.h
+CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../BA/tinyxml.h
+CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../base.h
+CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../condition_tree.h
+CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../cpn.h
+CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../cpn_rg.h
+CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../criteria.cpp
+CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../product.h
+CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../y.tab.h
 
 CMakeFiles/PDNet_checker.dir/lex.y.cpp.o: ../AST.h
 CMakeFiles/PDNet_checker.dir/lex.y.cpp.o: ../lex.y.cpp
@@ -111,6 +122,9 @@ CMakeFiles/PDNet_checker.dir/slice.cpp.o: ../cpn.h
 CMakeFiles/PDNet_checker.dir/slice.cpp.o: ../slice.cpp
 CMakeFiles/PDNet_checker.dir/slice.cpp.o: ../v_table.h
 CMakeFiles/PDNet_checker.dir/slice.cpp.o: ../y.tab.h
+
+CMakeFiles/PDNet_checker.dir/v_table.cpp.o: ../v_table.cpp
+CMakeFiles/PDNet_checker.dir/v_table.cpp.o: ../v_table.h
 
 CMakeFiles/PDNet_checker.dir/y.tab.cpp.o: ../AST.h
 CMakeFiles/PDNet_checker.dir/y.tab.cpp.o: ../y.tab.cpp

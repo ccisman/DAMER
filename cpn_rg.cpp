@@ -136,6 +136,8 @@ bool is_Fireable(CTransition *transition,CPN *cpn,vector<Binding *>&bindings,con
 
 void RG_NODE::get_FireTranQ(CPN *cpn) {
 
+    if(tranQ_obtained)
+        return;
     tranQ_obtained = true;
     for(int i=0;i<cpn->transitioncount;i++)
     {
@@ -191,10 +193,11 @@ void RG::init(CPN *cpn) {
         cout<<"can't find main place"<<endl;
         exit(-1);
     }
-    Tokens *token = new Tokens;
-    token->tokencount = 1;
-    cpn->place[iter2->second].initMarking.insert(token);
-
+    if(cpn->place[iter2->second].initMarking.tokenQ->next == NULL) {
+        Tokens *token = new Tokens;
+        token->tokencount = 1;
+        cpn->place[iter2->second].initMarking.insert(token);
+    }
     init_node = new RG_NODE;
     init_node->marking.init_marking(cpn->place,cpn->placecount);
     rgnodetable = new RG_NODE*[CPNRGTABLE_SIZE]();
@@ -279,7 +282,6 @@ void RG::createNode(RG_NODE *node,CPN *cpn) {
         {
             cout<<"count = "<<count++<<endl;
             addRGNode(newnode);
-//            if(count<=5000)
             createNode(newnode, cpn);
         }
 
@@ -316,6 +318,7 @@ void RG::addRGNode(RG_NODE *node) {
     rgnodevec.push_back(node);
     node->num = node_num;
     node_num++;
+//    cout<<node_num<<endl;
 }
 
 void RG::GENERATE(CPN *cpn) {

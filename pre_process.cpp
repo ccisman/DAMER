@@ -87,12 +87,12 @@ bool trans_plusplus(string s, string &newtext)//true代表搜索到，false代�
         return false;
 
     newtext = "";
-    if (isalpha(s[position - 1]) || s[position - 1] == '_')
+    if (isalpha(s[position + 2]) || s[position + 2] == '_')
     {
-        following_plus = true;
-        for (unsigned int i = position - 1; i > 0; i--)
+        following_plus = false;
+        for (unsigned int i = position + 2; i < s.length(); i++)
         {
-            if (s[i] == '_' || isalpha(s[i]))
+            if (s[i] == '_' || isalpha(s[i])||isdigit(s[i]))
                 text = s[i] + text;
             else
                 break;
@@ -101,10 +101,10 @@ bool trans_plusplus(string s, string &newtext)//true代表搜索到，false代�
     }
     else
     {
-        following_plus = false;
-        for (unsigned int i = position + 2; i < s.length(); i++)
+        following_plus = true;
+        for (unsigned int i = position - 1; i > 0; i--)
         {
-            if (s[i] == '_' || isalpha(s[i]))
+            if (s[i] == '_' || isalpha(s[i]) || isdigit(s[i]))
                 text = s[i] + text;
             else
                 break;
@@ -218,7 +218,7 @@ bool trans_subsub(string s, string &newtext)//true代表搜索到，false代表�
     return true;
 }
 
-void trans_subsub(string &s)
+void trans_subsub_all(string &s)
 {
     string newtext;
     while (1)
@@ -239,7 +239,7 @@ bool trans_assign(string &s)
     for (unsigned int i = 0; i < sign_list.size(); i++)
     {
         string sign = sign_list[i];
-        string p = "([a-zA-Z_]+ *)\\" + sign + "=";
+        string p = "([a-zA-Z_0-9]+ *)\\" + sign + "=";
         regex pattern(p);
         smatch result;
 
@@ -253,10 +253,21 @@ bool trans_assign(string &s)
             res1 = result[1];
         }
         else
-            return false;
+            continue;
         newtext = "=" + res1 + sign;
         text.replace(text.find(sign + "="), 2, newtext);
         s.replace(s.find(result[0]), result[0].length(), text);
+        return true;
+    }
+    return false;
+}
+
+void trans_assign_all(string &s)
+{
+    while (1)
+    {
+        if (!trans_assign(s))
+            break;
     }
 }
 
@@ -392,7 +403,11 @@ void trans_some_function(string &s)
         s = "int nondet_num_double=" + init_num + ";\n" + s;
 
     string pthread_library = "#include <pthread.h>";
+    string stdio_library = "#include <stdio.h>";
+    string assert_library = "#include <assert.h>";
     string_replace(s,  pthread_library, "");
+    string_replace(s,  stdio_library, "");
+    string_replace(s,  assert_library, "");
 
     string atomic_begin = "extern void __VERIFIER_atomic_begin();";
     string atomic_begin_rp = "void __VERIFIER_atomic_begin(){}";
@@ -616,9 +631,9 @@ void pre_process(string &s)
     trans_define_all(s);
     for_to_while_all(s);
     trans_plusplus_all(s);
-    trans_subsub(s);
+    trans_subsub_all(s);
     trans_some_function(s);
-    trans_assign(s);
+    trans_assign_all(s);
     trans_switch_all(s);
     trans_dynamic_init(s);
     //cout << s << endl;

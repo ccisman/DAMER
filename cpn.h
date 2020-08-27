@@ -465,6 +465,7 @@ public:
     map<string,VARID> mapVariable;
     map<string,string> mapFunction;
     map<string,string> mapPthread;
+    map<string,string> mapJoin;
 
     //***PDNet added start***/
     void CTN_cal(condition_tree_node *CTN);
@@ -506,7 +507,7 @@ public:
     ~CPN();
     void print_CPN(string filename);
 
-    void copy_childtree(CPN *cpn,vector<string> places,vector<string> transitions);
+    void copy_childNet(CPN *cpn,vector<string> places,vector<string> transitions);
     void create_PDNet(gtree *tree);
 private:
 };

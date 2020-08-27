@@ -339,33 +339,6 @@ BA/tinyxmlparser.cpp.s:
 	$(MAKE) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/BA/tinyxmlparser.cpp.s
 .PHONY : BA/tinyxmlparser.cpp.s
 
-LTL2PT.o: LTL2PT.cpp.o
-
-.PHONY : LTL2PT.o
-
-# target to build an object file
-LTL2PT.cpp.o:
-	$(MAKE) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/LTL2PT.cpp.o
-.PHONY : LTL2PT.cpp.o
-
-LTL2PT.i: LTL2PT.cpp.i
-
-.PHONY : LTL2PT.i
-
-# target to preprocess a source file
-LTL2PT.cpp.i:
-	$(MAKE) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/LTL2PT.cpp.i
-.PHONY : LTL2PT.cpp.i
-
-LTL2PT.s: LTL2PT.cpp.s
-
-.PHONY : LTL2PT.s
-
-# target to generate assembly for a file
-LTL2PT.cpp.s:
-	$(MAKE) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/LTL2PT.cpp.s
-.PHONY : LTL2PT.cpp.s
-
 base.o: base.cpp.o
 
 .PHONY : base.o
@@ -473,6 +446,33 @@ cpn_rg.s: cpn_rg.cpp.s
 cpn_rg.cpp.s:
 	$(MAKE) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.s
 .PHONY : cpn_rg.cpp.s
+
+criteria.o: criteria.cpp.o
+
+.PHONY : criteria.o
+
+# target to build an object file
+criteria.cpp.o:
+	$(MAKE) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/criteria.cpp.o
+.PHONY : criteria.cpp.o
+
+criteria.i: criteria.cpp.i
+
+.PHONY : criteria.i
+
+# target to preprocess a source file
+criteria.cpp.i:
+	$(MAKE) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/criteria.cpp.i
+.PHONY : criteria.cpp.i
+
+criteria.s: criteria.cpp.s
+
+.PHONY : criteria.s
+
+# target to generate assembly for a file
+criteria.cpp.s:
+	$(MAKE) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/criteria.cpp.s
+.PHONY : criteria.cpp.s
 
 lex.y.o: lex.y.cpp.o
 
@@ -609,6 +609,33 @@ slice.cpp.s:
 	$(MAKE) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/slice.cpp.s
 .PHONY : slice.cpp.s
 
+v_table.o: v_table.cpp.o
+
+.PHONY : v_table.o
+
+# target to build an object file
+v_table.cpp.o:
+	$(MAKE) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/v_table.cpp.o
+.PHONY : v_table.cpp.o
+
+v_table.i: v_table.cpp.i
+
+.PHONY : v_table.i
+
+# target to preprocess a source file
+v_table.cpp.i:
+	$(MAKE) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/v_table.cpp.i
+.PHONY : v_table.cpp.i
+
+v_table.s: v_table.cpp.s
+
+.PHONY : v_table.s
+
+# target to generate assembly for a file
+v_table.cpp.s:
+	$(MAKE) -f CMakeFiles/PDNet_checker.dir/build.make CMakeFiles/PDNet_checker.dir/v_table.cpp.s
+.PHONY : v_table.cpp.s
+
 y.tab.o: y.tab.cpp.o
 
 .PHONY : y.tab.o
@@ -669,9 +696,6 @@ help:
 	@echo "... BA/tinyxmlparser.o"
 	@echo "... BA/tinyxmlparser.i"
 	@echo "... BA/tinyxmlparser.s"
-	@echo "... LTL2PT.o"
-	@echo "... LTL2PT.i"
-	@echo "... LTL2PT.s"
 	@echo "... base.o"
 	@echo "... base.i"
 	@echo "... base.s"
@@ -684,6 +708,9 @@ help:
 	@echo "... cpn_rg.o"
 	@echo "... cpn_rg.i"
 	@echo "... cpn_rg.s"
+	@echo "... criteria.o"
+	@echo "... criteria.i"
+	@echo "... criteria.s"
 	@echo "... lex.y.o"
 	@echo "... lex.y.i"
 	@echo "... lex.y.s"
@@ -699,6 +726,9 @@ help:
 	@echo "... slice.o"
 	@echo "... slice.i"
 	@echo "... slice.s"
+	@echo "... v_table.o"
+	@echo "... v_table.i"
+	@echo "... v_table.s"
 	@echo "... y.tab.o"
 	@echo "... y.tab.i"
 	@echo "... y.tab.s"

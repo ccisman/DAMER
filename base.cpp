@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
+using namespace std;
 
 int string_replace(std::string &s1, const std::string &s2, const std::string &s3)//replace s2 in s1 to s3
 {
@@ -81,8 +82,8 @@ void makeGraph(std::string inputname, std::string outputname) //generate .png
     system(cmd);
 }
 
-template <class T>
-void Bubble_sort(std::vector<T> &change_P)
+//template <class T>
+void Bubble_sort(vector<string> &change_P)
 {
     for (unsigned int i = 0; i < change_P.size(); i++)
     {
@@ -92,7 +93,7 @@ void Bubble_sort(std::vector<T> &change_P)
             int num2 = atoi(change_P[j + 1].substr(1).c_str());
             if (num1 > num2)
             {
-                T temp = change_P[j];
+                string temp = change_P[j];
                 change_P[j] = change_P[j + 1];
                 change_P[j + 1] = temp;
             }

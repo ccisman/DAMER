@@ -77,8 +77,6 @@ tinystr.h
 /home/lewis/Documents/noBA/PDNet_checker/base.h
 string
 -
-fstream
--
 
 /home/lewis/Documents/noBA/PDNet_checker/condition_tree.h
 string
@@ -131,10 +129,12 @@ product.h
 /home/lewis/Documents/noBA/PDNet_checker/product.h
 string.h
 -
-
-/home/lewis/Documents/noBA/PDNet_checker/product.cpp
-product.h
-/home/lewis/Documents/noBA/PDNet_checker/product.h
+time.h
+-
+sys/types.h
+-
+dirent.h
+-
 
 /home/lewis/Documents/noBA/PDNet_checker/product.h
 cpn_rg.h
@@ -150,6 +150,8 @@ string
 map
 -
 iostream
+-
+vector
 -
 
 /home/lewis/Documents/noBA/PDNet_checker/y.tab.h

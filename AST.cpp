@@ -425,7 +425,7 @@ gtree *&create_tree(string filename, bool pre_process_flag)
         }
     }
     yyparse();
-    printtree(head);
+    //printtree(head);
     //if (flag == true)
     TraverseTree2(head);
     TraverseTree3(head);

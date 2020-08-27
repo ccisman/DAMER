@@ -129,9 +129,6 @@
 		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/BA/tinyxmlparser.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/LTL2PT.cpp">
-			<Option target="PDNet_checker"/>
-		</Unit>
 		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/base.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
@@ -156,6 +153,9 @@
 		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/cpn_rg.h">
 			<Option target="PDNet_checker"/>
 		</Unit>
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/criteria.cpp">
+			<Option target="PDNet_checker"/>
+		</Unit>
 		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/lex.y.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
@@ -172,6 +172,9 @@
 			<Option target="PDNet_checker"/>
 		</Unit>
 		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/slice.cpp">
+			<Option target="PDNet_checker"/>
+		</Unit>
+		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/v_table.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
 		<Unit filename="/home/lewis/Documents/noBA/PDNet_checker/v_table.h">

@@ -6,7 +6,7 @@ void __VERIFIER_atomic_end(){}
 void abort(){}
 void reach_error(){}
 
-double i = 3.1, j = 6.1;
+int i = 3, j = 6;
 
 
 void *t1(void *arg) {
@@ -43,11 +43,11 @@ int main(int argc, char **argv) {
   pthread_create(&id2, NULL, t2, NULL);
 
   __VERIFIER_atomic_begin();
-  condI = i >= (2*2+6);
+  condI = i > (2*2+6);
   __VERIFIER_atomic_end();
 
   __VERIFIER_atomic_begin();
-  condJ = j >= (2*2+6);
+  condJ = j > (2*2+6);
   __VERIFIER_atomic_end();
 
   if (condI || condJ) {
