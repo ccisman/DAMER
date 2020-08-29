@@ -341,10 +341,7 @@ void trans_some_function(string &s)
 		}\n";
 
     string newerr =
-            "void __VERIFIER_error()\n\
-		{\n\
-			return;\n\
-		}\n";
+            "void __VERIFIER_error(){}\n";
     string newass =
             "void __VERIFIER_assert(int cond)\n\
 		{\n\
@@ -413,11 +410,16 @@ void trans_some_function(string &s)
     string atomic_begin_rp = "void __VERIFIER_atomic_begin(){}";
     string atomic_end = "extern void __VERIFIER_atomic_end();";
     string atomic_end_rp = "void __VERIFIER_atomic_end(){}";
-    string abort = "extern void abort(void); ";
+    string abort = "extern void abort(void);";
     string abort_rp = "void abort(){}";
-    string_replace(s,  atomic_begin, atomic_begin_rp);
-    string_replace(s,  atomic_end, atomic_end_rp);
+    string_replace(s,  atomic_begin, "");
+    string_replace(s,  atomic_end, "");
     string_replace(s,  abort, abort_rp);
+
+    string atomic_begin_call = "__VERIFIER_atomic_begin();";
+    string atomic_end_call = "__VERIFIER_atomic_end();";
+    string_replace(s,  atomic_begin_call, "");
+    string_replace(s,  atomic_end_call, "");
 
 }
 

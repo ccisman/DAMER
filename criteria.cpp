@@ -13,36 +13,52 @@ using namespace std;
 extern char LTLFfile[] ;
 extern char LTLVfile[] ;
 extern char LTLCfile[] ;
-void GetLTLV(TiXmlElement *p, vector<string> &criteria)
+void GetLTL(ofstream &out,TiXmlElement *p, vector<string> &P,vector<string> &T)
 {
     string value = p->Value();
     if (value == "all-paths")
     {
-        GetLTLV(p->FirstChildElement(), criteria);
+        GetLTL(out,p->FirstChildElement(), P,T);
     }
     else if (value == "globally")
     {
-        //		criteria << "[](";
-        GetLTLV(p->FirstChildElement(), criteria);
-        //		criteria << ")";
+        out << "G(";
+        GetLTL(out,p->FirstChildElement(), P,T);
+        out << ")";
     }
     else if (value == "finally")
     {
-        //		criteria << "<>(";
-        GetLTLV(p->FirstChildElement(), criteria);
-        //		criteria << ")";
+        out << "F(";
+        GetLTL(out,p->FirstChildElement(), P,T);
+        out << ")";
     }
     else if (value == "next")
     {
-        //		criteria << "X(";
-        GetLTLV(p->FirstChildElement(), criteria);
-        //		criteria << ")";
+        out << "X(";
+        GetLTL(out,p->FirstChildElement(), P,T);
+        out << ")";
     }
-    else if (value == "negation" || value == "conjunction" || value == "disjunction")
+    else if (value == "negation")
     {
-//        criteria << "[](";
-        GetLTLV(p->FirstChildElement(), criteria);
-//        criteria << ")";
+        out << "!(";
+        GetLTL(out,p->FirstChildElement(), P,T);
+        out << ")";
+    }
+    else if(value == "conjunction" || value == "disjunction")
+    {
+        TiXmlElement *m, *n;
+        m = p->FirstChildElement();
+        GetLTL(out,m, P, T);
+        m = m->NextSiblingElement();
+        while(m) {
+            if(value == "conjunction")
+                out << "&&";
+            else
+                out << "||";
+            GetLTL(out,m, P, T);
+
+            m = m->NextSiblingElement();
+        }
     }
     else if (value == "until")
     {
@@ -61,133 +77,82 @@ void GetLTLV(TiXmlElement *p, vector<string> &criteria)
             cerr << "Error in XML file! The element until\'s second child is not reach!" << endl;
             exit(-1);
         }
-        //		criteria << "(";
-        GetLTLV(m->FirstChildElement(), criteria);
-        //		criteria << ")U(";
-        GetLTLV(n->FirstChildElement(), criteria);
-        //		criteria << ")";
+        out << "(";
+        GetLTL(out,m->FirstChildElement(), P,T);
+        out << ")U(";
+        GetLTL(out,n->FirstChildElement(), P,T);
+        out << ")";
     }
-    else if (value == "less" || value == "equality" || "lesseq")
+    else if (value == "less" || value == "equality" || value == "lesseq")
     {
         TiXmlElement *m, *n;
         m = p->FirstChildElement();
         n = m->NextSiblingElement();
         string mValue = m->Value();
         string nValue = n->Value();
-        //		criteria << "{";
+        out << "{";
         if (mValue == "token-value")
         {
-            //			criteria << "token-count(";
+            out << "token-value(";
             TiXmlElement *left = m->FirstChildElement();
             while (left != NULL)
             {
 
-                //				criteria << left->GetText() << ",";
+                out << left->GetText() ;
                 string temp = left->GetText();
-                criteria.push_back(temp);
+                P.push_back(temp);
                 if (temp == "")
                     break;
                 left = left->NextSiblingElement();
             }
-            //			criteria << ")";
+            out << ")";
         }
         else if (mValue == "int-constant"
         || mValue == "real-constant"
         || mValue == "string-constant")
         {
-            //			criteria << m->GetText();
+            out << m->GetText();
         }
         else {
             cerr << "Error in XML file about the element integer-le!" << endl;
             exit(-1);
         }
-        //		criteria << "<=";
+        if(value == "lesseq")
+            out << "<=";
+        else if(value == "less")
+            out << "<";
+        if(value == "equality")
+            out << "==";
         if (nValue == "token-value")
         {
-            //			criteria << "token-count(";
+            out << "token-value(";
             TiXmlElement *right = n->FirstChildElement();
             while (right != NULL)
             {
-                //				criteria << right->GetText() << ",";
+                out << right->GetText() ;
                 string temp = right->GetText();
-                criteria.push_back(temp);
+                P.push_back(temp);
                 right = right->NextSiblingElement();
             }
-            //			criteria << ")";
+            out << ")";
         }
         else if (nValue == "int-constant"
                  || nValue == "real-constant"
                  || nValue == "string-constant")
         {
-            //			criteria << n->GetText();
+            out << n->GetText();
         }
         else {
             cerr << "Error in XML file about the element integer-le!" << endl;
             exit(-1);
         }
-        //		criteria << "}";
+        out << "}";
     }
-}
-
-void GetLTLf(TiXmlElement *p, vector<string> &criteria)
-{
-    string Value = p->Value();
-    if (Value == "all-paths")
-    {
-        GetLTLf(p->FirstChildElement(), criteria);
-    }
-    else if (Value == "next")
-    {
-//        criteria << "X(";
-        GetLTLf(p->FirstChildElement(), criteria);
-//        criteria << ")";
-    }
-    else if (Value == "globally")
-    {
-//        criteria << "[](";
-        GetLTLf(p->FirstChildElement(), criteria);
-//        criteria << ")";
-    }
-    else if (Value == "negation" || Value == "conjunction" || Value == "disjunction")
-    {
-//        criteria << "[](";
-        GetLTLf(p->FirstChildElement(), criteria);
-//        criteria << ")";
-    }
-    else if (Value == "until")
-    {
-        TiXmlElement *m, *n;
-        m = p->FirstChildElement();
-        n = m->NextSiblingElement();
-        string mValue = m->Value();
-        string nValue = n->Value();
-        if (mValue != "before")
-        {
-            cerr << "Error in XML file! The element until\'s first child is not before!" << endl;
-            exit(-1);
-        }
-        if (nValue != "reach")
-        {
-            cerr << "Error in XML file! The element until\'s second child is not reach!" << endl;
-            exit(-1);
-        }
-//        criteria << "(";
-        GetLTLf(m->FirstChildElement(), criteria);
-//        criteria << ")U(";
-        GetLTLf(n->FirstChildElement(), criteria);
-//        criteria << ")";
-    }
-    else if (Value == "finally")
-    {
-//        criteria << "<>(";
-        GetLTLf(p->FirstChildElement(), criteria);
-//        criteria << ")";
-    }
-    else if (Value == "is-fireable")
+    else if (value == "is-fireable")
     {
         TiXmlElement *m;
         m = p->FirstChildElement();
-//        criteria << "{";
+        out << "is-fireable{";
         while (m != NULL)
         {
             string Value = m->Value();
@@ -195,8 +160,8 @@ void GetLTLf(TiXmlElement *p, vector<string> &criteria)
             if (Value == "transition")
             {
                 string temp = m->GetText();
-                criteria.push_back(temp);
-//                criteria << m->GetText() << ",";
+                T.push_back(temp);
+                out << m->GetText() << ",";
             }
             else
             {
@@ -205,23 +170,28 @@ void GetLTLf(TiXmlElement *p, vector<string> &criteria)
             }
             m = m->NextSiblingElement();
         }
-//        criteria << "}";
+        out << "}";
     }
 }
 
 void extract_criteria(int number,LTLCategory type,CPN *cpn,vector<string> &criteria) {
 
-    //ofstream criteria("FormulaC.txt", ios::out);
+
     TiXmlDocument *doc;
-    if(type == LTLC)
-        doc = new TiXmlDocument(LTLCfile);
-    else if(type == LTLF)
-        doc = new TiXmlDocument(LTLFfile);
-    else if(type == LTLV)
-        doc = new TiXmlDocument(LTLVfile);
+    string file,out_LTL;
+    if (type == LTLC)
+        file = LTLCfile;
+    else if (type == LTLF)
+        file = LTLFfile;
+    else if (type == LTLV)
+        file = LTLVfile;
+    doc = new TiXmlDocument(file.c_str());
     if (!doc->LoadFile()) {
         cerr << doc->ErrorDesc() << endl;
     }
+    out_LTL = file.replace(file.length()-2,2,".txt");
+    ofstream out(file.c_str(), ios::out | ios::app);
+
     TiXmlElement *root = doc->RootElement();
     if (root == NULL) {
         cerr << "Failed to load file: no root element!" << endl;
@@ -237,70 +207,47 @@ void extract_criteria(int number,LTLCategory type,CPN *cpn,vector<string> &crite
 
     TiXmlElement *formula = p->FirstChildElement("formula");
     vector<string> P, T;
-    if (type == LTLV) {
-        GetLTLV(formula->FirstChildElement(), P);
-        for (unsigned int i = 0; i < P.size(); i++) {
-            auto iter = cpn->mapPlace.find(P[i]);
-            CPlace *pp = &cpn->place[iter->second];
-            if (!pp->control_P) {
-                CTransition *tt;
-                for (unsigned int j = 0; j < pp->producer.size(); j++) {
-                    tt = &cpn->transition[pp->producer[j].idx];
-                    for (unsigned int k = 0; k < tt->producer.size(); k++) {
-                        if (tt->producer[k].arcType == control
-                            && cpn->place[tt->producer[k].idx].expression != executed_P_name)
-                            if(!exist_in(criteria,cpn->place[tt->producer[k].idx].id))
-                                criteria.push_back(cpn->place[tt->producer[k].idx].id);
-                    }
+
+
+    GetLTL(out,formula->FirstChildElement(), P, T);
+    for (unsigned int i = 0; i < P.size(); i++) {
+        auto iter = cpn->mapPlace.find(P[i]);
+        CPlace *pp = &cpn->place[iter->second];
+        if (!pp->control_P) {
+            CTransition *tt;
+            for (unsigned int j = 0; j < pp->producer.size(); j++) {
+                tt = &cpn->transition[pp->producer[j].idx];
+                for (unsigned int k = 0; k < tt->producer.size(); k++) {
+                    if (tt->producer[k].arcType == control
+                        && cpn->place[tt->producer[k].idx].expression != executed_P_name)
+                        if (!exist_in(criteria, cpn->place[tt->producer[k].idx].id))
+                            criteria.push_back(cpn->place[tt->producer[k].idx].id);
                 }
-                for (unsigned int j = 0; j < pp->consumer.size(); j++) {
-                    tt = &cpn->transition[pp->consumer[j].idx];
-                    for (unsigned int k = 0; k < tt->producer.size(); k++) {
-                        if (tt->producer[k].arcType == control
-                            && cpn->place[tt->producer[k].idx].expression != executed_P_name)
-                            if(!exist_in(criteria,cpn->place[tt->producer[k].idx].id))
-                                criteria.push_back(cpn->place[tt->producer[k].idx].id);
-                    }
+            }
+            for (unsigned int j = 0; j < pp->consumer.size(); j++) {
+                tt = &cpn->transition[pp->consumer[j].idx];
+                for (unsigned int k = 0; k < tt->producer.size(); k++) {
+                    if (tt->producer[k].arcType == control
+                        && cpn->place[tt->producer[k].idx].expression != executed_P_name)
+                        if (!exist_in(criteria, cpn->place[tt->producer[k].idx].id))
+                            criteria.push_back(cpn->place[tt->producer[k].idx].id);
                 }
-            } else {
-                cout << "nonsense token-value for control place" << endl;
-                exit(-1);
             }
-        }
-    } else if (type == LTLF) {
-        GetLTLf(formula->FirstChildElement(), T);
-        for(unsigned int i=0;i<T.size();i++)
-        {
-            auto iter = cpn->mapTransition.find(T[i]);
-            CTransition *tt = &cpn->transition[iter->second];
-            for(unsigned int j=0;j<tt->producer.size();j++)
-            {
-                if (tt->producer[j].arcType == control
-                    && cpn->place[tt->producer[j].idx].expression != executed_P_name)
-                    if(!exist_in(criteria,cpn->place[tt->producer[j].idx].id))
-                        criteria.push_back(cpn->place[tt->producer[j].idx].id);
-            }
+        } else {
+            cout << "nonsense token-value for control place" << endl;
+            exit(-1);
         }
     }
-    else if (type == LTLC) {
-        cout << "LTLC doesn't means anything!" << endl;
-        exit(-1);
+    for (unsigned int i = 0; i < T.size(); i++) {
+        auto iter = cpn->mapTransition.find(T[i]);
+        CTransition *tt = &cpn->transition[iter->second];
+        for (unsigned int j = 0; j < tt->producer.size(); j++) {
+            if (tt->producer[j].arcType == control
+                && cpn->place[tt->producer[j].idx].expression != executed_P_name)
+                if (!exist_in(criteria, cpn->place[tt->producer[j].idx].id))
+                    criteria.push_back(cpn->place[tt->producer[j].idx].id);
+        }
     }
-
-}
-
-void construct_LTLF(char *filename)
-{
-    TiXmlDocument *doc = new TiXmlDocument(filename);
-    if (!doc->LoadFile()) {
-        cerr << doc->ErrorDesc() << endl;
-    }
-    TiXmlElement *root = doc->RootElement();
-    if (root == NULL) {
-        cerr << "Failed to load file: no root element!" << endl;
-        doc->Clear();
-    }
-
-    TiXmlElement *p = root->FirstChildElement();
-
+    out<<endl;
+    out.close();
 }

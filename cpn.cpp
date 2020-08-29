@@ -30,9 +30,24 @@ string arr_suffix = "_arr",begin_suffix = " begin"
         call_suffix = "()",para_suffix = "_para",
         call_statement_suffix = "_call",join_suffix = " join";
 string executed_P_name = "executed_P";
+vector<string> pthread_type = {"pthread_t","pthread_mutex_t","pthread_cond_t"};
+vector<string> pthread_func_type = {"pthread_create","pthread_join","pthread_exit",
+                                    "pthread_mutex_init","pthread_mutex_lock","pthread_mutex_unlock",
+                                    "pthread_cond_init","pthread_cond_signal","pthread_cond_wait"};
 
 extern int string_replace(std::string &s1, const std::string &s2, const std::string &s3);
 vector<string> extract_paras(gtree *p);
+void init_pthread_type()
+{
+
+    aka temp;
+    for(unsigned int i=0;i<pthread_type.size();i++) {
+        temp.origin_name = "";
+        temp.aka_name = pthread_type[i];
+        temp.level = 0;
+        aka_type_array.push_back(temp);
+    }
+}
 string gen_P()
 {
     string temp = "";

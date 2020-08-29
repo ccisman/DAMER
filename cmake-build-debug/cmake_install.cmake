@@ -1,4 +1,4 @@
-# Install script for directory: /home/lewis/Documents/noBA/PDNet_checker
+# Install script for directory: /home/lewis/Documents/PDNet/PDNet_checker
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/lewis/Documents/noBA/PDNet_checker/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

@@ -517,7 +517,8 @@ private:
 extern string executed_P_name;
 extern string arr_suffix;
 extern map<string,type> map_build_in_type;
-extern void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P, vector<string>&final_T);
-extern void post_process(CPN *cpn,CPN *cpn_slice,vector<string> transitions);
-
+extern vector<string> pthread_type,pthread_func_type;
+void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P, vector<string>&final_T);
+void post_process(CPN *cpn,CPN *cpn_slice,vector<string> transitions);
+void init_pthread_type();
 #endif //PDNET_CHECKER_CPN_H

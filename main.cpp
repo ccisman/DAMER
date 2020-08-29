@@ -11,31 +11,13 @@
 
 extern void Bubble_sort(vector<string> &change_P);
 
-char LTLFfile[50] = "LTLFireability.xml";
-char LTLVfile[50] = "LTLVariablity.xml";
-char LTLCfile[50] = "LTLCardinality.xml";
+char LTLFfile[50],LTLVfile[50],LTLCfile[50];
 
-string origin_dirname = "../test/";
+string origin_dirname = "../test_LTLV/";
 string newfile_dirname = "../newfile/";
-vector<string> pthread_type = {"pthread_t","pthread_mutex_t","pthread_cond_t"};
-vector<string> pthread_func_type = {"pthread_create","pthread_join","pthread_exit",
-                                    "pthread_mutex_init","pthread_mutex_lock","pthread_mutex_unlock",
-                                    "pthread_cond_init","pthread_cond_signal","pthread_cond_wait"};
-
 
 extern void extract_criteria(int number,LTLCategory type,CPN *cpn,vector<string> &criteria);
-void init_pthread_type()
-{
-
-    aka temp;
-    for(unsigned int i=0;i<pthread_type.size();i++) {
-        temp.origin_name = "";
-        temp.aka_name = pthread_type[i];
-        temp.level = 0;
-        aka_type_array.push_back(temp);
-    }
-}
-void CHECKLTL(CPN *cpnet, LTLCategory type,int num) {
+void CHECKLTL(CPN *cpnet, LTLCategory type,int num,int &rgnum,string &res) {
     RG *graph = new RG;
     graph->init(cpnet);
 
@@ -99,42 +81,55 @@ void CHECKLTL(CPN *cpnet, LTLCategory type,int num) {
     product->GetProduct();
     product->printresult(propertyid);
 
-    ofstream out;
-    out.open("result.txt",ios::out|ios::app);
-    if (out.fail())
-    {
-        cout << "open result failed!" << endl;
-        exit(1);
-    }
+
     cout<<"graph node num: "<<graph->node_num<<endl;
-    out<<"graph node num: "<<graph->node_num<<endl;
-    out.close();
+    rgnum = graph->node_num;
+    res = product->GetResult();
+
     delete product;
     delete graph;
 
 }
 
-void GetFileNames(string path,vector<string>& filenames)
-{
-    DIR *pDir;
-    struct dirent* ptr;
-    if(!(pDir = opendir(path.c_str()))){
-        cout<<"Folder doesn't Exist!"<<endl;
-        return;
+int fileNameFilter(const struct dirent *cur) {
+    std::string str(cur->d_name);
+    if (str.find(".c") != std::string::npos) {
+        return 1;
     }
-    while((ptr = readdir(pDir))!=0) {
-        if (strcmp(ptr->d_name, ".") != 0
-        && strcmp(ptr->d_name, "..") != 0
-        && strstr(ptr->d_name,".c")){
-            filenames.push_back(ptr->d_name);
-        }
-    }
-    closedir(pDir);
+    return 0;
 }
 
+void GetFileNames(string path,vector<string>& ret)
+{
+    struct dirent **namelist;
+    int n = scandir(path.c_str(), &namelist, fileNameFilter, alphasort);
+    if (n < 0) {
+        cout<<"There is no file!"<<endl;
+        exit(-1);
+    }
+    for (int i = 0; i < n; ++i) {
+        std::string filePath(namelist[i]->d_name);
+        ret.push_back(filePath);
+        free(namelist[i]);
+    };
+    free(namelist);
+}
+
+//****************************************************//
+//*****There is two check step in this function*******//
+//*****1.construct program's CPN and checking LTL*****//
+//*****2.slice CPN and checking LTL again*************//
+//****************************************************//
+//*****check_file：program filename*******************//
+//*****ltltype：check LTLF or LTLV（including LTLF）***//
+//*****num：checked property num in the LTLFile*******//
 void construct_and_slice(string check_file,LTLCategory ltltype,int num)
 {
     string filename;
+    int pre_P_num,pre_T_num,pre_rgnode_num,slice_P_num,slice_T_num,slice_rgnode_num;
+    clock_t pre_time,slice_time;
+    string pre_res,slice_res;
+
     switch(ltltype)
     {
         case LTLF:
@@ -158,6 +153,8 @@ void construct_and_slice(string check_file,LTLCategory ltltype,int num)
         cout << "open result failed!" << endl;
         exit(1);
     }
+    out<<endl;
+    cout<<endl;
     out<<"current file: "<<check_file<<endl;
     cout<<"current file: "<<check_file<<endl;
     out<<endl;
@@ -165,6 +162,8 @@ void construct_and_slice(string check_file,LTLCategory ltltype,int num)
 
     clock_t start,finish;
     start = clock();
+
+    //1.preprocess and build program's AST
     gtree * tree = create_tree(check_file,true);
     cut_tree(tree);
 //    intofile_tree(tree);
@@ -175,6 +174,7 @@ void construct_and_slice(string check_file,LTLCategory ltltype,int num)
     v_tables.clear();
     init_v_table();
 
+    //2.construct program's CPN
     cpnet->init();
     cpnet->initDecl();
     cpnet->getDecl(tree);
@@ -185,25 +185,37 @@ void construct_and_slice(string check_file,LTLCategory ltltype,int num)
     cout<<"placenum: "<<cpnet->placecount<<endl;
     out<<"transnum: "<<cpnet->transitioncount<<endl;
     cout<<"transnum: "<<cpnet->transitioncount<<endl;
+    pre_P_num = cpnet->placecount;
+    pre_T_num = cpnet->transitioncount;
+
 //    string filename_prefix = "1";
 //    cpnet->print_CPN(filename_prefix + ".txt");
 //    readGraph(filename_prefix + ".txt",filename_prefix + ".dot");
 //    makeGraph(filename_prefix + ".dot",filename_prefix + ".png");
-    CHECKLTL(cpnet,ltltype,num);
+
+    //3.verify CPN's properties
+    CHECKLTL(cpnet,ltltype,num,pre_rgnode_num,pre_res);
     finish = clock();
     out<<"time: "<<(finish-start)/1000000.0<<endl;
     out<<endl;
+    pre_time = (finish-start);
 
     vector<string> final_P,final_T,criteria;
+
+    //4.extract criteria from LTL file and generate “.txt” to describe formulas
     extract_criteria(num,ltltype,cpnet,criteria);
 
     start = clock();
+
+    //5.slicing CPN
     two_phrase_slicing(cpnet,criteria,final_P,final_T);
     Bubble_sort(final_T);
     Bubble_sort(final_P);
 
     CPN *cpnet_slice = new CPN;
     cpnet_slice->copy_childNet(cpnet,final_P,final_T);
+
+    //6.post_process
     post_process(cpnet,cpnet_slice,final_T);
 //    filename_prefix = "2";
 //    cpnet_slice->print_CPN(filename_prefix + ".txt");
@@ -215,53 +227,38 @@ void construct_and_slice(string check_file,LTLCategory ltltype,int num)
     cout<<"placenum: "<<cpnet_slice->placecount<<endl;
     out<<"transnum: "<<cpnet_slice->transitioncount<<endl;
     cout<<"transnum: "<<cpnet_slice->transitioncount<<endl;
-    CHECKLTL(cpnet_slice,ltltype,num);
+
+    slice_P_num = cpnet_slice->placecount;
+    slice_T_num = cpnet_slice->transitioncount;
+
+    //7.verify sliced CPN's property
+    CHECKLTL(cpnet_slice,ltltype,num,slice_rgnode_num,slice_res);
     finish = clock();
 
     out<<"time: "<<(finish-start)/1000000.0<<endl;
     out<<endl;
+
+    slice_time = (finish-start);
+
+//    out<<"& \\emph{"<<pre_res<<"} & "<<pre_P_num<<" & "<<pre_T_num<<" & "<<pre_rgnode_num<<" & "<<pre_time/1000000.0<<" & \\emph{"<<slice_res<<"} & "<<slice_P_num<<" & "<<slice_T_num<<" & "<<slice_rgnode_num<<" & "<<slice_time/1000000.0<<"\\\\ \\hline\\hline";
+//    out<<endl;
     out.close();
     release_v_table();
     delete cpnet;
 }
 
 int main() {
-    int num = 1;
-    LTLCategory ltltype = LTLF;
+    LTLCategory ltltype = LTLV;
     init_pthread_type();
 
-//    gtree * tree = create_tree("triangular-2.c",true);
-//    cut_tree(tree);
-//    intofile_tree(tree);
-//    makeGraph("tree.dot","tree.png");
-//
-//    CPN *cpnet = new CPN;
-//
-//    V_Table *table = new V_Table("global");
-//    table->fa == NULL;
-//    v_tables.push_back(table);
-//
-//    cpnet->init();
-//    cpnet->initDecl();
-//    cpnet->getDecl(tree);
-//    cpnet->create_PDNet(tree);
-//    cpnet->set_producer_consumer();
-//    string filename_prefix = "1";
-//
-//    cpnet->print_CPN(filename_prefix + ".txt");
-//    readGraph(filename_prefix + ".txt",filename_prefix + ".dot");
-//    makeGraph(filename_prefix + ".dot",filename_prefix + ".png");
-//
-//    RG rg;
-//    rg.init(cpnet);
-//    rg.GENERATE(cpnet);
-//    rg.print_RG("rg.txt",cpnet);
-
     vector<string> files;
+    //get filename in origin_dirname
+    //so we can check all the .c file in origin_dirname
     GetFileNames(origin_dirname,files);
 
-//    for(unsigned int i=0;i<files.size();i++)
-//        construct_and_slice(files[i],ltltype,num);
-    construct_and_slice("triangular-2.c",ltltype,num);
+    int num=1;//it stands for checking property 1 in every LTLFile
+    for(unsigned int i=0;i<files.size();i++)
+//        for(unsigned int num=1;num<=3;num++)
+            construct_and_slice(files[i],ltltype,num);
     return 0;
 }
