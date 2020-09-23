@@ -1,0 +1,6 @@
+digraph BA {
+	S0 [shape=doublecircle]
+
+	S0->S0 [label="!{token-value(P10)==int-constant(3)}"]
+	S0->S0 [label="!{T1,}"]
+}

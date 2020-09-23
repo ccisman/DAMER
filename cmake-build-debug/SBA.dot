@@ -1,0 +1,10 @@
+digraph SBA{
+	rankdir=LR
+	0 [shape=doublecircle,style=filled,label="0.1"]
+	1 [shape=doublecircle,style=filled,label="0.1"]
+
+	0->0
+	0->1
+	1->0
+	1->1
+}
