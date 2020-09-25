@@ -1,0 +1,3 @@
+G(!(is-fireable{T1,})||!({token-value(P49)==0}))
+G({token-value(P48)==0}&&{token-value(P9)<16})
+G({3<=token-value(P9)}&&{6<=token-value(P10)})

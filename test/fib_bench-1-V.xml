@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<property-set xmlns="http://mcc.lip6.fr/">
+    <property>
+        <id>F(k1=5 && k2=5) && G(!__VERIFIER_error)</id>
+        <description>Automatically generated</description>
+        <formula>
+            <all-paths>
+                <conjunction>
+                    <finally>
+                        <conjunction>
+                            <equality>
+                                <token-value>
+                                    <place>P14</place>
+                                </token-value>
+                                <int-constant>5</int-constant>
+                            </equality>
+                            <equality>
+                                <token-value>
+                                    <place>P32</place>
+                                </token-value>
+                                <int-constant>5</int-constant>
+                            </equality>
+                        </conjunction>
+                    </finally>
+                    <globally>
+                        <negation>
+                            <is-fireable>
+                                <transition>T1</transition>
+                            </is-fireable>
+                        </negation>
+                    </globally>
+                </conjunction>                
+            </all-paths>
+        </formula>
+    </property>
+    <property>
+        <id>G((i=144)->(j=89))</id>
+        <description>Automatically generated</description>
+        <formula>
+            <all-paths>
+                <globally>
+                    <disjunction>
+                        <negation>
+                            <equality>
+                                <token-value>
+                                    <place>P9</place>
+                                </token-value>
+                                <int-constant>144</int-constant>
+                            </equality>
+                        </negation>
+                        <equality>
+                            <token-value>
+                                <place>P10</place>
+                            </token-value>
+                            <int-constant>89</int-constant>
+                        </equality>
+                    </disjunction>
+                </globally>             
+            </all-paths>
+        </formula>
+    </property>
+    <property>
+        <id>F(i=2 || j=2)</id>
+        <description>Automatically generated</description>
+        <formula>
+            <all-paths>
+                <finally>
+                    <disjunction>
+                        <equality>
+                            <token-value>
+                                <place>P9</place>
+                            </token-value>
+                            <int-constant>2</int-constant>
+                        </equality>
+                        <equality>
+                            <token-value>
+                                <place>P10</place>
+                            </token-value>
+                            <int-constant>2</int-constant>
+                        </equality>
+                    </disjunction>
+                </finally>             
+            </all-paths>
+        </formula>
+    </property>
+</property-set>
+F({token-value(P14)==5}&&{token-value(P32)==5})&&G(!(is-fireable{T1,}))
+G(!({token-value(P9)==144})||{token-value(P10)==89})
+F({token-value(P9)==2}||{token-value(P10)==2})

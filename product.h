@@ -142,7 +142,7 @@ public:
     CPN_Product_Automata(CPN *net,StateBuchi *StateBuchi,RG *rg);
     void GetInitNode();
     void GetProduct();
-    string GetResult(){return (this->result)?"TRUE":"FALSE";};
+    string GetResult(){return (this->result)?"true":"false";};
     void Tarjan(CPN_Product *pnode);
 
     void printresult(string propertyid);

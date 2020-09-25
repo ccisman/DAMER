@@ -128,62 +128,48 @@ bool judge_call_statement(gtree *statement1)
     return false;
 }
 
-bool judge_label_statement(gtree *statement1)
-{
-    if (statement1->type == STATEMENT && statement1->child->type == LABELED_STATEMENT)
-    {
-        return true;
-    }
-    return false;
-}
-
-bool judge_return_statement(gtree *statement1)
+bool judge_return(gtree *statement1)
 {
     if (statement1->type == STATEMENT && statement1->child->type == JUMP_STATEMENT && statement1->child->child->type == RETURN)
         return true;
     return false;
 }
 
-bool judge_goto_statement(gtree *statement1)
+bool judge_goto(gtree *statement1)
 {
     if (statement1->type == STATEMENT && statement1->child->type == JUMP_STATEMENT && statement1->child->child->type == GOTO)
         return true;
     return false;
 }
 
-bool judge_break_statement(gtree *statement1)
+bool judge_break(gtree *statement1)
 {
     if (statement1->type == STATEMENT && statement1->child->type == JUMP_STATEMENT && statement1->child->child->type == BREAK)
         return true;
     return false;
 }
 
-
-bool judge_statement(gtree *p)
-{
-    if(judge_assign_statement(p)
-    ||judge_compound_statement(p)
-       || (p->child && p->child->type == SELECTION_STATEMENT)
-       || (p->child && p->child->type == ITERATION_STATEMENT)
-       || judge_return_statement(p)
-       || judge_break_statement(p)
-       || judge_goto_statement(p)
-       ||judge_label_statement(p)
-       ||judge_expression_statement(p)
-       )
+bool judge_label_statement(gtree *statement1){
+    if (statement1->type == STATEMENT && statement1->child->type == LABELED_STATEMENT)
         return true;
-    else
-        return false;
+    return false;
+}
+
+bool judge_select_statement(gtree *statement1){
+    if (statement1->type == STATEMENT && statement1->child->type == SELECTION_STATEMENT)
+        return true;
+    return false;
+}
+
+bool judge_iteration_statement(gtree *statement1){
+    if (statement1->type == STATEMENT && statement1->child->type == ITERATION_STATEMENT)
+        return true;
+    return false;
 }
 
 bool judge_expression_statement(gtree *statement1)
 {
-    if (statement1->type == STATEMENT && statement1->child->type == EXPRESSION_STATEMENT
-        && ((statement1->child->child->type == EXPRESSION
-        && statement1->child->child->child->type == ASSIGNMENT_EXPRESSION
-        && (statement1->child->child->child->child == NULL
-        || statement1->child->child->child->child->next == NULL)) || statement1->child->child->place == ";")
-        )
+    if (statement1->type == STATEMENT && statement1->child->type == EXPRESSION_STATEMENT)
         return true;
     return false;
 }
@@ -194,6 +180,28 @@ bool judge_compound_statement(gtree *statement1)
         return true;
     return false;
 }
+
+bool judge_jump_statement(gtree *statement1)
+{
+    if(statement1->type == STATEMENT && statement1->child->type == JUMP_STATEMENT)
+        return true;
+    return false;
+}
+
+bool judge_statement(gtree *p)
+{
+    if(judge_compound_statement(p)
+       || judge_select_statement(p)
+       || judge_iteration_statement(p)
+       ||judge_label_statement(p)
+       ||judge_expression_statement(p)
+       ||judge_jump_statement(p)
+       )
+        return true;
+    else
+        return false;
+}
+
 
 bool judge_inside_compound_statement(gtree *statement1)//
 {

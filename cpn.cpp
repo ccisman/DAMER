@@ -2434,223 +2434,236 @@ vector<string> extract_paras(gtree *p)
     }
 }
 
+void CPN::create_v_table(gtree *p){
+    V_Table *table = new V_Table(p->place);
+    v_tables.push_back(table);
+    gtree *up = p->parent;
+
+    while (up != NULL && up->type != COMPOUND_STATEMENT)
+        up = up->parent;
+    if(p->para.size()!=0) {
+        for (unsigned int i = 0; i < p->para.size(); i++)
+            table->insert(p->para[i].first, p->para[i].second);
+        string identifier;
+        gtree *func = p->parent;
+        if (func->child->next->child->type == POINTER)
+            identifier = func->child->next->child->next->child->child->place;
+        else
+            identifier = func->child->next->child->child->child->place;
+        auto iter = mapFunction.find(identifier + begin_suffix);
+        if(iter == mapFunction.end())
+        {
+            cout<<"can't find begin_Place in create_PDNet"<<endl;
+            exit(-1);
+        }
+        string func_P = iter->second;
+        auto iter1 = mapPlace.find(func_P);
+        if(iter1 == mapPlace.end())
+        {
+            cout<<"can't find func_P in create_PDNet"<<endl;
+            exit(-1);
+        }
+        for(unsigned int i=0;i<p->para.size();i++)
+            place[iter1->second].para_list.push_back(p->para[i]);
+    }
+    if (up == NULL)
+    {
+        v_tables[v_tables.size()-1]->connect(v_tables[0]);
+    }
+    else
+    {
+        for(int i=0;i<v_tables.size();i++)
+            if (v_tables[i]->name == up->place)
+            {
+                v_tables[v_tables.size()-1]->connect(v_tables[i]);
+                break;
+            }
+    }
+}
+
+void CPN::visit_compound_statement(gtree *p)
+{
+
+}
+
+void CPN::visit_declaration(gtree *p)
+{
+    gtree *p1 = p->parent;
+    string func = "";
+    while (p1 != NULL && p1->type != COMPOUND_STATEMENT)
+        p1 = p1->parent;
+    if (p1 != NULL)
+        func = p1->place;
+    process_declaration(p,func);
+}
+
+void CPN::visit_statement(gtree *p)
+{
+    //handle it first because call statement needs them
+    if(p->child->type == SELECTION_STATEMENT || p->child->type == ITERATION_STATEMENT)
+    {
+        //construct  P、T
+        string control_P = gen_P();
+        gtree *statement = p;
+        while(statement->type != STATEMENT)
+            statement = statement->parent;
+        statement->matched_P = control_P;
+        Add_Place(control_P,"",0,true,p->place);
+        string control_T1 = gen_T(),control_T2 = gen_T();
+        string condition = p->child->child->next->next->place;
+        Add_Transition(control_T1,condition,condition);
+        Add_Arc(control_P,control_T1,"",true,control);
+        string condition_op = opposite_all(condition);
+        Add_Transition(control_T2,condition_op,condition_op);
+        Add_Arc(control_P,control_T2,"",true,control);
+
+        //set enter,enter_P
+        vector<string> enter,enter_P;
+        enter.push_back(control_T1);
+        enter.push_back(control_T2);
+        enter_P.push_back(control_P);
+        set_enter_T(control_P,enter);
+    }
+    else if(judge_expression_statement(p))
+    {
+        //construct  P、T
+        string control_P = gen_P();
+        gtree *statement = p;
+        while(statement->type != STATEMENT)
+            statement = statement->parent;
+        statement->matched_P = control_P;
+        Add_Place(control_P,"",0,true,p->place);
+        string control_T = gen_T();
+        Add_Transition(control_T,"",p->place);
+        Add_Arc(control_P,control_T,"",true,control);
+
+        //set exit,enter
+        vector<string> enter,exit_T,enter_P;
+        enter.push_back(control_T);
+        exit_T.push_back(control_T);
+        enter_P.push_back(control_P);
+        set_enter_T(control_P,enter);
+        set_exit_T(control_P,exit_T);
+    }
+    else if(judge_compound_statement(p))
+        ;
+    else
+    {
+        //construct  P、T
+        string control_P = gen_P();
+        gtree *statement = p;
+        while(statement->type != STATEMENT)
+            statement = statement->parent;
+        statement->matched_P = control_P;
+        Add_Place(control_P,"",0,true,p->place);
+        string control_T = gen_T();
+        Add_Transition(control_T,"",p->place);
+        Add_Arc(control_P,control_T,"",true,control);
+
+        //set exit,enter
+        vector<string> enter,exit_T,enter_P;
+        enter.push_back(control_T);
+        exit_T.push_back(control_T);
+        enter_P.push_back(control_P);
+        set_enter_T(control_P,enter);
+        set_exit_T(control_P,exit_T);
+
+    }
+}
+
+void CPN::visit_function(gtree *p){
+    string ret_tag;
+    if (p->child->type == DECLARATION_SPECIFIERS)
+        ret_tag = p->child->place;
+    else
+    {
+        cout << "暂不支持定义函数未定义返回类型!" << endl;
+        exit(-1);
+    }
+    string func;
+    bool return_pointer_flag = false;
+    if (p->child->next->child->type == POINTER) {
+        func = p->child->next->child->next->child->child->place;
+        return_pointer_flag = true;
+        ret_tag = "int";
+    }
+    else
+        func = p->child->next->child->child->child->place;
+
+    //construct begin_P,end_P,begin_T
+
+    string begin_P = gen_P();
+    Add_Place(begin_P,"",0,true,func + begin_suffix);
+    mapFunction.insert(make_pair(func + begin_suffix,begin_P));
+    string begin_T = gen_T();
+    Add_Transition(begin_T,"",func + begin_suffix);
+    vector<string> enter;
+    enter.push_back(begin_T);
+    set_enter_T(begin_P,enter);
+
+    Add_Arc(begin_P,begin_T,"",true,control);
+
+    string end_P = gen_P();
+    Add_Place(end_P,"",0,true,func+ end_suffix);
+    mapFunction.insert(make_pair(func + end_suffix,end_P));
+    vector<string> correspond_P;
+    correspond_P.push_back(end_P);
+    set_correspond_P(begin_P,correspond_P);
+
+    //construct parameter_P
+
+    if (p->child->child->type == POINTER || p->child->next->child->type == POINTER)
+    {
+        //do not support pointer now
+    }
+    else
+    {
+        gtree *direct_declarator = p->child->next->child;
+        if (direct_declarator->child->next->type == REMAIN && direct_declarator->child->next->place == "(")
+        {
+            if (direct_declarator->child->next->next->type == PARAMETER_TYPE_LIST)
+            {
+                gtree *para_type_list = direct_declarator->child->next->next;
+
+                process_para_type_list(para_type_list,func);
+            }
+            else//no para
+            {
+
+            }
+        }
+        else
+        {
+            cout << "there is no '('!" << endl;
+            exit(-1);
+        }
+    }
+
+    //construct return_P
+    if(ret_tag != "void" || return_pointer_flag == true)
+    {
+        string return_P = gen_P();
+        Add_Place(return_P,ret_tag,1,false,func + return_suffix);
+        mapFunction.insert(make_pair(func + return_suffix,return_P));
+        string V = func + return_suffix;
+        Add_Variable(V,return_P);
+        v_tables[0]->insert(V,return_P);
+        //to be continue
+    }
+}
+
 //*create PDNet by traverse AST tree*//
 void CPN::create_PDNet(gtree *p)
 {
     if (p == NULL) return;
     if(p->type == COMPOUND_STATEMENT)
-    {
-        V_Table *table = new V_Table(p->place);
-        v_tables.push_back(table);
-        gtree *up = p->parent;
-
-        while (up != NULL && up->type != COMPOUND_STATEMENT)
-            up = up->parent;
-        if(p->para.size()!=0) {
-            for (unsigned int i = 0; i < p->para.size(); i++)
-                table->insert(p->para[i].first, p->para[i].second);
-            string identifier;
-            gtree *func = p->parent;
-            if (func->child->next->child->type == POINTER)
-                identifier = func->child->next->child->next->child->child->place;
-            else
-                identifier = func->child->next->child->child->child->place;
-            auto iter = mapFunction.find(identifier + begin_suffix);
-            if(iter == mapFunction.end())
-            {
-                cout<<"can't find begin_Place in create_PDNet"<<endl;
-                exit(-1);
-            }
-            string func_P = iter->second;
-            auto iter1 = mapPlace.find(func_P);
-            if(iter1 == mapPlace.end())
-            {
-                cout<<"can't find func_P in create_PDNet"<<endl;
-                exit(-1);
-            }
-            for(unsigned int i=0;i<p->para.size();i++)
-                place[iter1->second].para_list.push_back(p->para[i]);
-        }
-        if (up == NULL)
-        {
-            v_tables[v_tables.size()-1]->connect(v_tables[0]);
-        }
-        else
-        {
-            for(int i=0;i<v_tables.size();i++)
-                if (v_tables[i]->name == up->place)
-                {
-                    v_tables[v_tables.size()-1]->connect(v_tables[i]);
-                    break;
-                }
-        }
-    }
+        create_v_table(p);
     else if(p->type == FUNCTION_DEFINITION)
-    {
-        string ret_tag;
-        if (p->child->type == DECLARATION_SPECIFIERS)
-            ret_tag = p->child->place;
-        else
-        {
-            cout << "暂不支持定义函数未定义返回类型!" << endl;
-            exit(-1);
-        }
-        string func;
-        bool return_pointer_flag = false;
-        if (p->child->next->child->type == POINTER) {
-            func = p->child->next->child->next->child->child->place;
-            return_pointer_flag = true;
-            ret_tag = "int";
-        }
-        else
-            func = p->child->next->child->child->child->place;
-
-        //construct begin_P,end_P,begin_T
-
-        string begin_P = gen_P();
-        Add_Place(begin_P,"",0,true,func + begin_suffix);
-        mapFunction.insert(make_pair(func + begin_suffix,begin_P));
-        string begin_T = gen_T();
-        Add_Transition(begin_T,"",func + begin_suffix);
-        vector<string> enter;
-        enter.push_back(begin_T);
-        set_enter_T(begin_P,enter);
-
-        Add_Arc(begin_P,begin_T,"",true,control);
-
-        string end_P = gen_P();
-        Add_Place(end_P,"",0,true,func+ end_suffix);
-        mapFunction.insert(make_pair(func + end_suffix,end_P));
-        vector<string> correspond_P;
-        correspond_P.push_back(end_P);
-        set_correspond_P(begin_P,correspond_P);
-
-        //construct parameter_P
-
-        if (p->child->child->type == POINTER || p->child->next->child->type == POINTER)
-        {
-            //do not support pointer now
-        }
-        else
-        {
-            gtree *direct_declarator = p->child->next->child;
-            if (direct_declarator->child->next->type == REMAIN && direct_declarator->child->next->place == "(")
-            {
-                if (direct_declarator->child->next->next->type == PARAMETER_TYPE_LIST)
-                {
-                    gtree *para_type_list = direct_declarator->child->next->next;
-
-                    process_para_type_list(para_type_list,func);
-                }
-                else//no para
-                {
-
-                }
-            }
-            else
-            {
-                cout << "there is no '('!" << endl;
-                exit(-1);
-            }
-        }
-
-        //construct return_P
-        if(ret_tag != "void" || return_pointer_flag == true)
-        {
-            string return_P = gen_P();
-            Add_Place(return_P,ret_tag,1,false,func + return_suffix);
-            mapFunction.insert(make_pair(func + return_suffix,return_P));
-            string V = func + return_suffix;
-            Add_Variable(V,return_P);
-            v_tables[0]->insert(V,return_P);
-            //to be continue
-        }
-
-    }
+        visit_function(p);
     else if(p->type == DECLARATION)
-    {
-        gtree *p1 = p->parent;
-        string func = "";
-        while (p1 != NULL && p1->type != COMPOUND_STATEMENT)
-            p1 = p1->parent;
-        if (p1 != NULL)
-            func = p1->place;
-        process_declaration(p,func);
-    }
+        visit_declaration(p);
     else if(judge_statement(p))
-    {
-
-        //handle it first because call statement needs them
-        if(p->child->type == SELECTION_STATEMENT || p->child->type == ITERATION_STATEMENT)
-        {
-            //construct  P、T
-            string control_P = gen_P();
-            gtree *statement = p;
-            while(statement->type != STATEMENT)
-                statement = statement->parent;
-            statement->matched_P = control_P;
-            Add_Place(control_P,"",0,true,p->place);
-            string control_T1 = gen_T(),control_T2 = gen_T();
-            string condition = p->child->child->next->next->place;
-            Add_Transition(control_T1,condition,condition);
-            Add_Arc(control_P,control_T1,"",true,control);
-            string condition_op = opposite_all(condition);
-            Add_Transition(control_T2,condition_op,condition_op);
-            Add_Arc(control_P,control_T2,"",true,control);
-
-            //set enter,enter_P
-            vector<string> enter,enter_P;
-            enter.push_back(control_T1);
-            enter.push_back(control_T2);
-            enter_P.push_back(control_P);
-            set_enter_T(control_P,enter);
-        }
-        else if(judge_expression_statement(p))
-        {
-            //construct  P、T
-            string control_P = gen_P();
-            gtree *statement = p;
-            while(statement->type != STATEMENT)
-                statement = statement->parent;
-            statement->matched_P = control_P;
-            Add_Place(control_P,"",0,true,p->place);
-            string control_T = gen_T();
-            Add_Transition(control_T,"",p->place);
-            Add_Arc(control_P,control_T,"",true,control);
-
-            //set exit,enter
-            vector<string> enter,exit_T,enter_P;
-            enter.push_back(control_T);
-            exit_T.push_back(control_T);
-            enter_P.push_back(control_P);
-            set_enter_T(control_P,enter);
-            set_exit_T(control_P,exit_T);
-        }
-        else if(judge_compound_statement(p))
-            ;
-        else
-        {
-            //construct  P、T
-            string control_P = gen_P();
-            gtree *statement = p;
-            while(statement->type != STATEMENT)
-                statement = statement->parent;
-            statement->matched_P = control_P;
-            Add_Place(control_P,"",0,true,p->place);
-            string control_T = gen_T();
-            Add_Transition(control_T,"",p->place);
-            Add_Arc(control_P,control_T,"",true,control);
-
-            //set exit,enter
-            vector<string> enter,exit_T,enter_P;
-            enter.push_back(control_T);
-            exit_T.push_back(control_T);
-            enter_P.push_back(control_P);
-            set_enter_T(control_P,enter);
-            set_exit_T(control_P,exit_T);
-
-        }
-    }
+        visit_statement(p);
 
 
     create_PDNet(p->child);
@@ -2886,7 +2899,7 @@ void CPN::create_PDNet(gtree *p)
 
         while (statement->parent != statement_list)
         {
-            if (judge_return_statement(statement))
+            if (judge_return(statement))
             {
                 already_return = true;
                 break;
@@ -2895,7 +2908,7 @@ void CPN::create_PDNet(gtree *p)
         }
         if (already_return == false)
         {
-            if (judge_return_statement(statement))
+            if (judge_return(statement))
                 already_return = true;
             else
             {
@@ -2965,7 +2978,7 @@ void CPN::create_PDNet(gtree *p)
 
 
     }
-    else if(judge_return_statement(p))
+    else if(judge_return(p))
     {
         gtree *statement = p;
         while(statement->type != STATEMENT)
@@ -3340,6 +3353,26 @@ void CPN::create_PDNet(gtree *p)
 
 }
 
+//void CPN::create_PDNet(gtree *p) {
+//    if(p == NULL)return;
+//
+//    //inherited attribute
+//    if(p->type == COMPOUND_STATEMENT)
+//        create_v_table(p);
+//    else if(p->type == DECLARATION)
+//        visit_declaration(p);
+//    else if(p->type == FUNCTION_DEFINITION)
+//        visit_function(p);
+//    else if(judge_statement(p))
+//
+//
+//    create_PDNet(p->child);
+//
+//    //comprehensive attribute
+//
+//    create_PDNet(p->next);
+//}
+
 void Tokens::init_a_token(type tid, Integer_t value) {
     tokencount = 1;
     if(tid == Integer)
@@ -3382,21 +3415,30 @@ void CPN::print_CPN(string filename) {
     //out << "Place:" << endl;
     //out << "-----------------------------------" << endl;
 
+    int P_width, T_width,T_height,font_size=60;
+    P_width=T_width=T_height=3;
+
     string fillcolor = "chartreuse";
+    string fillcolor1 = "lightblue";
+
+
     for (int i = 0; i < placecount; i++) {
         if (place[i].control_P == false)
-            out << "subgraph cluster_" << place[i].id << "{label=\"" <<
-                place[i].expression << "\"color=\"white\"" << place[i].id <<
-                "[shape=circle, style=\"filled\",color=\"black\",fillcolor=\"" << fillcolor << "\"]}" << endl;
+            out << "subgraph cluster_" << place[i].id << "{"<<"fontsize = "<<to_string(font_size)<< ";label=\"" <<
+                place[i].expression << "\";color=\"white\"" << place[i].id <<
+                "[shape=circle"<<",fontsize = "<<to_string(font_size)<<",width="<<to_string(P_width)<<",style=\"filled\",color=\"black\",fillcolor=\"" << fillcolor << "\"]}" << endl;
         else {
-            out << place[i].id << "[shape=circle," << "label=\"" << place[i].expression << "\"]" << endl;
+//            out << place[i].id << "[shape=circle," << "label=\"" << place[i].expression << "\"]" << endl;
+            out << "subgraph cluster_" << place[i].id << "{"<<"fontsize = "<<to_string(font_size)<< ";label=\"" <<
+                place[i].expression << "\";color=\"white\"" << place[i].id <<
+                "[shape=circle"<<",fontsize = "<<to_string(font_size)<<",width="<<to_string(P_width)<<",style=\"filled\",color=\"black\",fillcolor=\"" << fillcolor1 << "\"]}" << endl;
         }
     }
     //out << "-----------------------------------" << endl;
     //out << "Transition:" << endl;
     //out << "-----------------------------------" << endl;
     for (int i = 0; i < transitioncount; i++) {
-        out << transition[i].id << "[shape=box]" << endl;
+        out << transition[i].id << "[shape=box"<<",fontsize = "<<to_string(font_size)<<",width="<<to_string(T_width)<<",height="<<to_string(T_height)<<"]" << endl;
     }
     //out << "-----------------------------------" << endl;
     //out << "Arc:" << endl;

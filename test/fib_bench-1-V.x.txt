@@ -1,0 +1,3 @@
+F({token-value(P14)==5}&&{token-value(P32)==5})&&G(!(is-fireable{T1,}))
+G(!({token-value(P9)==144})||{token-value(P10)==89})
+F({token-value(P9)==2}||{token-value(P10)==2})

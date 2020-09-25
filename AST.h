@@ -71,13 +71,12 @@ gtree* find_last_sentence(gtree *node, bool &flag, bool &flag1);
 bool judge_assign_statement(gtree *statement1);
 bool judge_call_postfix_expression(gtree *postfix_expression);
 bool judge_call_statement(gtree *statement1);
-bool judge_return_statement(gtree *statement1);
-bool judge_goto_statement(gtree *statement1);
-bool judge_break_statement(gtree *statement1);
+bool judge_return(gtree *statement1);
+bool judge_goto(gtree *statement1);
+bool judge_break(gtree *statement1);
 bool judge_expression_statement(gtree *statement1);
 bool judge_label_statement(gtree *statement1);
 void pre_process(string &s);
-bool judge_inside_compound_statement(gtree *statement1);
 bool judge_statement(gtree *p);
 bool judge_compound_statement(gtree *statement1);
 

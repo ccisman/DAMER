@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<property-set xmlns="http://mcc.lip6.fr/">
+    <property>
+        <id>G(__VERIFIER_error->((data1!=16) && (data2!=5)))</id>
+        <description>Automatically generated</description>
+        <formula>
+            <all-paths>
+                <globally>
+                    <disjunction>
+                        <negation>
+                            <is-fireable>
+                                <transition>T1</transition>
+                            </is-fireable>
+                        </negation>
+                        <conjunction>
+                            <negation>
+                                <equality>
+                                    <token-value>
+                                        <place>P11</place>
+                                    </token-value>
+                                    <int-constant>16</int-constant>
+                                </equality>
+                            </negation>
+                            <negation>
+                                <equality>
+                                    <token-value>
+                                        <place>P12</place>
+                                    </token-value>
+                                    <int-constant>5</int-constant>
+                                </equality>
+                            </negation>
+                        </conjunction>
+                    </disjunction>
+                </globally>
+            </all-paths>
+        </formula>
+    </property>
+    <property>
+        <id>G((data1=16)->(data2=5))</id>
+        <description>Automatically generated</description>
+        <formula>
+            <all-paths>
+                <globally>
+                    <disjunction>
+                        <negation>
+                            <equality>
+                                <token-value>
+                                    <place>P11</place>
+                                </token-value>
+                                <int-constant>16</int-constant>
+                            </equality>
+                        </negation>
+                        <equality>
+                            <token-value>
+                                <place>P12</place>
+                            </token-value>
+                            <int-constant>5</int-constant>
+                        </equality>
+                    </disjunction>
+                </globally>
+            </all-paths>
+        </formula>
+    </property>
+    <property>
+        <id>G((data2=5)->(data1=16))</id>
+        <description>Automatically generated</description>
+        <formula>
+            <all-paths>
+                <globally>
+                    <disjunction>
+                        <negation>
+                            <equality>
+                                <token-value>
+                                    <place>P12</place>
+                                </token-value>
+                                <int-constant>5</int-constant>
+                            </equality>
+                        </negation>
+                        <equality>
+                            <token-value>
+                                <place>P11</place>
+                            </token-value>
+                            <int-constant>16</int-constant>
+                        </equality>
+                    </disjunction>
+                </globally>
+            </all-paths>
+        </formula>
+    </property>
+</property-set>
+G(!(is-fireable{T1,})||!({token-value(P11)==16})&&!({token-value(P12)==5}))
+G(!({token-value(P11)==16})||{token-value(P12)==5})
+G(!({token-value(P12)==5})||{token-value(P11)==16})

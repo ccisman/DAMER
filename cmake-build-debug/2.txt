@@ -1,78 +1,78 @@
-subgraph cluster_P2{label="__VERIFIER_error begin"color="white"P2[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P4{label="reach_error begin"color="white"P4[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P7{label="__VERIFIER_error()"color="white"P7[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P8{label="executed_P"color="white"P8[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P9{label="mutex"color="white"P9[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P10{label="data"color="white"P10[shape=circle, width=1.75,style="filled",color="black",fillcolor="chartreuse"]}
-subgraph cluster_P11{label="thread1 begin"color="white"P11[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P12{label="thread1 end"color="white"P12[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P14{label="pthread_mutex_lock_call"color="white"P14[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P16{label="data=data+1"color="white"P16[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P17{label="pthread_mutex_unlock_call"color="white"P17[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P19{label="executed_P"color="white"P19[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P21{label="executed_P"color="white"P21[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P22{label="executed_P"color="white"P22[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P24{label="thread2 begin"color="white"P24[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P25{label="thread2 end"color="white"P25[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P27{label="pthread_mutex_lock_call"color="white"P27[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P28{label="data=data+2"color="white"P28[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P29{label="pthread_mutex_unlock_call"color="white"P29[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P31{label="executed_P"color="white"P31[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P32{label="executed_P"color="white"P32[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P33{label="executed_P"color="white"P33[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P35{label="thread3 begin"color="white"P35[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P36{label="thread3 end"color="white"P36[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P38{label="pthread_mutex_lock_call"color="white"P38[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P39{label="sel0"color="white"P39[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P41{label="reach_error()"color="white"P41[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P44{label="com7"color="white"P44[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P45{label="executed_P"color="white"P45[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P48{label="executed_P"color="white"P48[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P50{label="pthread_mutex_unlock_call"color="white"P50[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P52{label="executed_P"color="white"P52[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P53{label="executed_P"color="white"P53[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P54{label="executed_P"color="white"P54[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P56{label="main begin"color="white"P56[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P59{label="pthread_mutex_init_call"color="white"P59[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P60{label="pthread_create_call"color="white"P60[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P61{label="pthread_create_call"color="white"P61[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P62{label="pthread_create_call"color="white"P62[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P63{label="pthread_join_call"color="white"P63[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P64{label="pthread_join_call"color="white"P64[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P65{label="pthread_join_call"color="white"P65[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P67{label="executed_P"color="white"P67[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P68{label="executed_P"color="white"P68[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P69{label="executed_P"color="white"P69[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P70{label="executed_P"color="white"P70[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P71{label="executed_P"color="white"P71[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P72{label="executed_P"color="white"P72[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-subgraph cluster_P73{label="executed_P"color="white"P73[shape=circle, width=1.75,style="filled",color="black",fillcolor="lightblue"]}
-T1[shape=box]
-T2[shape=box]
-T4[shape=box]
-T5[shape=box]
-T6[shape=box]
-T8[shape=box]
-T9[shape=box]
-T11[shape=box]
-T12[shape=box]
-T13[shape=box]
-T14[shape=box]
-T16[shape=box]
-T17[shape=box]
-T18[shape=box]
-T19[shape=box]
-T21[shape=box]
-T24[shape=box]
-T26[shape=box]
-T28[shape=box]
-T29[shape=box]
-T30[shape=box]
-T31[shape=box]
-T32[shape=box]
-T33[shape=box]
-T34[shape=box]
-T35[shape=box]
+subgraph cluster_P2{fontsize = 60;label="__VERIFIER_error begin";color="white"P2[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P4{fontsize = 60;label="reach_error begin";color="white"P4[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P7{fontsize = 60;label="__VERIFIER_error()";color="white"P7[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P8{fontsize = 60;label="executed_P";color="white"P8[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P9{fontsize = 60;label="mutex";color="white"P9[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P10{fontsize = 60;label="data";color="white"P10[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="chartreuse"]}
+subgraph cluster_P11{fontsize = 60;label="thread1 begin";color="white"P11[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P12{fontsize = 60;label="thread1 end";color="white"P12[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P14{fontsize = 60;label="pthread_mutex_lock_call";color="white"P14[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P16{fontsize = 60;label="data=data+1";color="white"P16[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P17{fontsize = 60;label="pthread_mutex_unlock_call";color="white"P17[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P19{fontsize = 60;label="executed_P";color="white"P19[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P21{fontsize = 60;label="executed_P";color="white"P21[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P22{fontsize = 60;label="executed_P";color="white"P22[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P24{fontsize = 60;label="thread2 begin";color="white"P24[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P25{fontsize = 60;label="thread2 end";color="white"P25[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P27{fontsize = 60;label="pthread_mutex_lock_call";color="white"P27[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P28{fontsize = 60;label="data=data+2";color="white"P28[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P29{fontsize = 60;label="pthread_mutex_unlock_call";color="white"P29[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P31{fontsize = 60;label="executed_P";color="white"P31[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P32{fontsize = 60;label="executed_P";color="white"P32[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P33{fontsize = 60;label="executed_P";color="white"P33[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P35{fontsize = 60;label="thread3 begin";color="white"P35[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P36{fontsize = 60;label="thread3 end";color="white"P36[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P38{fontsize = 60;label="pthread_mutex_lock_call";color="white"P38[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P39{fontsize = 60;label="sel0";color="white"P39[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P41{fontsize = 60;label="reach_error()";color="white"P41[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P44{fontsize = 60;label="com7";color="white"P44[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P45{fontsize = 60;label="executed_P";color="white"P45[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P48{fontsize = 60;label="executed_P";color="white"P48[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P50{fontsize = 60;label="pthread_mutex_unlock_call";color="white"P50[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P52{fontsize = 60;label="executed_P";color="white"P52[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P53{fontsize = 60;label="executed_P";color="white"P53[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P54{fontsize = 60;label="executed_P";color="white"P54[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P56{fontsize = 60;label="main begin";color="white"P56[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P59{fontsize = 60;label="pthread_mutex_init_call";color="white"P59[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P60{fontsize = 60;label="pthread_create_call";color="white"P60[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P61{fontsize = 60;label="pthread_create_call";color="white"P61[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P62{fontsize = 60;label="pthread_create_call";color="white"P62[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P63{fontsize = 60;label="pthread_join_call";color="white"P63[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P64{fontsize = 60;label="pthread_join_call";color="white"P64[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P65{fontsize = 60;label="pthread_join_call";color="white"P65[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P67{fontsize = 60;label="executed_P";color="white"P67[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P68{fontsize = 60;label="executed_P";color="white"P68[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P69{fontsize = 60;label="executed_P";color="white"P69[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P70{fontsize = 60;label="executed_P";color="white"P70[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P71{fontsize = 60;label="executed_P";color="white"P71[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P72{fontsize = 60;label="executed_P";color="white"P72[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+subgraph cluster_P73{fontsize = 60;label="executed_P";color="white"P73[shape=circle,fontsize = 60,width=3,style="filled",color="black",fillcolor="lightblue"]}
+T1[shape=box,fontsize = 60,width=3,height=3]
+T2[shape=box,fontsize = 60,width=3,height=3]
+T4[shape=box,fontsize = 60,width=3,height=3]
+T5[shape=box,fontsize = 60,width=3,height=3]
+T6[shape=box,fontsize = 60,width=3,height=3]
+T8[shape=box,fontsize = 60,width=3,height=3]
+T9[shape=box,fontsize = 60,width=3,height=3]
+T11[shape=box,fontsize = 60,width=3,height=3]
+T12[shape=box,fontsize = 60,width=3,height=3]
+T13[shape=box,fontsize = 60,width=3,height=3]
+T14[shape=box,fontsize = 60,width=3,height=3]
+T16[shape=box,fontsize = 60,width=3,height=3]
+T17[shape=box,fontsize = 60,width=3,height=3]
+T18[shape=box,fontsize = 60,width=3,height=3]
+T19[shape=box,fontsize = 60,width=3,height=3]
+T21[shape=box,fontsize = 60,width=3,height=3]
+T24[shape=box,fontsize = 60,width=3,height=3]
+T26[shape=box,fontsize = 60,width=3,height=3]
+T28[shape=box,fontsize = 60,width=3,height=3]
+T29[shape=box,fontsize = 60,width=3,height=3]
+T30[shape=box,fontsize = 60,width=3,height=3]
+T31[shape=box,fontsize = 60,width=3,height=3]
+T32[shape=box,fontsize = 60,width=3,height=3]
+T33[shape=box,fontsize = 60,width=3,height=3]
+T34[shape=box,fontsize = 60,width=3,height=3]
+T35[shape=box,fontsize = 60,width=3,height=3]
 {P2,T1}
 {P4,T2}
 {P7,T4}

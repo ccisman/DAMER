@@ -1,0 +1,3 @@
+G(!(is-fireable{T1,})||!({token-value(P11)==16})&&!({token-value(P12)==5}))
+G(!({token-value(P11)==16})||{token-value(P12)==5})
+G(!({token-value(P12)==5})||{token-value(P11)==16})

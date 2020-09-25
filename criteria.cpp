@@ -178,7 +178,7 @@ void extract_criteria(int number,LTLCategory type,CPN *cpn,vector<string> &crite
 
 
     TiXmlDocument *doc;
-    string file,out_LTL;
+    string file;
     if (type == LTLC)
         file = LTLCfile;
     else if (type == LTLF)
@@ -189,7 +189,7 @@ void extract_criteria(int number,LTLCategory type,CPN *cpn,vector<string> &crite
     if (!doc->LoadFile()) {
         cerr << doc->ErrorDesc() << endl;
     }
-    out_LTL = file.replace(file.length()-2,2,".txt");
+    file = "result.txt";
     ofstream out(file.c_str(), ios::out | ios::app);
 
     TiXmlElement *root = doc->RootElement();
@@ -210,6 +210,8 @@ void extract_criteria(int number,LTLCategory type,CPN *cpn,vector<string> &crite
 
 
     GetLTL(out,formula->FirstChildElement(), P, T);
+
+    out<<endl;
     for (unsigned int i = 0; i < P.size(); i++) {
         auto iter = cpn->mapPlace.find(P[i]);
         CPlace *pp = &cpn->place[iter->second];

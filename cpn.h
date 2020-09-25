@@ -509,6 +509,13 @@ public:
 
     void copy_childNet(CPN *cpn,vector<string> places,vector<string> transitions);
     void create_PDNet(gtree *tree);
+
+    //visit function
+    void create_v_table(gtree *p);
+    void visit_compound_statement(gtree *p);
+    void visit_declaration(gtree *p);
+    void visit_statement(gtree *p);
+    void visit_function(gtree *p);
 private:
 };
 

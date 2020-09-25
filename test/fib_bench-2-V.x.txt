@@ -1,0 +1,3 @@
+G(!(is-fireable{T1,})||{token-value(P9)==144}||{token-value(P10)==144})
+G(!({token-value(P9)==2})||{token-value(P10)==3})
+F({token-value(P9)==144}||{token-value(P10)==144})

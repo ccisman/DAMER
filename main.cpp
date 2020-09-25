@@ -8,12 +8,13 @@
 #include<time.h>
 #include<sys/types.h>
 #include<dirent.h>
+#include<cmath>
 
 extern void Bubble_sort(vector<string> &change_P);
 
 char LTLFfile[50],LTLVfile[50],LTLCfile[50];
 
-string origin_dirname = "../test_LTLV/";
+string origin_dirname = "../test/";
 string newfile_dirname = "../newfile/";
 
 extern void extract_criteria(int number,LTLCategory type,CPN *cpn,vector<string> &criteria);
@@ -127,7 +128,7 @@ void construct_and_slice(string check_file,LTLCategory ltltype,int num)
 {
     string filename;
     int pre_P_num,pre_T_num,pre_rgnode_num,slice_P_num,slice_T_num,slice_rgnode_num;
-    clock_t pre_time,slice_time;
+    clock_t pre_time,slice_time,pre_model,pre_check,slice,slice_check;
     string pre_res,slice_res;
 
     switch(ltltype)
@@ -157,6 +158,8 @@ void construct_and_slice(string check_file,LTLCategory ltltype,int num)
     cout<<endl;
     out<<"current file: "<<check_file<<endl;
     cout<<"current file: "<<check_file<<endl;
+    out<<"formula:"<<num<<endl;
+    cout<<"formula:"<<num<<endl;
     out<<endl;
     cout<<endl;
 
@@ -188,22 +191,31 @@ void construct_and_slice(string check_file,LTLCategory ltltype,int num)
     pre_P_num = cpnet->placecount;
     pre_T_num = cpnet->transitioncount;
 
-//    string filename_prefix = "1";
-//    cpnet->print_CPN(filename_prefix + ".txt");
-//    readGraph(filename_prefix + ".txt",filename_prefix + ".dot");
-//    makeGraph(filename_prefix + ".dot",filename_prefix + ".png");
+    clock_t direct_build_end = clock();
+
+    string filename_prefix = "1";
+    cpnet->print_CPN(filename_prefix + ".txt");
+    readGraph(filename_prefix + ".txt",filename_prefix + ".dot");
+    makeGraph(filename_prefix + ".dot",filename_prefix + ".png");
 
     //3.verify CPN's properties
     CHECKLTL(cpnet,ltltype,num,pre_rgnode_num,pre_res);
     finish = clock();
-    out<<"time: "<<(finish-start)/1000000.0<<endl;
+
+    pre_model = ceil((direct_build_end - start)/1000.0);
+    pre_check = ceil((finish - direct_build_end)/1000.0);
+    pre_time = pre_model + pre_check;
+
+    out<<"direct build time: "<<setiosflags(ios::fixed)<<setprecision(3)<<pre_model/1000.0<<endl;
+    out<<"model_check: "<<setiosflags(ios::fixed)<<setprecision(3)<<pre_check/1000.0<<endl;
+    out<<"total time: "<<setiosflags(ios::fixed)<<setprecision(3)<<pre_time/1000.0<<endl;
     out<<endl;
-    pre_time = (finish-start);
 
     vector<string> final_P,final_T,criteria;
 
     //4.extract criteria from LTL file and generate “.txt” to describe formulas
     extract_criteria(num,ltltype,cpnet,criteria);
+
 
     start = clock();
 
@@ -217,16 +229,18 @@ void construct_and_slice(string check_file,LTLCategory ltltype,int num)
 
     //6.post_process
     post_process(cpnet,cpnet_slice,final_T);
-//    filename_prefix = "2";
-//    cpnet_slice->print_CPN(filename_prefix + ".txt");
-//    readGraph(filename_prefix + ".txt",filename_prefix + ".dot");
-//    makeGraph(filename_prefix + ".dot",filename_prefix + ".png");
+    filename_prefix = "2";
+    cpnet_slice->print_CPN(filename_prefix + ".txt");
+    readGraph(filename_prefix + ".txt",filename_prefix + ".dot");
+    makeGraph(filename_prefix + ".dot",filename_prefix + ".png");
 
 
     out<<"placenum: "<<cpnet_slice->placecount<<endl;
     cout<<"placenum: "<<cpnet_slice->placecount<<endl;
     out<<"transnum: "<<cpnet_slice->transitioncount<<endl;
     cout<<"transnum: "<<cpnet_slice->transitioncount<<endl;
+
+    clock_t slice_end = clock();
 
     slice_P_num = cpnet_slice->placecount;
     slice_T_num = cpnet_slice->transitioncount;
@@ -235,27 +249,53 @@ void construct_and_slice(string check_file,LTLCategory ltltype,int num)
     CHECKLTL(cpnet_slice,ltltype,num,slice_rgnode_num,slice_res);
     finish = clock();
 
-    out<<"time: "<<(finish-start)/1000000.0<<endl;
+    slice = ceil((slice_end - start)/1000.0);
+    slice_check = ceil((finish - slice_end)/1000.0);
+    slice_time = slice + slice_check;
+
+    out<<"slice time: "<<setiosflags(ios::fixed)<<setprecision(3)<<slice/1000.0<<endl;
+    out<<"model_check: "<<setiosflags(ios::fixed)<<setprecision(3)<<slice_check/1000.0<<endl;
+    out<<"total time: "<<setiosflags(ios::fixed)<<setprecision(3)<<slice_time/1000.0<<endl;
     out<<endl;
 
-    slice_time = (finish-start);
-
-//    out<<"& \\emph{"<<pre_res<<"} & "<<pre_P_num<<" & "<<pre_T_num<<" & "<<pre_rgnode_num<<" & "<<pre_time/1000000.0<<" & \\emph{"<<slice_res<<"} & "<<slice_P_num<<" & "<<slice_T_num<<" & "<<slice_rgnode_num<<" & "<<slice_time/1000000.0<<"\\\\ \\hline\\hline";
-//    out<<endl;
+    out<<setiosflags(ios::fixed)<<"& \\emph{"<<pre_res<<"} & "<<pre_P_num<<" & "<<pre_T_num<<" & "<<pre_model/1000.0<<" & "<<pre_check/1000.0<<" & "<<pre_time/1000.0<<" & \\emph{"<<slice_res<<"} & "<<slice_P_num<<" & "<<slice_T_num<<" & "<<slice/1000.0<<" & "<<slice_check/1000.0<<" & "<<slice_time/1000.0<<"\\\\ \\cline{2-12}";
+    out<<endl;
+    out<<"criteria P : ";
+    for(unsigned int i=0;i<criteria.size();i++)
+        out<<criteria[i]<<",";
+    out<<endl;
+    out<<"deleted P : ";
+    for(unsigned int i=0;i<cpnet->placecount;i++)
+        if(!exist_in(final_P,cpnet->place[i].id)){
+            out<<"$P_{";
+            out<<cpnet->place[i].id.substr(1);
+            out<<"}$,";
+        }
+    out<<endl;
+    out<<"deleted T : ";
+    for(unsigned int i=0;i<cpnet->transitioncount;i++)
+        if(!exist_in(final_T,cpnet->transition[i].id))
+            {
+                out<<"$T_{";
+                out<<cpnet->transition[i].id.substr(1)<<",";
+                out<<"}$";
+            }
+    out<<endl;
     out.close();
     release_v_table();
     delete cpnet;
 }
 
 int main() {
-    LTLCategory ltltype = LTLV;
+    LTLCategory ltltype = LTLF;
     init_pthread_type();
+
 
     vector<string> files;
     //get filename in origin_dirname
     //so we can check all the .c file in origin_dirname
     GetFileNames(origin_dirname,files);
-
+    construct_and_slice("lazy01.c",LTLV,2);
     int num=1;//it stands for checking property 1 in every LTLFile
     for(unsigned int i=0;i<files.size();i++)
 //        for(unsigned int num=1;num<=3;num++)
