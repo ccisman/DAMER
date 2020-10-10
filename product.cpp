@@ -690,7 +690,8 @@ void CPN_Product_Automata::Tarjan(CPN_Product *pnode) {
 void CPN_Product_Automata::printresult(string propertyid) {
 
     string ret=(this->result)?"TRUE":"FALSE";
-    cout<<propertyid<<" "<<ret<<endl;
+//    cout<<propertyid<<" "<<ret<<endl;
+    cout<<"checked result:"<<ret<<endl;
 }
 
 bool CPN_Product_Automata::handleLTLV(string s, RG_NODE *state) {

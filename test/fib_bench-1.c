@@ -1,5 +1,5 @@
 extern void abort(void); 
-extern void __VERIFIER_error(); 
+extern void __VERIFIER_error();
 void reach_error(){__VERIFIER_error();}
 
 extern void __VERIFIER_atomic_begin();

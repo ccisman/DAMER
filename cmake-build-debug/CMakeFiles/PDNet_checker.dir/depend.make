@@ -81,21 +81,25 @@ CMakeFiles/PDNet_checker.dir/lex.y.cpp.o: ../AST.h
 CMakeFiles/PDNet_checker.dir/lex.y.cpp.o: ../lex.y.cpp
 CMakeFiles/PDNet_checker.dir/lex.y.cpp.o: ../y.tab.h
 
-CMakeFiles/PDNet_checker.dir/main.cpp.o: ../AST.h
-CMakeFiles/PDNet_checker.dir/main.cpp.o: ../BA/Syntax_Tree.h
-CMakeFiles/PDNet_checker.dir/main.cpp.o: ../BA/VWAA.h
-CMakeFiles/PDNet_checker.dir/main.cpp.o: ../BA/buchi.h
-CMakeFiles/PDNet_checker.dir/main.cpp.o: ../BA/set.h
-CMakeFiles/PDNet_checker.dir/main.cpp.o: ../BA/tinystr.h
-CMakeFiles/PDNet_checker.dir/main.cpp.o: ../BA/tinyxml.h
-CMakeFiles/PDNet_checker.dir/main.cpp.o: ../base.h
-CMakeFiles/PDNet_checker.dir/main.cpp.o: ../condition_tree.h
-CMakeFiles/PDNet_checker.dir/main.cpp.o: ../cpn.h
-CMakeFiles/PDNet_checker.dir/main.cpp.o: ../cpn_rg.h
 CMakeFiles/PDNet_checker.dir/main.cpp.o: ../main.cpp
-CMakeFiles/PDNet_checker.dir/main.cpp.o: ../product.h
-CMakeFiles/PDNet_checker.dir/main.cpp.o: ../v_table.h
-CMakeFiles/PDNet_checker.dir/main.cpp.o: ../y.tab.h
+CMakeFiles/PDNet_checker.dir/main.cpp.o: ../pdnet_parseoption.h
+
+CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../AST.h
+CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../BA/Syntax_Tree.h
+CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../BA/VWAA.h
+CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../BA/buchi.h
+CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../BA/set.h
+CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../BA/tinystr.h
+CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../BA/tinyxml.h
+CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../base.h
+CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../condition_tree.h
+CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../cpn.h
+CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../cpn_rg.h
+CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../pdnet_parseoption.cpp
+CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../pdnet_parseoption.h
+CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../product.h
+CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../v_table.h
+CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../y.tab.h
 
 CMakeFiles/PDNet_checker.dir/pre_process.cpp.o: ../pre_process.cpp
 

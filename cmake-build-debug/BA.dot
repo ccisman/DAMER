@@ -1,6 +1,9 @@
 digraph BA {
-	S0 [shape=doublecircle]
+	S0 [shape=circle]
+	S1 [shape=doublecircle]
 
-	S0->S0 [label="!{token-value(P10)==int-constant(3)}"]
-	S0->S0 [label="!{T1,}"]
+	S0->S1 [label="!{int-constant(3)<=token-value(P9)}"]
+	S0->S1 [label="!{int-constant(6)<=token-value(P10)}"]
+	S0->S0 [label="true"]
+	S1->S1 [label="true"]
 }

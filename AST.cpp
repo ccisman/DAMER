@@ -392,11 +392,11 @@ gtree *&create_tree(string filename, bool pre_process_flag)
     if (pre_process_flag == true)
     {
         //string filename = "a.txt";
-        string filename1 = "z-" + filename;
-        string whole_filename1 = newfile_dirname + filename1;
+        string filename1 = filename;
+        string whole_filename1 = filename1.substr(0,filename1.size()-2) + ".i";
         ifstream fin;
         ofstream fout;
-        fin.open(origin_dirname + filename, ios::in);
+        fin.open(filename, ios::in);
         if (!fin.is_open())
         {
             cout << filename << " not exist" << endl;
@@ -417,7 +417,7 @@ gtree *&create_tree(string filename, bool pre_process_flag)
             yyin = fp;
         else
         {
-            cout << filename1 << " not exist" << endl;
+            cout << whole_filename1 << " not exist" << endl;
             exit(-1);
         }
 

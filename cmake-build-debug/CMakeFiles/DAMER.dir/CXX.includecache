@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/lewis/Documents/PDNet/PDNet_checker/main.cpp
+iostream
+-
+pdnet_parseoption.h
+/home/lewis/Documents/PDNet/PDNet_checker/pdnet_parseoption.h
+
+/home/lewis/Documents/PDNet/PDNet_checker/pdnet_parseoption.h
+iostream
+-
+string
+-
+vector
+-
+

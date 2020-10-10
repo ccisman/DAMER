@@ -97,7 +97,6 @@ void GetLTL(ofstream &out,TiXmlElement *p, vector<string> &P,vector<string> &T)
             TiXmlElement *left = m->FirstChildElement();
             while (left != NULL)
             {
-
                 out << left->GetText() ;
                 string temp = left->GetText();
                 P.push_back(temp);

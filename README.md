@@ -1,4 +1,4 @@
-# PDNet_checker
+# DAMER
 
 an aotumatic tool for modeling and slicing
 
@@ -9,14 +9,18 @@ The c program must satisfy ANSI-C grammar.
 - Deepin 15.11
 - CLion
 
-
 ## Usage
 
-- You can build the project in CLion through Cmake(make sure the version of Cmake is matched)
-- I'm sorry that it has no user interface for now.
+- You can build the project through Cmake(make sure the version of Cmake is matched)
+- The 'test' folder is where you put the test files, including *.c files and *.xml files. Those *.c files is the original program files, while those *.xml files indicate the checked properties using LTL form. To be noticed, those *.xml files' name must match the *.c files. For example, you want to check a program named 'test.c', the correspond xml file must name as 'test-V.xml'.
 
-- In our program, you can put the checked program and corresponding LTL formula files(which is a .xml file) in the direction indicated by the variable "origin_dirname" in main.cpp, the corresponding LTL formula files' name is the program's name + "-V" or "-F". For example, a checked program named "program.c"
-Its corresponding LTL formula file named "program-V.xml" or "program-F.xml". We have given some example programs and their corresponding formulas in test. 
 
+To run DAMER, use the following command-line from this directory:
+
+$ cmake-build-debug/PDNet_checker [-showtree] [-showcpn] [-fnum 1] -compare test/triangular-2.c
+
+More command can be seen with $ cmake-build-debug/PDNet_checker -help
+
+## The picture of syntax tree and cpn can be found in this directory, using Graphviz to generate it.
 
 ## Program being checked must match the ANSI-C grammar

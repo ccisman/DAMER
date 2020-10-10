@@ -40,7 +40,7 @@ void Syntax_Tree::Destroy(STNode *n) {
 }
 
 void Syntax_Tree::PrintTree() const {
-    cout<<propertyid<<":"<<endl;
+//    cout<<propertyid<<":"<<endl;
     PrintTree(root,0);
 }
 

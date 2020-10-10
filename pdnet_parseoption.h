@@ -24,9 +24,12 @@ class cmdlinet{
 public:
     bool parse(int argc,char **argv);
     paracount_t get_paranum(std::string optstring);
-    bool opt_exist(std::string optstring);
+    optcount_t opt_exist(std::string optstring);
+    option_t get_option(std::string name);
     void help();
     void doit();
+    cmdlinet(){};
+    ~cmdlinet(){};
 protected:
     std::vector<option_t> options;
     std::string filename;
