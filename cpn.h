@@ -44,7 +44,7 @@ extern SortTable sorttable;
 extern CPN *cpnet;
 
 enum type{dot,finiteintrange,productsort,usersort,Integer,Real,String};
-enum Arc_Type{executed,control,call_enter,call_exit,data,write,call_connect,remain};
+enum Arc_Type{executed,control,call_enter,call_exit,data,write,call_connect,remain};//data is equal to read
 
 
 /*========================Sort==========================*/
@@ -404,6 +404,7 @@ typedef struct CPN_Place
     vector<string> false_exit;
     vector<string> call_P;
     vector<string> correspond_P;
+    vector<pair<string,string>> returns;//for func begin P
     vector<pair<string,string>> para_list;
     //***PDNet added end***/
 
@@ -463,9 +464,9 @@ public:
     map<string,index_t> mapPlace;
     map<string,index_t> mapTransition;
     map<string,VARID> mapVariable;
-    map<string,string> mapFunction;
-    map<string,string> mapPthread;
-    map<string,string> mapJoin;
+    map<string,string> mapFunction;//map some unique function expression with their matched places , for example begin,end  and especially ret_tag
+    map<string,string> mapPthread;//map some pthread information with their matched places
+    map<string,string> mapJoin;//map pthread_create with join
 
     //***PDNet added start***/
     void CTN_cal(condition_tree_node *CTN);
@@ -502,20 +503,29 @@ public:
     vector<string> get_falseexit_T(string p_name);
     void set_enter_T(string p_name,vector<string> enter_T);
     vector<string> get_enter_T(string p_name);
+    void Add_returns(string p_name,string return_T,string exp);
+    vector<pair<string,string>> get_returns(string p_name);
 
     //***PDNet added end***//
     ~CPN();
     void print_CPN(string filename);
-
+    string Add_executed_P(vector<string> source_T,vector<string> target_T);
     void copy_childNet(CPN *cpn,vector<string> places,vector<string> transitions);
     void create_PDNet(gtree *tree);
 
     //visit function
     void create_v_table(gtree *p);
-    void visit_compound_statement(gtree *p);
     void visit_declaration(gtree *p);
     void visit_statement(gtree *p);
     void visit_function(gtree *p);
+    void supply_compound(gtree *p);
+    //void build_control_flow(gtree *p);
+    void handle_expression(gtree *p);
+    void handle_call(gtree *p);
+    void handle_iter_sel(gtree *p);
+    void supply_func(gtree *p);
+    void supply_jump_statement(gtree *p);
+    void delete_compound(gtree *p);
 private:
 };
 

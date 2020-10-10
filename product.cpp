@@ -466,7 +466,7 @@ void CPN_Product_Automata::GetProduct() {
     }
 }
 
-//int sum=0;
+int sum=0;
 void CPN_Product_Automata::Tarjan(CPN_Product *pnode) {
     if(!result)
         return;
@@ -510,6 +510,110 @@ void CPN_Product_Automata::Tarjan(CPN_Product *pnode) {
             }
         }
         else {
+
+//            ofstream fout;
+//            fout.open("rg_wrong.txt",ios::out|ios::app);
+//            if(fout.fail()){
+//                cout<<"wrong !"<<endl;
+//                exit(-1);
+//            }
+//            if(sum<2000) {
+//                sum++;
+//                if(sum%2==0) {
+//                    cout << "sum=" << sum/2 - 1<< endl;
+//                    for (tranQ = pnode->RGname_ptr->tranQ->next; tranQ; tranQ = tranQ->next)
+//                        cout << tranQ->transition->id << ",";
+//                    cout<<endl;
+//                    int i,j;
+//                    pnode->RGname_ptr->marking.mss[9].tokenQ->next->color->getColor(i);
+//                    pnode->RGname_ptr->marking.mss[10].tokenQ->next->color->getColor(j);
+//                    cout << "i=" << i <<"    "<<"j="<<j<< endl;
+//                    cout << endl;
+//                    type tid;
+//                    Tokens *tokenQ;
+//                    RG_NODE *node = pnode->RGname_ptr;
+//                    fout << "node:" << node->num << endl;
+//                    cout << "node:" << node->num << endl;
+////                    if(node->num == 489)
+////                        cout<<1<<endl;
+//                    for (int j = 0; j < node->marking.placecount; j++)
+//                    {
+//                        tokenQ = node->marking.mss[j].tokenQ->next;
+//                        tid = node->marking.mss[j].tid;
+//                        fout << "(" << cpn->place[j].expression << ",";
+//                        cout << "(" << cpn->place[j].expression << ",";
+//                        while(tokenQ)
+//                        {
+//                            fout << "[" << tokenQ->tokencount << ",";
+//                            cout << "[" << tokenQ->tokencount << ",";
+//                            if(tid == productsort)
+//                            {
+//
+//                            }
+//                            else if(tid == Integer)
+//                            {
+//                                Integer_t cid;
+//                                tokenQ->color->getColor(cid);
+//                                fout << cid ;
+//                                cout << cid ;
+//                            }
+//                            else if(tid == Real)
+//                            {
+//                                Real_t cid;
+//                                tokenQ->color->getColor(cid);
+//                                fout << cid ;
+//                                cout << cid ;
+//                            }
+//                            else if(tid == String)
+//                            {
+//                                String_t cid;
+//                                tokenQ->color->getColor(cid);
+//                                fout << cid ;
+//                                cout << cid ;
+//                            }
+//                            else if(tid == dot)
+//                            {
+////                   String_t cid;
+////                   tokenQ->color->getColor(cid);
+//                                fout << "dot";
+//                                cout << "dot" ;
+//                            }
+//                            fout << "] ";
+//                            cout << "] " ;
+//                            tokenQ = tokenQ->next;
+//                        }
+//
+//                        fout << ")    ";
+//                        cout << ")    " ;
+//                    }
+//
+//                    fout << endl;
+//                    cout << endl;
+//
+//                    fout << "successor node:";
+//                    cout << "successor node:";
+//
+//
+//                    FireTranQ *tranQ = node->tranQ->next;
+//                    while(tranQ)
+//                    {
+//
+//                        fout << tranQ->transition->id << " , " ;
+//                        cout << tranQ->transition->id << " , " ;
+//                        tranQ = tranQ->next;
+//                    }
+//                    cout << endl;
+//                    fout << endl;
+//
+//                    fout <<"father node:"<<node->fathernum<<"    last Tran:"<<node->last_tran;
+//                    cout <<"father node:"<<node->fathernum<<"    last Tran:"<<node->last_tran;
+//
+//                    cout << endl<<endl;
+//                    fout << endl<<endl;
+//
+//                }
+//            }
+//            fout.close();
             for(tranQ=pnode->RGname_ptr->tranQ->next;tranQ;tranQ=tranQ->next)
             {
                 if(!result)
@@ -523,8 +627,21 @@ void CPN_Product_Automata::Tarjan(CPN_Product *pnode) {
                 RG_NODE *rgseed = rg->nodeExist(newnode);
                 if(rgseed == NULL) {
                     rgseed = newnode;
+                    newnode->fathernum = pnode->RGname_ptr->num;
+                    newnode->last_tran = tranQ->transition->id;
                     rgseed->get_FireTranQ(cpn);
                     rg->addRGNode(newnode);
+//                    if (sum < 10000) {
+//                        sum++;
+//                        cout << "sum=" << sum << endl;
+//                        FireTranQ *temp_tranQ;
+//                        for (temp_tranQ = rgseed->tranQ->next; temp_tranQ; temp_tranQ = temp_tranQ->next)
+//                            cout << temp_tranQ->transition->id << ",";
+//                        int i;
+//                        rgseed->marking.mss[9].tokenQ->next->color->getColor(i);
+//                        cout << "i=" << i << endl;
+//                        cout << endl;
+//                    }
                 }
                 else {
 //                    sum--;

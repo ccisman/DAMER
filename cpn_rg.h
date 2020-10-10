@@ -6,7 +6,7 @@
 #define PDNET_CHECKER_CPN_RG_H
 
 #include "cpn.h"
-#define CPNRGTABLE_SIZE 10000
+#define CPNRGTABLE_SIZE 100000
 class Marking;
 class Binding;
 void Marking_after_fire(Marking &marking,CTransition *transition,vector<Binding *>bindings,CPN *cpn);

@@ -375,6 +375,24 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
             ;
         else
             continue;
+        //cor_P
+        for(unsigned int j=0;j<p->consumer.size();j++)
+        {
+            CTransition *tran = &cpn->transition[p->consumer[j].idx];
+            if(!exist_in(T,tran->id))
+                T.push_back(tran->id);
+            for(unsigned int k=0;k<tran->producer.size();k++)
+            {
+                if(tran->producer[k].arcType == control)
+                    if(!exist_in(P,cpn->place[tran->producer[k].idx].id))
+                        P.push_back(cpn->place[tran->producer[k].idx].id);
+            }
+        }
+        vector<string> cor_P = cpn->get_correspond_P(P[i]);
+        for(unsigned int j=0;j<cor_P.size();j++)
+            if (!exist_in(P, cor_P[j]))
+                P.push_back(cor_P[j]);
+
         //control dependence
 
         for(unsigned int j=0;j<p->producer.size();j++)
@@ -383,8 +401,8 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
             || p->producer[j].arcType == call_connect
             || p->producer[j].arcType == call_enter) {
                 CTransition *trans = &cpn->transition[p->producer[j].idx];
-                if(!exist_in(T,trans->id))
-                    T.push_back(trans->id);
+//                if(!exist_in(T,trans->id))
+//                    T.push_back(trans->id);
                 for(unsigned int k=0;k<trans->producer.size();k++)
                 {
                     if(trans->producer[k].arcType == control) {
@@ -396,33 +414,33 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
             }
         }
 
-        if(p->is_mutex)
-        {
-            for(unsigned int j=0;j<p->consumer.size();j++)
-            {
-                if(p->consumer[j].arcType == control) {
-                    CTransition *trans = &cpn->transition[p->consumer[j].idx];
-                    if(!exist_in(T,trans->id))
-                        T.push_back(trans->id);
-                    for(unsigned int k=0;k<trans->producer.size();k++)
-                    {
-                        if(trans->producer[k].arcType == control) {
-                            string temp_P = cpn->place[trans->producer[k].idx].id;
-                            if (!exist_in(P, temp_P))
-                                P.push_back(temp_P);
-                        }
-                    }
-                }
-            }
-        }
+//        if(p->is_mutex)
+//        {
+//            for(unsigned int j=0;j<p->consumer.size();j++)
+//            {
+//                if(p->consumer[j].arcType == control) {
+//                    CTransition *trans = &cpn->transition[p->consumer[j].idx];
+//                    if(!exist_in(T,trans->id))
+//                        T.push_back(trans->id);
+//                    for(unsigned int k=0;k<trans->producer.size();k++)
+//                    {
+//                        if(trans->producer[k].arcType == control) {
+//                            string temp_P = cpn->place[trans->producer[k].idx].id;
+//                            if (!exist_in(P, temp_P))
+//                                P.push_back(temp_P);
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
         //data dependence
         for(unsigned int j=0;j<p->consumer.size();j++) {
             if (p->consumer[j].arcType == control) {
                 CTransition *trans = &cpn->transition[p->consumer[j].idx];
 //                    vector<index_t> index_vec;
-                if(!exist_in(T,trans->id))
-                    T.push_back(trans->id);
+//                if(!exist_in(T,trans->id))
+//                    T.push_back(trans->id);
                 for (unsigned int k = 0; k < trans->producer.size(); k++) {
                     if (trans->producer[k].arcType == data) {
                         vector<CTransition *> trans_vec;
@@ -437,8 +455,8 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
                                     CTransition *t = &cpn->transition[global_v_P->producer[l].idx];
                                     if(in_a_thread(t,trans)) {
                                         if (contain_path(t, trans, cpn, global_v_P->id)) {
-                                            if (!exist_in(T, t->id))
-                                                T.push_back(t->id);
+//                                            if (!exist_in(T, t->id))
+//                                                T.push_back(t->id);
                                             for (unsigned int m = 0; m < t->producer.size(); m++) {
                                                 if (t->producer[m].arcType == control
                                                     || t->producer[m].arcType == call_connect) {
@@ -450,8 +468,8 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
                                     }
                                     else
                                     {
-                                        if (!exist_in(T, t->id))
-                                            T.push_back(t->id);
+//                                        if (!exist_in(T, t->id))
+//                                            T.push_back(t->id);
                                         for (unsigned int m = 0; m < t->producer.size(); m++) {
                                             if (t->producer[m].arcType == control
                                                 || t->producer[m].arcType == call_connect) {
@@ -468,8 +486,8 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
                             if (trans_vec.size() != 0 && !exist_in(P, var))
                                 P.push_back(var);
                             for (unsigned int l = 0; l < trans_vec.size(); l++) {
-                                if (!exist_in(T, trans_vec[l]->id))
-                                    T.push_back(trans_vec[l]->id);
+//                                if (!exist_in(T, trans_vec[l]->id))
+//                                    T.push_back(trans_vec[l]->id);
                                 for (unsigned int m = 0; m < trans_vec[l]->producer.size(); m++) {
                                     if (trans_vec[l]->producer[m].arcType == control) {
                                         string temp_P = cpn->place[trans_vec[l]->producer[m].idx].id;
@@ -494,6 +512,24 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
             ;
         else
             continue;
+        //cor_P
+        for(unsigned int j=0;j<p->consumer.size();j++)
+        {
+            CTransition *tran = &cpn->transition[p->consumer[j].idx];
+            if(!exist_in(T,tran->id))
+                T.push_back(tran->id);
+            for(unsigned int k=0;k<tran->producer.size();k++)
+            {
+                if(tran->producer[k].arcType == control)
+                    if(!exist_in(P,cpn->place[tran->producer[k].idx].id))
+                        P.push_back(cpn->place[tran->producer[k].idx].id);
+            }
+        }
+        vector<string> cor_P = cpn->get_correspond_P(P[i]);
+        for(unsigned int j=0;j<cor_P.size();j++)
+            if (!exist_in(P, cor_P[j]))
+                P.push_back(cor_P[j]);
+
         //control dependence
 
         for(unsigned int j=0;j<p->producer.size();j++)
@@ -502,8 +538,8 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
                || p->producer[j].arcType == call_connect
                || p->producer[j].arcType == call_enter) {
                 CTransition *trans = &cpn->transition[p->producer[j].idx];
-                if(!exist_in(T,trans->id))
-                    T.push_back(trans->id);
+//                if(!exist_in(T,trans->id))
+//                    T.push_back(trans->id);
                 for(unsigned int k=0;k<trans->producer.size();k++)
                 {
                     if(trans->producer[k].arcType == control) {
@@ -515,33 +551,33 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
             }
         }
 
-        if(p->is_mutex)
-        {
-            for(unsigned int j=0;j<p->consumer.size();j++)
-            {
-                if(p->consumer[j].arcType == control) {
-                    CTransition *trans = &cpn->transition[p->consumer[j].idx];
-                    if(!exist_in(T,trans->id))
-                        T.push_back(trans->id);
-                    for(unsigned int k=0;k<trans->producer.size();k++)
-                    {
-                        if(trans->producer[k].arcType == control) {
-                            string temp_P = cpn->place[trans->producer[k].idx].id;
-                            if (!exist_in(P, temp_P))
-                                P.push_back(temp_P);
-                        }
-                    }
-                }
-            }
-        }
+//        if(p->is_mutex)
+//        {
+//            for(unsigned int j=0;j<p->consumer.size();j++)
+//            {
+//                if(p->consumer[j].arcType == control) {
+//                    CTransition *trans = &cpn->transition[p->consumer[j].idx];
+//                    if(!exist_in(T,trans->id))
+//                        T.push_back(trans->id);
+//                    for(unsigned int k=0;k<trans->producer.size();k++)
+//                    {
+//                        if(trans->producer[k].arcType == control) {
+//                            string temp_P = cpn->place[trans->producer[k].idx].id;
+//                            if (!exist_in(P, temp_P))
+//                                P.push_back(temp_P);
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
         //data dependence
         for(unsigned int j=0;j<p->consumer.size();j++) {
             if (p->consumer[j].arcType == control) {
                 CTransition *trans = &cpn->transition[p->consumer[j].idx];
 //                    vector<index_t> index_vec;
-                if(!exist_in(T,trans->id))
-                    T.push_back(trans->id);
+//                if(!exist_in(T,trans->id))
+//                    T.push_back(trans->id);
                 for (unsigned int k = 0; k < trans->producer.size(); k++) {
                     if (trans->producer[k].arcType == data) {
                         vector<CTransition *> trans_vec;
@@ -556,8 +592,8 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
                                     CTransition *t = &cpn->transition[global_v_P->producer[l].idx];
                                     if(in_a_thread(t,trans)) {
                                         if (contain_path(t, trans, cpn, global_v_P->id)) {
-                                            if (!exist_in(T, t->id))
-                                                T.push_back(t->id);
+//                                            if (!exist_in(T, t->id))
+//                                                T.push_back(t->id);
                                             for (unsigned int m = 0; m < t->producer.size(); m++) {
                                                 if (t->producer[m].arcType == control
                                                     || t->producer[m].arcType == call_connect) {
@@ -569,8 +605,8 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
                                     }
                                     else
                                     {
-                                        if (!exist_in(T, t->id))
-                                            T.push_back(t->id);
+//                                        if (!exist_in(T, t->id))
+//                                            T.push_back(t->id);
                                         for (unsigned int m = 0; m < t->producer.size(); m++) {
                                             if (t->producer[m].arcType == control
                                                 || t->producer[m].arcType == call_connect) {
@@ -587,8 +623,8 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
                             if (trans_vec.size() != 0 && !exist_in(P, var))
                                 P.push_back(var);
                             for (unsigned int l = 0; l < trans_vec.size(); l++) {
-                                if (!exist_in(T, trans_vec[l]->id))
-                                    T.push_back(trans_vec[l]->id);
+//                                if (!exist_in(T, trans_vec[l]->id))
+//                                    T.push_back(trans_vec[l]->id);
                                 for (unsigned int m = 0; m < trans_vec[l]->producer.size(); m++) {
                                     if (trans_vec[l]->producer[m].arcType == control) {
                                         string temp_P = cpn->place[trans_vec[l]->producer[m].idx].id;
@@ -604,27 +640,28 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
         }
     }
 
-    for(unsigned int i=0;i<P.size();i++) {
-        auto iter = cpn->mapJoin.find(P[i]);
-        if (iter != cpn->mapJoin.end()) {
-            auto pier = cpn->mapPlace.find(iter->second);
-            CPlace *pp = &cpn->place[pier->second];
-            for (unsigned int j = 0; j < pp->consumer.size(); j++) {
-                if (pp->consumer[j].arcType == control) {
-                    CTransition *tt = &cpn->transition[pp->consumer[j].idx];
-                    if (!exist_in(T, tt->id))
-                        T.push_back(tt->id);
-                    for (unsigned int k = 0; k < tt->producer.size(); k++)
-                        if (tt->producer[k].arcType == control) {
-                            string temp_p = cpn->place[tt->producer[k].idx].id;
-
-                            if (!exist_in(P, temp_p))
-                                P.push_back(temp_p);
-                        }
-                }
-            }
-        }
-    }
+//    //correspond pthread_create and join
+//    for(unsigned int i=0;i<P.size();i++) {
+//        auto iter = cpn->mapJoin.find(P[i]);
+//        if (iter != cpn->mapJoin.end()) {
+//            auto pier = cpn->mapPlace.find(iter->second);
+//            CPlace *pp = &cpn->place[pier->second];
+//            for (unsigned int j = 0; j < pp->consumer.size(); j++) {
+//                if (pp->consumer[j].arcType == control) {
+//                    CTransition *tt = &cpn->transition[pp->consumer[j].idx];
+//                    if (!exist_in(T, tt->id))
+//                        T.push_back(tt->id);
+//                    for (unsigned int k = 0; k < tt->producer.size(); k++)
+//                        if (tt->producer[k].arcType == control) {
+//                            string temp_p = cpn->place[tt->producer[k].idx].id;
+//
+//                            if (!exist_in(P, temp_p))
+//                                P.push_back(temp_p);
+//                        }
+//                }
+//            }
+//        }
+//    }
     final_P = P;
     final_T = T;
 }

@@ -2219,8 +2219,8 @@ gtree* newNode(std::string node_name, int type)
         exit(-1);
     }
     int len = int(node_name.size());
-    std::cout << "size is " << len << std::endl;
-    std::cout << "node_name is " << node_name << std::endl;
+//    std::cout << "size is " << len << std::endl;
+//    std::cout << "node_name is " << node_name << std::endl;
     p->place = node_name;
     p->No_Child = 0;
     p->child = NULL;

@@ -266,7 +266,7 @@ void Marking_after_fire(Marking &marking,CTransition *transition,vector<Binding 
 }
 unsigned long count=0;
 void RG::createNode(RG_NODE *node,CPN *cpn) {
-    node->get_FireTranQ(cpn);
+
     FireTranQ *tranQ = node->tranQ->next;
     while(tranQ)
     {
@@ -276,10 +276,12 @@ void RG::createNode(RG_NODE *node,CPN *cpn) {
         newnode->last_tran = tranQ->transition->id;
         newnode->marking.init_marking(node->marking);
         Marking_after_fire(newnode->marking,tranQ->transition,tranQ->bindings,cpn);
+
         if(nodeExist(newnode))
-            ;
+            delete newnode;
         else
         {
+            newnode->get_FireTranQ(cpn);
             cout<<"count = "<<count++<<endl;
             addRGNode(newnode);
             createNode(newnode, cpn);

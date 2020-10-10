@@ -176,7 +176,7 @@ bool judge_expression_statement(gtree *statement1)
 
 bool judge_compound_statement(gtree *statement1)
 {
-    if(statement1->type == STATEMENT && statement1->child->type == COMPOUND_STATEMENT &&  statement1->parent->type == STATEMENT_LIST)
+    if(statement1->type == STATEMENT && statement1->child->type == COMPOUND_STATEMENT)
         return true;
     return false;
 }
@@ -190,9 +190,10 @@ bool judge_jump_statement(gtree *statement1)
 
 bool judge_statement(gtree *p)
 {
+    //
     if(judge_compound_statement(p)
-       || judge_select_statement(p)
-       || judge_iteration_statement(p)
+       ||judge_select_statement(p)
+       ||judge_iteration_statement(p)
        ||judge_label_statement(p)
        ||judge_expression_statement(p)
        ||judge_jump_statement(p)
@@ -320,26 +321,27 @@ void TraverseTree2(gtree *p)
             p->place = p->child->place;
         else if (p->child->type == EXPRESSION_STATEMENT)
         {
-            if (judge_assign_statement(p))
-                p->place = p->child->child->child->place;
-            else if (judge_call_statement(p))
-            {
-                gtree *temp = p, *temp_postfix_expression = NULL;
-                while (temp->type != PRIMARY_EXPRESSION)
-                {
-                    if (temp->type == POSTFIX_EXPRESSION && temp_postfix_expression == NULL)
-                        temp_postfix_expression = temp;
-                    temp = temp->child;
-                }
-                p->place = temp->place + call_statement_suffix;
-                temp_postfix_expression->place = temp->place + call_statement_suffix;
-            }
-            else if(p->child->child->place == ";")// ';' expression
-                p->place = p->child->child->place;
-            else
-                p->place = p->child->child->child->place;
+            p->place = p->child->place = p->child->child->place;
+//            if (judge_assign_statement(p))
+//                p->place = p->child->child->child->place;
+//            else if (judge_call_statement(p))
+//            {
+//                gtree *temp = p, *temp_postfix_expression = NULL;
+//                while (temp->type != PRIMARY_EXPRESSION)
+//                {
+//                    if (temp->type == POSTFIX_EXPRESSION && temp_postfix_expression == NULL)
+//                        temp_postfix_expression = temp;
+//                    temp = temp->child;
+//                }
+//                p->place = temp->place + call_statement_suffix;
+//                temp_postfix_expression->place = temp->place + call_statement_suffix;
+//            }
+//            else if(p->child->child->place == ";")// ';' expression
+//                p->place = p->child->child->place;
+//            else
+//                p->place = p->child->child->child->place;
         }
-        else if (p->child->type == JUMP_STATEMENT)
+        else if (p->child->type == JUMP_STATEMENT || p->child->type == COMPOUND_STATEMENT)
             p->place = p->child->place;
     }
     else if (p->type == INIT_DECLARATOR)

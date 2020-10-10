@@ -14,6 +14,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/PDNet_checker.dir/criteria.cpp.o"
   "CMakeFiles/PDNet_checker.dir/lex.y.cpp.o"
   "CMakeFiles/PDNet_checker.dir/main.cpp.o"
+  "CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o"
   "CMakeFiles/PDNet_checker.dir/pre_process.cpp.o"
   "CMakeFiles/PDNet_checker.dir/product.cpp.o"
   "CMakeFiles/PDNet_checker.dir/slice.cpp.o"

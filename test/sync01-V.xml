@@ -50,7 +50,7 @@
         </formula>
     </property>
     <property>
-        <id>F((n=1) && F((n=0) && F(n=1))</id>
+        <id>F((num=1) && F((num=0) && F(num=1))</id>
         <description>Automatically generated</description>
         <formula>
             <all-paths> 
@@ -86,6 +86,3 @@
         </formula>
     </property>
 </property-set>
-G({token-value(P9)<=1}&&{-1<=token-value(P9)})
-G(!(is-fireable{T1,})||!({1==token-value(P9)}))
-F({1==token-value(P9)}&&F({0==token-value(P9)}&&F({1==token-value(P9)})))

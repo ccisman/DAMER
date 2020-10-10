@@ -79,6 +79,7 @@ bool judge_label_statement(gtree *statement1);
 void pre_process(string &s);
 bool judge_statement(gtree *p);
 bool judge_compound_statement(gtree *statement1);
+bool judge_jump_statement(gtree *statement1);
 
 void cut_tree(gtree *p);
 extern string call_statement_suffix;

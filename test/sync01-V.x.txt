@@ -1,3 +1,0 @@
-G({token-value(P9)<=1}&&{-1<=token-value(P9)})
-G(!(is-fireable{T1,})||!({1==token-value(P9)}))
-F({1==token-value(P9)}&&F({0==token-value(P9)}&&F({1==token-value(P9)})))

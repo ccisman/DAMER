@@ -9,13 +9,13 @@
                     <disjunction>
                         <equality>
                             <token-value>
-                                <place>P48</place>
+                                <place>P49</place>
                             </token-value>
                             <int-constant>1</int-constant>
                         </equality>
                         <equality>
                             <token-value>
-                                <place>P49</place>
+                                <place>P50</place>
                             </token-value>
                             <int-constant>1</int-constant>
                         </equality>
@@ -145,6 +145,3 @@
         </formula>
     </property>
 </property-set>
-F({token-value(P48)==1}||{token-value(P49)==1})
-G(!({token-value(P9)==4})&&!({token-value(P9)==6})&&!({token-value(P9)==8})&&!({token-value(P9)==10})&&!({token-value(P9)==12})&&!({token-value(P9)==14}))
-G(!({token-value(P10)==5})&&!({token-value(P10)==7})&&!({token-value(P10)==9})&&!({token-value(P10)==11})&&!({token-value(P10)==13})&&!({token-value(P10)==15}))

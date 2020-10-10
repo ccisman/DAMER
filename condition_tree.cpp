@@ -198,8 +198,11 @@ void condition_tree::construct(string s) {
         }
         else
             temp_s.append(1, s[i]);
+        if(count==0 && s[i]=='=')
+            temp_s.clear();
         if (count == 2)
             i++;
+
     }
 }
 

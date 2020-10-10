@@ -162,6 +162,12 @@
 		<Unit filename="/home/lewis/Documents/PDNet/PDNet_checker/main.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
+		<Unit filename="/home/lewis/Documents/PDNet/PDNet_checker/pdnet_parseoption.cpp">
+			<Option target="PDNet_checker"/>
+		</Unit>
+		<Unit filename="/home/lewis/Documents/PDNet/PDNet_checker/pdnet_parseoption.h">
+			<Option target="PDNet_checker"/>
+		</Unit>
 		<Unit filename="/home/lewis/Documents/PDNet/PDNet_checker/pre_process.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>

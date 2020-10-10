@@ -86,6 +86,10 @@ void Syntax_Tree::ParseXML(char *filename, string &property, int number) {
     TiXmlElement *p = root->FirstChildElement();
     for(int i=1; i<number; ++i) {
         p=p->NextSiblingElement();
+        if(p == NULL){
+            cerr<<"The formula number:"<<number<<" is invalid!"<<endl;
+            exit(-1);
+        }
     }
     string value = p->Value();
     TiXmlElement *id = p->FirstChildElement("id");

@@ -71,6 +71,4 @@
         </formula>
     </property>
 </property-set>
-G(!(is-fireable{T1,})||{token-value(P10)==3})
-F({token-value(P10)==3}&&is-fireable{T1,})
-F({token-value(P10)==2}&&F({token-value(P10)==3}))
+

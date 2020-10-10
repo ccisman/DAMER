@@ -2,1171 +2,163 @@
 current file: lazy01.c
 formula:2
 
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.007
-total time: 0.012
+placenum: 73
+transnum: 38
+direct build time: 5.066
+model_check: 6.722
+total time: 11.788
 
 F({token-value(P10)==3}&&is-fireable{T1,})
 
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
+placenum: 53
+transnum: 28
+slice time: 0.359
+model_check: 4.664
+total time: 10.089
 
-& \emph{false} & 75 & 37 & 0.005 & 0.007 & 0.012 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
+& \emph{false}
+& 73
+& 38
+& 26
+& 5.066
+& 6.722
+& 11.788
+& \emph{false}
+& 53
+& 28
+& 22
+& 0.359
+& 4.664
+& 10.089\\ \cline{2-12}
+
+criteria P : P14,P15,P26,P36,P2,
+
+deleted P : $P_{0}$,$P_{1}$,$P_{17}$,$P_{22}$,$P_{28}$,$P_{32}$,$P_{37}$,$P_{38}$,$P_{41}$,$P_{42}$,$P_{43}$,$P_{44}$,$P_{45}$,$P_{46}$,$P_{47}$,$P_{50}$,$P_{54}$,$P_{56}$,$P_{64}$,$P_{72}$,
+
+deleted T : $T_{0,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{21,}$$T_{24,}$$T_{25,}$$T_{26,}$$T_{28,}$$T_{37,}$
 
 current file: lazy01.c
 formula:2
 
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.007
-total time: 0.012
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.001
-model_check: 0.006
-total time: 0.007
-
-& \emph{false} & 75 & 37 & 0.005 & 0.007 & 0.012 & \emph{false} & 49 & 26 & 0.001 & 0.006 & 0.007\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
+placenum: 73
+transnum: 38
 
 current file: lazy01.c
 formula:2
 
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.008
-total time: 0.013
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.007
-total time: 0.009
-
-& \emph{false} & 75 & 37 & 0.005 & 0.008 & 0.013 & \emph{false} & 49 & 26 & 0.002 & 0.007 & 0.009\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
+placenum: 73
+transnum: 38
 
 current file: lazy01.c
 formula:2
 
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.007
-total time: 0.012
+placenum: 73
+transnum: 38
+direct build time: 4.605
+model_check: 6.552
+total time: 11.157
 
 F({token-value(P10)==3}&&is-fireable{T1,})
 
-placenum: 49
-transnum: 26
-slice time: 0.001
-model_check: 0.006
-total time: 0.007
+placenum: 53
+transnum: 28
+slice time: 0.340
+model_check: 4.549
+total time: 9.494
 
-& \emph{false} & 75 & 37 & 0.005 & 0.007 & 0.012 & \emph{false} & 49 & 26 & 0.001 & 0.006 & 0.007\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
+& \emph{false}
+& 73
+& 38
+& 26
+& 4.605
+& 6.552
+& 11.157
+& \emph{false}
+& 53
+& 28
+& 22
+& 0.340
+& 4.549
+& 9.494\\ \cline{2-12}
+
+criteria P : P14,P15,P26,P36,P2,
+
+deleted P : $P_{0}$,$P_{1}$,$P_{17}$,$P_{22}$,$P_{28}$,$P_{32}$,$P_{37}$,$P_{38}$,$P_{41}$,$P_{42}$,$P_{43}$,$P_{44}$,$P_{45}$,$P_{46}$,$P_{47}$,$P_{50}$,$P_{54}$,$P_{56}$,$P_{64}$,$P_{72}$,
+
+deleted T : $T_{0,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{21,}$$T_{24,}$$T_{25,}$$T_{26,}$$T_{28,}$$T_{37,}$
 
 current file: lazy01.c
 formula:2
 
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.008
-total time: 0.013
+placenum: 73
+transnum: 38
+direct build time: 4.851
+model_check: 6.008
+total time: 10.859
 
 F({token-value(P10)==3}&&is-fireable{T1,})
 
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
+placenum: 53
+transnum: 28
+slice time: 0.329
+model_check: 4.435
+total time: 9.615
 
-& \emph{false} & 75 & 37 & 0.005 & 0.008 & 0.013 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
+& \emph{false}
+& 73
+& 38
+& 26
+& 4.851
+& 6.008
+& 10.859
+& \emph{false}
+& 53
+& 28
+& 22
+& 0.329
+& 4.435
+& 9.615\\ \cline{2-12}
+
+criteria P : P14,P15,P26,P36,P2,
+
+deleted P : $P_{0}$,$P_{1}$,$P_{17}$,$P_{22}$,$P_{28}$,$P_{32}$,$P_{37}$,$P_{38}$,$P_{41}$,$P_{42}$,$P_{43}$,$P_{44}$,$P_{45}$,$P_{46}$,$P_{47}$,$P_{50}$,$P_{54}$,$P_{56}$,$P_{64}$,$P_{72}$,
+
+deleted T : $T_{0,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{21,}$$T_{24,}$$T_{25,}$$T_{26,}$$T_{28,}$$T_{37,}$
 
 current file: lazy01.c
 formula:2
 
-placenum: 75
-transnum: 37
-direct build time: 0.006
-model_check: 0.008
-total time: 0.014
+placenum: 73
+transnum: 38
+direct build time: 1.637
+model_check: 6.267
+total time: 7.904
 
 F({token-value(P10)==3}&&is-fireable{T1,})
 
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.006 & 0.008 & 0.014 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.008
-total time: 0.013
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.005 & 0.008 & 0.013 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: fib_bench-1.c
-formula:1
-
-placenum: 74
-transnum: 36
-direct build time: 0.004
-model_check: 2.322
-total time: 2.326
-
-G(!(is-fireable{T1,}))
-
-placenum: 47
-transnum: 26
-slice time: 0.006
-model_check: 0.636
-total time: 0.642
-
-& \emph{true} & 74 & 36 & 0.004 & 2.322 & 2.326 & \emph{true} & 47 & 26 & 0.006 & 0.636 & 0.642\\ \cline{2-12}
-criteria P : P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{12}$,$P_{13}$,$P_{18}$,$P_{21}$,$P_{26}$,$P_{28}$,$P_{30}$,$P_{31}$,$P_{36}$,$P_{39}$,$P_{44}$,$P_{46}$,$P_{48}$,$P_{49}$,$P_{50}$,$P_{51}$,$P_{59}$,$P_{61}$,$P_{62}$,$P_{65}$,$P_{67}$,$P_{73}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{10,}$$T_{13,}$$T_{19,}$$T_{22,}$$T_{30,}$$T_{32,}$$T_{33,}$$T_{35,}$
-
-current file: fib_bench-2.c
-formula:1
-
-placenum: 74
-transnum: 36
-direct build time: 0.005
-model_check: 1.795
-total time: 1.800
-
-G(!(is-fireable{T1,}))
-
-placenum: 47
-transnum: 26
-slice time: 0.010
-model_check: 0.422
-total time: 0.432
-
-& \emph{false} & 74 & 36 & 0.005 & 1.795 & 1.800 & \emph{false} & 47 & 26 & 0.010 & 0.422 & 0.432\\ \cline{2-12}
-criteria P : P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{12}$,$P_{13}$,$P_{18}$,$P_{21}$,$P_{26}$,$P_{28}$,$P_{30}$,$P_{31}$,$P_{36}$,$P_{39}$,$P_{44}$,$P_{46}$,$P_{48}$,$P_{49}$,$P_{50}$,$P_{51}$,$P_{59}$,$P_{61}$,$P_{62}$,$P_{65}$,$P_{67}$,$P_{73}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{10,}$$T_{13,}$$T_{19,}$$T_{22,}$$T_{30,}$$T_{32,}$$T_{33,}$$T_{35,}$
-
-current file: lazy01.c
-formula:1
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.018
-total time: 0.023
-
-G(!(is-fireable{T1,}))
-
-placenum: 49
-transnum: 26
-slice time: 0.010
-model_check: 0.007
-total time: 0.017
-
-& \emph{false} & 75 & 37 & 0.005 & 0.018 & 0.023 & \emph{false} & 49 & 26 & 0.010 & 0.007 & 0.017\\ \cline{2-12}
-criteria P : P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: stateful01-1.c
-formula:1
-
-placenum: 84
-transnum: 41
-direct build time: 0.006
-model_check: 0.016
-total time: 0.022
-
-G(!(is-fireable{T1,}))
-
-placenum: 56
-transnum: 29
-slice time: 0.010
-model_check: 0.007
-total time: 0.017
-
-& \emph{false} & 84 & 41 & 0.006 & 0.016 & 0.022 & \emph{false} & 56 & 29 & 0.010 & 0.007 & 0.017\\ \cline{2-12}
-criteria P : P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{10}$,$P_{15}$,$P_{17}$,$P_{21}$,$P_{24}$,$P_{26}$,$P_{30}$,$P_{33}$,$P_{36}$,$P_{43}$,$P_{50}$,$P_{52}$,$P_{53}$,$P_{55}$,$P_{63}$,$P_{65}$,$P_{66}$,$P_{69}$,$P_{70}$,$P_{72}$,$P_{73}$,$P_{75}$,$P_{83}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{11,}$$T_{14,}$$T_{22,}$$T_{25,}$$T_{34,}$$T_{36,}$$T_{37,}$$T_{39,}$$T_{40,}$
-
-current file: stateful01-2.c
-formula:1
-
-placenum: 84
-transnum: 41
-direct build time: 0.006
-model_check: 0.018
-total time: 0.024
-
-G(!(is-fireable{T1,}))
-
-placenum: 56
-transnum: 29
-slice time: 0.010
-model_check: 0.007
-total time: 0.017
-
-& \emph{true} & 84 & 41 & 0.006 & 0.018 & 0.024 & \emph{true} & 56 & 29 & 0.010 & 0.007 & 0.017\\ \cline{2-12}
-criteria P : P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{10}$,$P_{15}$,$P_{17}$,$P_{21}$,$P_{24}$,$P_{26}$,$P_{30}$,$P_{33}$,$P_{36}$,$P_{43}$,$P_{50}$,$P_{52}$,$P_{53}$,$P_{55}$,$P_{63}$,$P_{65}$,$P_{66}$,$P_{69}$,$P_{70}$,$P_{72}$,$P_{73}$,$P_{75}$,$P_{83}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{11,}$$T_{14,}$$T_{22,}$$T_{25,}$$T_{34,}$$T_{36,}$$T_{37,}$$T_{39,}$$T_{40,}$
-
-current file: sync01.c
-formula:1
-
-placenum: 88
-transnum: 47
-direct build time: 0.005
-model_check: 0.018
-total time: 0.023
-
-G(!(is-fireable{T1,}))
-
-placenum: 59
-transnum: 34
-slice time: 0.010
-model_check: 0.008
-total time: 0.018
-
-& \emph{true} & 88 & 47 & 0.005 & 0.018 & 0.023 & \emph{true} & 59 & 34 & 0.010 & 0.008 & 0.018\\ \cline{2-12}
-criteria P : P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{15}$,$P_{22}$,$P_{26}$,$P_{29}$,$P_{33}$,$P_{36}$,$P_{43}$,$P_{47}$,$P_{50}$,$P_{54}$,$P_{56}$,$P_{57}$,$P_{60}$,$P_{61}$,$P_{67}$,$P_{69}$,$P_{70}$,$P_{73}$,$P_{74}$,$P_{76}$,$P_{77}$,$P_{80}$,$P_{81}$,$P_{87}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{12,}$$T_{16,}$$T_{24,}$$T_{28,}$$T_{32,}$$T_{33,}$$T_{40,}$$T_{42,}$$T_{43,}$$T_{45,}$$T_{46,}$
-
-current file: triangular-1.c
-formula:1
-
-placenum: 70
-transnum: 34
-direct build time: 0.005
-model_check: 0.369
-total time: 0.374
-
-G(!(is-fireable{T1,}))
-
-placenum: 43
-transnum: 24
-slice time: 0.010
-model_check: 0.130
-total time: 0.140
-
-& \emph{true} & 70 & 34 & 0.005 & 0.369 & 0.374 & \emph{true} & 43 & 24 & 0.010 & 0.130 & 0.140\\ \cline{2-12}
-criteria P : P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{12}$,$P_{13}$,$P_{17}$,$P_{20}$,$P_{24}$,$P_{26}$,$P_{28}$,$P_{29}$,$P_{33}$,$P_{36}$,$P_{40}$,$P_{42}$,$P_{44}$,$P_{45}$,$P_{46}$,$P_{47}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{61}$,$P_{63}$,$P_{69}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{9,}$$T_{12,}$$T_{17,}$$T_{20,}$$T_{28,}$$T_{30,}$$T_{31,}$$T_{33,}$
-
-current file: triangular-2.c
-formula:1
-
-placenum: 70
-transnum: 34
-direct build time: 0.005
-model_check: 0.284
-total time: 0.289
-
-G(!(is-fireable{T1,}))
-
-placenum: 43
-transnum: 24
-slice time: 0.011
-model_check: 0.083
-total time: 0.094
-
-& \emph{false} & 70 & 34 & 0.005 & 0.284 & 0.289 & \emph{false} & 43 & 24 & 0.011 & 0.083 & 0.094\\ \cline{2-12}
-criteria P : P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{12}$,$P_{13}$,$P_{17}$,$P_{20}$,$P_{24}$,$P_{26}$,$P_{28}$,$P_{29}$,$P_{33}$,$P_{36}$,$P_{40}$,$P_{42}$,$P_{44}$,$P_{45}$,$P_{46}$,$P_{47}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{61}$,$P_{63}$,$P_{69}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{9,}$$T_{12,}$$T_{17,}$$T_{20,}$$T_{28,}$$T_{30,}$$T_{31,}$$T_{33,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.008
-total time: 0.013
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.007
-total time: 0.009
-
-& \emph{false} & 75 & 37 & 0.005 & 0.008 & 0.013 & \emph{false} & 49 & 26 & 0.002 & 0.007 & 0.009\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.008
-total time: 0.013
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.005 & 0.008 & 0.013 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.006
-model_check: 0.008
-total time: 0.014
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.007
-total time: 0.009
-
-& \emph{false} & 75 & 37 & 0.006 & 0.008 & 0.014 & \emph{false} & 49 & 26 & 0.002 & 0.007 & 0.009\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.008
-total time: 0.013
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.005 & 0.008 & 0.013 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.006
-model_check: 0.008
-total time: 0.014
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.006 & 0.008 & 0.014 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.008
-total time: 0.013
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.005 & 0.008 & 0.013 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.007
-total time: 0.012
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.007
-total time: 0.009
-
-& \emph{false} & 75 & 37 & 0.005 & 0.007 & 0.012 & \emph{false} & 49 & 26 & 0.002 & 0.007 & 0.009\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.007
-total time: 0.012
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.005 & 0.007 & 0.012 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.008
-total time: 0.013
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.005 & 0.008 & 0.013 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.008
-total time: 0.013
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.005 & 0.008 & 0.013 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.008
-total time: 0.013
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.007
-total time: 0.009
-
-& \emph{false} & 75 & 37 & 0.005 & 0.008 & 0.013 & \emph{false} & 49 & 26 & 0.002 & 0.007 & 0.009\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.006
-model_check: 0.008
-total time: 0.014
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.006 & 0.008 & 0.014 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.008
-total time: 0.013
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.007
-total time: 0.009
-
-& \emph{false} & 75 & 37 & 0.005 & 0.008 & 0.013 & \emph{false} & 49 & 26 & 0.002 & 0.007 & 0.009\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.006
-model_check: 0.008
-total time: 0.014
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.007
-total time: 0.009
-
-& \emph{false} & 75 & 37 & 0.006 & 0.008 & 0.014 & \emph{false} & 49 & 26 & 0.002 & 0.007 & 0.009\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.007
-total time: 0.012
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.005 & 0.007 & 0.012 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.008
-total time: 0.013
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.005 & 0.008 & 0.013 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.008
-total time: 0.013
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.005 & 0.008 & 0.013 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.008
-total time: 0.013
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.005 & 0.008 & 0.013 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.008
-total time: 0.013
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.007
-total time: 0.009
-
-& \emph{false} & 75 & 37 & 0.005 & 0.008 & 0.013 & \emph{false} & 49 & 26 & 0.002 & 0.007 & 0.009\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.008
-total time: 0.013
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.005 & 0.008 & 0.013 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.008
-total time: 0.013
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.005 & 0.008 & 0.013 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.006
-model_check: 0.008
-total time: 0.014
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.006 & 0.008 & 0.014 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.008
-total time: 0.013
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.005 & 0.008 & 0.013 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.008
-total time: 0.013
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.005 & 0.008 & 0.013 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.006
-model_check: 0.007
-total time: 0.013
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.006 & 0.007 & 0.013 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.006
-model_check: 0.008
-total time: 0.014
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.007
-total time: 0.009
-
-& \emph{false} & 75 & 37 & 0.006 & 0.008 & 0.014 & \emph{false} & 49 & 26 & 0.002 & 0.007 & 0.009\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.006
-model_check: 0.008
-total time: 0.014
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.007
-total time: 0.009
-
-& \emph{false} & 75 & 37 & 0.006 & 0.008 & 0.014 & \emph{false} & 49 & 26 & 0.002 & 0.007 & 0.009\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.008
-total time: 0.013
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.007
-total time: 0.009
-
-& \emph{false} & 75 & 37 & 0.005 & 0.008 & 0.013 & \emph{false} & 49 & 26 & 0.002 & 0.007 & 0.009\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.008
-total time: 0.013
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.005 & 0.008 & 0.013 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.006
-model_check: 0.009
-total time: 0.015
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.007
-total time: 0.009
-
-& \emph{false} & 75 & 37 & 0.006 & 0.009 & 0.015 & \emph{false} & 49 & 26 & 0.002 & 0.007 & 0.009\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.006
-model_check: 0.009
-total time: 0.015
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.006 & 0.009 & 0.015 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.007
-total time: 0.012
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.005 & 0.007 & 0.012 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.008
-total time: 0.013
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.005 & 0.008 & 0.013 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.006
-model_check: 0.008
-total time: 0.014
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.006 & 0.008 & 0.014 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.006
-model_check: 0.008
-total time: 0.014
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.006 & 0.008 & 0.014 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.008
-total time: 0.013
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.005 & 0.008 & 0.013 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.008
-total time: 0.013
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.005 & 0.008 & 0.013 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
-
-current file: lazy01.c
-formula:2
-
-placenum: 75
-transnum: 37
-direct build time: 0.005
-model_check: 0.007
-total time: 0.012
-
-F({token-value(P10)==3}&&is-fireable{T1,})
-
-placenum: 49
-transnum: 26
-slice time: 0.002
-model_check: 0.006
-total time: 0.008
-
-& \emph{false} & 75 & 37 & 0.005 & 0.007 & 0.012 & \emph{false} & 49 & 26 & 0.002 & 0.006 & 0.008\\ \cline{2-12}
-criteria P : P16,P28,P39,P2,
-deleted P : $P_{0}$,$P_{1}$,$P_{3}$,$P_{5}$,$P_{6}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{20}$,$P_{23}$,$P_{26}$,$P_{30}$,$P_{34}$,$P_{37}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{46}$,$P_{47}$,$P_{49}$,$P_{51}$,$P_{55}$,$P_{57}$,$P_{58}$,$P_{66}$,$P_{74}$,
-deleted T : $T_{0,}$$T_{3,}$$T_{7,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{22,}$$T_{23,}$$T_{25,}$$T_{27,}$$T_{36,}$
+placenum: 53
+transnum: 28
+slice time: 0.340
+model_check: 5.107
+total time: 7.084
+
+& \emph{false}
+& 73
+& 38
+& 26
+& 1.637
+& 6.267
+& 7.904
+& \emph{false}
+& 53
+& 28
+& 22
+& 0.340
+& 5.107
+& 7.084\\ \cline{2-12}
+
+criteria P : P14,P15,P26,P36,P2,
+
+deleted P : $P_{0}$,$P_{1}$,$P_{17}$,$P_{22}$,$P_{28}$,$P_{32}$,$P_{37}$,$P_{38}$,$P_{41}$,$P_{42}$,$P_{43}$,$P_{44}$,$P_{45}$,$P_{46}$,$P_{47}$,$P_{50}$,$P_{54}$,$P_{56}$,$P_{64}$,$P_{72}$,
+
+deleted T : $T_{0,}$$T_{10,}$$T_{15,}$$T_{20,}$$T_{21,}$$T_{24,}$$T_{25,}$$T_{26,}$$T_{28,}$$T_{37,}$
