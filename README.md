@@ -29,7 +29,9 @@ More command can be seen with $ cmake-build-debug/PDNet_checker -help
 ## The picture of syntax tree and cpn can be found in this directory, using Graphviz to generate it, so make sure you have installed Graphviz.
 
 The help interface may be like that if running correctly.
+
 ![Image text](https://github.com/ccisman/DAMER/blob/master/pic/help.png)
 
 The model check interface may be like that if running correctly.(-compare can be replaced by -directbuild or -slice, more details can be seen in -help)
+
 ![Image text](https://github.com/ccisman/DAMER/blob/master/pic/compare.png)
