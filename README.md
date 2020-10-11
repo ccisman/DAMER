@@ -1,6 +1,6 @@
 # DAMER
 
-an aotumatic tool for modeling and slicing
+an aotumatic tool for modeling and slicing pthread c program
 
 This project is a tool for building a PDNet model of c program, and alleviate the state space with slicing.
 The c program must satisfy ANSI-C grammar.
@@ -22,5 +22,3 @@ $ cmake-build-debug/PDNet_checker [-showtree] [-showcpn] [-fnum 1] -compare test
 More command can be seen with $ cmake-build-debug/PDNet_checker -help
 
 ## The picture of syntax tree and cpn can be found in this directory, using Graphviz to generate it.
-
-## Program being checked must match the ANSI-C grammar
