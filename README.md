@@ -23,4 +23,4 @@ $ cmake-build-debug/PDNet_checker [-showtree] [-showcpn] [-fnum 1] -compare test
 
 More command can be seen with $ cmake-build-debug/PDNet_checker -help
 
-## The picture of syntax tree and cpn can be found in this directory, using Graphviz to generate it.
+## The picture of syntax tree and cpn can be found in this directory, using Graphviz to generate it, so make sure you have installed Graphviz.
