@@ -84,7 +84,6 @@ const int TiXmlBase::utf8ByteTable[256] =
 		4,	4,	4,	4,	4,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1	// 0xf0 0xf0 to 0xf4 4 byte, 0xf5 and higher invalid
 };
 
-
 void TiXmlBase::ConvertUTF32ToUTF8( unsigned long input, char* output, int* length )
 {
 	const unsigned long BYTE_MASK = 0xBF;

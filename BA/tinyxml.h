@@ -105,7 +105,6 @@ struct TiXmlCursor
 	int col;	// 0 based.
 };
 
-
 /**
 	Implements the interface to the "Visitor pattern" (see the Accept() method.)
 	If you call the Accept() method, it requires being passed a TiXmlVisitor

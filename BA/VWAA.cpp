@@ -1,8 +1,7 @@
 //
-// Created by hecong on 2020/7/30.
+// Created by hecong on 2020/10/10.
 //
 #include "VWAA.h"
-
 
 /* t1=(q,a1,q1) implies t2=(q,a2,q2) if a2 <= a1 and q1 <= q2
  * Notice: if a1=m&&n&&k, a2=m&&n, a1 <= a2;

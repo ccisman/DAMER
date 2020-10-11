@@ -11,7 +11,6 @@
 #include "product.h"
 #include<string.h>
 #include<time.h>
-#include<sys/types.h>
 #include<dirent.h>
 #include<cmath>
 #include<sys/time.h>

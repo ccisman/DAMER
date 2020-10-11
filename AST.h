@@ -63,7 +63,6 @@ public:
 
 gtree *&create_tree(string filename, bool flag);
 
-
 string get_gen_P();
 
 gtree* find_last_sentence(gtree *node, bool &flag, bool &flag1);

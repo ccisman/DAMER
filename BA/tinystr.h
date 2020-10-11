@@ -44,7 +44,6 @@ distribution.
 	#define TIXML_EXPLICIT
 #endif
 
-
 /*
    TiXmlString is an emulation of a subset of the std::string template.
    Its purpose is to allow compiling TinyXML on compilers with no or poor STL support.

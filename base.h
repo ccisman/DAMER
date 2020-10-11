@@ -5,6 +5,7 @@
 #ifndef PDNET_CHECKER_BASE_H
 #define PDNET_CHECKER_BASE_H
 
+
 #include<string>
 
 extern int string_replace(std::string &s1, const std::string &s2, const std::string &s3);

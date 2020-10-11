@@ -10,7 +10,6 @@
 #include<map>
 using namespace std;
 
-
 enum CTN_type{TokenOperator,RelationOperator,Operator,color,variable};
 // Operator{"Addition","Subtraction","Multiplication","Division","Module"};
 

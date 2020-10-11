@@ -1,5 +1,5 @@
 //
-// Created by cc on 2020/8/4.
+// Created by cc on 2020/10/10.
 //
 
 #ifndef PDNET_CHECKER_CPN_H
@@ -20,7 +20,6 @@
 #define H1FACTOR 13
 
 using namespace std;
-
 
 typedef unsigned short VARID;
 typedef unsigned short SORTID;

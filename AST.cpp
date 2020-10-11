@@ -1,5 +1,5 @@
 //
-// Created by cc on 2020/7/25.
+// Created by cc on 2020/10/10.
 //
 
 #define _CRT_SECURE_NO_WARNINGS
@@ -13,7 +13,6 @@
 
 #include"AST.h"
 #include"y.tab.h"
-
 
 set<string> build_in_type {"void","char","short","int","long","float","double"};
 extern string return_suffix;
