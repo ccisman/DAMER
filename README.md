@@ -14,13 +14,17 @@ The c program must satisfy ANSI-C grammar.
 ## Usage
 
 - You can build the project through Cmake(make sure the version of Cmake is matched)
-- The 'test' folder is where you put the test files, including *.c files and *.xml files. Those *.c files is the original program files, while those *.xml files indicate the checked properties using LTL form. To be noticed, those *.xml files' name must match the *.c files. For example, you want to check a program named 'test.c', the correspond xml file must name as 'test-V.xml'.
+- The 'test' folder is where you put the test files, including *.c files and *.xml files. Those *.c files is the original program files, while those *.xml files indicate the checked properties using LTL form. To be noticed, those *.xml files' name must match the *.c files. For example, you want to check a program named 'test.c', the correspond xml file must name as 'test-V.xml'. And make sure the .c file and the .xml file are in the same directory.
 
 
 To run DAMER, use the following command-line from this directory:
 
-$ cmake-build-debug/PDNet_checker [-showtree] [-showcpn] [-fnum 1] -compare test/triangular-2.c
+$ cmake-build-debug/PDNet_checker [-showtree] [-showcpn] [-fnum 1] (-compare|-directbuild|-slice) (filename)
+
+for example:
+$ cmake-build-debug/PDNet_checker -fnum 1 -compare test/fib_bench-1.c
 
 More command can be seen with $ cmake-build-debug/PDNet_checker -help
 
 ## The picture of syntax tree and cpn can be found in this directory, using Graphviz to generate it, so make sure you have installed Graphviz.
+
