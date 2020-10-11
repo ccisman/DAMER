@@ -553,11 +553,11 @@ void cmdlinet::doit() {
 
 void cmdlinet::help() {
     std::cout<<"\n"
-               "* *            PDNet_checker " PDNet_checker_VERSION "    2020-10-10            * *\n";
+               "* *              PDNet_checker " PDNet_checker_VERSION "    2020-10-10            * *\n";
     std::cout <<
-              "* *                        Chen Cheng                       * *\n"
-              "* *      Tongji University, Computer Science Department     * *\n"
-              "* *                      ccisman@163.com                    * *\n"
+//              "* *                        Chen Cheng                       * *\n"
+//              "* *      Tongji University, Computer Science Department     * *\n"
+//              "* *                      ccisman@163.com                    * *\n"
 
               "\n"
               "Optional commands:\n"
