@@ -1,6 +1,6 @@
 # DAMER
 
-an aotumatic tool for modeling and slicing multiple-thread pthread c program
+an aotumatic tool for modeling and slicing multiple-thread c programs(PThread programs).
 
 This project is a tool for building a PDNet model of c program, and alleviate the state space with slicing.
 The c program must satisfy ANSI-C grammar.
