@@ -28,6 +28,7 @@ More command can be seen with $ cmake-build-debug/PDNet_checker -help
 
 ## The picture of syntax tree and cpn can be found in this directory, using Graphviz to generate it, so make sure you have installed Graphviz.
 you can use the following command-line to install Graphviz
+
 $ sudo apt-get install graphviz
 
 The help interface may be like that if running correctly.
