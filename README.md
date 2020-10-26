@@ -94,7 +94,6 @@ $ echo "/usr/local/lib" > /etc/ld.so.conf
 
 ## Usage
 
-- You can build the project through Cmake(make sure the version of Cmake is matched)
 - The 'test' folder is where you put the test files, including *.c files and *.xml files. Those *.c files is the original program files, while those *.xml files indicate the checked properties using LTL form. To be noticed, those *.xml files' name must match the *.c files. For example, you want to check a program named 'test.c', the correspond xml file must name as 'test-V.xml'. And make sure the .c file and the .xml file are in the same directory.
 
 
