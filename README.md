@@ -30,67 +30,64 @@ $ tar -xzvf m4-1.4.13.tar.gz \
 $ cd m4-1.4.13 \
 $ ./configure --prefix=/usr/local
 
-$ make && make install
+$ sudo make && make install \
 $ cd ..
 
 if there is an error occured, use the following commands:
 
-#$ sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c
-
-#$ echo "#define _IO_IN_BACKUP 0x100" >> lib/stdio-impl.h
-
+#$ sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c \
+#$ echo "#define _IO_IN_BACKUP 0x100" >> lib/stdio-impl.h \
 #$ sudo make install
 
 Second, you should install autoconf
 
 $ wget http://mirrors.kernel.org/gnu/autoconf/autoconf-2.65.tar.gz \
-&& tar -xzvf autoconf-2.65.tar.gz \
-&& cd autoconf-2.65 \
-&& ./configure --prefix=/usr/local
+$ tar -xzvf autoconf-2.65.tar.gz \
+$ cd autoconf-2.65 \
+$ ./configure --prefix=/usr/local
 
-$ sudo make && make install
+$ sudo make && make install \
 $ cd ..
 
 Third, you should install automake
 
 $ wget http://mirrors.kernel.org/gnu/automake/automake-1.11.1tar.gz \
-&& tar xzvf automake-1.11.1tar.gz \
-&& cd automake-1.11.1 \
-&& ./configure --prefix=/usr/local
+$ tar xzvf automake-1.11.1tar.gz \
+$ cd automake-1.11.1 \
+$ ./configure --prefix=/usr/local
 
-$ sudo make && make install
+$ sudo make && make install \
 $ cd ..
 
 Forth, you should install libtool
 
 $ wget http://mirrors.kernel.org/gnu/libtool/libtool-2.2.6b.tar.gz \
-&& tar xzvf libtool-2.2.6b.tar.gz \
-&& cd libtool-2.2.6b \
-&& ./configure --prefix=/usr/local
+$ tar xzvf libtool-2.2.6b.tar.gz \
+$ cd libtool-2.2.6b \
+$ ./configure --prefix=/usr/local
 
-$ sudo make && make install
+$ sudo make && make install \
 $ cd ..
 
 Fifth, you should install libunwind
 
 $ wget http://download.savannah.gnu.org/releases/libunwind/libunwind-1.1.tar.gz \
-&& tar -xf libunwind-1.1.tar.gz \
-&& cd libunwind-1.1 \
-&& ./configure --prefix=/usr/local 
+$ tar -xf libunwind-1.1.tar.gz \
+$ cd libunwind-1.1 \
+$ ./configure --prefix=/usr/local 
 
-$ sudo make && make install
+$ sudo make && make install \
 $ cd ..
 
 Finally, you can install google-perftools
 
-get the newest google-perftools-*.tar.gz from https://github.com/gperftools/gperftools/releases , then do:
+get the newest google-perftools-2.x.tar.gz from https://github.com/gperftools/gperftools/releases , then do:
 
-$ tar zxvf gperftools-*.tar.gz
-&& cd gperftools-*
-&& ./configure --prefix=/usr/local
+$ tar zxvf gperftools-2.x.tar.gz \ 
+$ cd gperftools-2.x \
+$ ./configure --prefix=/usr/local
 
-$ sudo make && make install
-
+$ sudo make && make install \
 $ echo "/usr/local/lib" > /etc/ld.so.conf 
 
 ## Usage
