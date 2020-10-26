@@ -73,9 +73,9 @@ $ cd ..
 
 Fifth, you should install libunwind
 
-$ wget http://download.savannah.gnu.org/releases/libunwind/libunwind-1.1.tar.gz
-&& tar -xf libunwind-1.1.tar.gz
-&& cd libunwind-1.1
+$ wget http://download.savannah.gnu.org/releases/libunwind/libunwind-1.1.tar.gz \
+&& tar -xf libunwind-1.1.tar.gz \
+&& cd libunwind-1.1 \
 && ./configure --prefix=/usr/local 
 
 $ sudo make && make install
@@ -83,7 +83,7 @@ $ cd ..
 
 Finally, you can install google-perftools
 
-get the newest google-perftools-*.tar.gz from https://github.com/gperftools/gperftools/releases
+get the newest google-perftools-*.tar.gz from https://github.com/gperftools/gperftools/releases , then do:
 
 $ tar zxvf gperftools-*.tar.gz
 && cd gperftools-*
