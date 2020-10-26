@@ -22,9 +22,11 @@ To run DAMER, use the following command-line from this directory:
 $ cmake-build-debug/PDNet_checker [-showtree] [-showcpn] [-fnum 1] (-compare|-directbuild|-slice) (filename)
 
 for example:
+
 $ cmake-build-debug/PDNet_checker -fnum 1 -compare test/fib_bench-1.c
 
 More command can be seen with:
+
 $ cmake-build-debug/PDNet_checker -help
 
 ## The picture of syntax tree and cpn can be found in this directory, using Graphviz to generate it, so make sure you have installed Graphviz.
