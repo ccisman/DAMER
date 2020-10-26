@@ -73,7 +73,7 @@ $ cd ..
 Fifth, you should install libunwind
 
 $ wget http://download.savannah.gnu.org/releases/libunwind/libunwind-1.1.tar.gz \
-$ tar -xf libunwind-1.1.tar.gz \
+$ tar -zxvf libunwind-1.1.tar.gz \
 $ cd libunwind-1.1 \
 $ ./configure --prefix=/usr/local 
 
@@ -84,13 +84,13 @@ Finally, you can install google-perftools
 
 get the newest google-perftools-2.x.tar.gz from https://github.com/gperftools/gperftools/releases , then do:
 
-$ tar zxvf gperftools-2.x.tar.gz \
+$ tar -zxvf gperftools-2.x.tar.gz \
 $ cd gperftools-2.x \
 $ ./configure --prefix=/usr/local
 
 $ sudo make && sudo make install \
 $ su \
-$ echo "/usr/local/lib" > /etc/ld.so.conf 
+$ echo "/usr/local/lib" > /etc/ld.so.conf
 
 ## Usage
 
