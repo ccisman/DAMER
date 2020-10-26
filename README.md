@@ -52,8 +52,8 @@ $ cd ..
 
 Third, you should install automake
 
-$ wget http://mirrors.kernel.org/gnu/automake/automake-1.11.1tar.gz \
-$ tar xzvf automake-1.11.1tar.gz \
+$ wget http://mirrors.kernel.org/gnu/automake/automake-1.11.1.tar.gz \
+$ tar xzvf automake-1.11.1.tar.gz \
 $ cd automake-1.11.1 \
 $ ./configure --prefix=/usr/local
 
