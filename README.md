@@ -30,7 +30,7 @@ $ tar -xzvf m4-1.4.13.tar.gz \
 $ cd m4-1.4.13 \
 $ ./configure --prefix=/usr/local
 
-$ sudo make && make install \
+$ sudo make && sudo make install \
 $ cd ..
 
 if there is an error occured, use the following commands:
@@ -47,7 +47,7 @@ $ tar -xzvf autoconf-2.65.tar.gz \
 $ cd autoconf-2.65 \
 $ ./configure --prefix=/usr/local
 
-$ sudo make && make install \
+$ sudo make && sudo make install \
 $ cd ..
 
 Third, you should install automake
@@ -57,7 +57,7 @@ $ tar xzvf automake-1.11.1tar.gz \
 $ cd automake-1.11.1 \
 $ ./configure --prefix=/usr/local
 
-$ sudo make && make install \
+$ sudo make && sudo make install \
 $ cd ..
 
 Forth, you should install libtool
@@ -67,7 +67,7 @@ $ tar xzvf libtool-2.2.6b.tar.gz \
 $ cd libtool-2.2.6b \
 $ ./configure --prefix=/usr/local
 
-$ sudo make && make install \
+$ sudo make && sudo make install \
 $ cd ..
 
 Fifth, you should install libunwind
@@ -77,7 +77,7 @@ $ tar -xf libunwind-1.1.tar.gz \
 $ cd libunwind-1.1 \
 $ ./configure --prefix=/usr/local 
 
-$ sudo make && make install \
+$ sudo make && sudo make install \
 $ cd ..
 
 Finally, you can install google-perftools
@@ -88,7 +88,7 @@ $ tar zxvf gperftools-2.x.tar.gz \
 $ cd gperftools-2.x \
 $ ./configure --prefix=/usr/local
 
-$ sudo make && make install \
+$ sudo make && sudo make install \
 $ echo "/usr/local/lib" > /etc/ld.so.conf 
 
 ## Usage
