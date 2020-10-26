@@ -84,11 +84,12 @@ Finally, you can install google-perftools
 
 get the newest google-perftools-2.x.tar.gz from https://github.com/gperftools/gperftools/releases , then do:
 
-$ tar zxvf gperftools-2.x.tar.gz \ 
+$ tar zxvf gperftools-2.x.tar.gz \
 $ cd gperftools-2.x \
 $ ./configure --prefix=/usr/local
 
 $ sudo make && sudo make install \
+$ su \
 $ echo "/usr/local/lib" > /etc/ld.so.conf 
 
 ## Usage
