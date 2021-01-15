@@ -7,7 +7,7 @@
 #include"BA/tinyxml.h"
 #include"product.h"
 #include"cpn.h"
-#include"base.h"
+//#include"base.h"
 using namespace std;
 
 extern char LTLFfile[] ;

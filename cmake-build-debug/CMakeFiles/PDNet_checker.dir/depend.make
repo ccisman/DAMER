@@ -41,25 +41,20 @@ CMakeFiles/PDNet_checker.dir/BA/tinyxmlparser.cpp.o: ../BA/tinyxmlparser.cpp
 
 CMakeFiles/PDNet_checker.dir/base.cpp.o: ../base.cpp
 
-CMakeFiles/PDNet_checker.dir/condition_tree.cpp.o: ../AST.h
-CMakeFiles/PDNet_checker.dir/condition_tree.cpp.o: ../condition_tree.cpp
-CMakeFiles/PDNet_checker.dir/condition_tree.cpp.o: ../condition_tree.h
-CMakeFiles/PDNet_checker.dir/condition_tree.cpp.o: ../cpn.h
-CMakeFiles/PDNet_checker.dir/condition_tree.cpp.o: ../y.tab.h
-
 CMakeFiles/PDNet_checker.dir/cpn.cpp.o: ../AST.h
 CMakeFiles/PDNet_checker.dir/cpn.cpp.o: ../base.h
-CMakeFiles/PDNet_checker.dir/cpn.cpp.o: ../condition_tree.h
 CMakeFiles/PDNet_checker.dir/cpn.cpp.o: ../cpn.cpp
 CMakeFiles/PDNet_checker.dir/cpn.cpp.o: ../cpn.h
+CMakeFiles/PDNet_checker.dir/cpn.cpp.o: ../expression_tree.h
 CMakeFiles/PDNet_checker.dir/cpn.cpp.o: ../v_table.h
 CMakeFiles/PDNet_checker.dir/cpn.cpp.o: ../y.tab.h
 
 CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o: ../AST.h
-CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o: ../condition_tree.h
+CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o: ../base.h
 CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o: ../cpn.h
 CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o: ../cpn_rg.cpp
 CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o: ../cpn_rg.h
+CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o: ../expression_tree.h
 CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o: ../y.tab.h
 
 CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../AST.h
@@ -70,12 +65,15 @@ CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../BA/set.h
 CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../BA/tinystr.h
 CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../BA/tinyxml.h
 CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../base.h
-CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../condition_tree.h
 CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../cpn.h
 CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../cpn_rg.h
 CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../criteria.cpp
+CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../expression_tree.h
 CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../product.h
 CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../y.tab.h
+
+CMakeFiles/PDNet_checker.dir/expression_tree.cpp.o: ../expression_tree.cpp
+CMakeFiles/PDNet_checker.dir/expression_tree.cpp.o: ../expression_tree.h
 
 CMakeFiles/PDNet_checker.dir/lex.y.cpp.o: ../AST.h
 CMakeFiles/PDNet_checker.dir/lex.y.cpp.o: ../lex.y.cpp
@@ -92,9 +90,9 @@ CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../BA/set.h
 CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../BA/tinystr.h
 CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../BA/tinyxml.h
 CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../base.h
-CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../condition_tree.h
 CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../cpn.h
 CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../cpn_rg.h
+CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../expression_tree.h
 CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../pdnet_parseoption.cpp
 CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../pdnet_parseoption.h
 CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../product.h
@@ -111,9 +109,9 @@ CMakeFiles/PDNet_checker.dir/product.cpp.o: ../BA/set.h
 CMakeFiles/PDNet_checker.dir/product.cpp.o: ../BA/tinystr.h
 CMakeFiles/PDNet_checker.dir/product.cpp.o: ../BA/tinyxml.h
 CMakeFiles/PDNet_checker.dir/product.cpp.o: ../base.h
-CMakeFiles/PDNet_checker.dir/product.cpp.o: ../condition_tree.h
 CMakeFiles/PDNet_checker.dir/product.cpp.o: ../cpn.h
 CMakeFiles/PDNet_checker.dir/product.cpp.o: ../cpn_rg.h
+CMakeFiles/PDNet_checker.dir/product.cpp.o: ../expression_tree.h
 CMakeFiles/PDNet_checker.dir/product.cpp.o: ../product.cpp
 CMakeFiles/PDNet_checker.dir/product.cpp.o: ../product.h
 CMakeFiles/PDNet_checker.dir/product.cpp.o: ../y.tab.h
@@ -121,8 +119,9 @@ CMakeFiles/PDNet_checker.dir/product.cpp.o: ../y.tab.h
 CMakeFiles/PDNet_checker.dir/slice.cpp.o: ../AST.h
 CMakeFiles/PDNet_checker.dir/slice.cpp.o: ../BA/tinystr.h
 CMakeFiles/PDNet_checker.dir/slice.cpp.o: ../BA/tinyxml.h
-CMakeFiles/PDNet_checker.dir/slice.cpp.o: ../condition_tree.h
+CMakeFiles/PDNet_checker.dir/slice.cpp.o: ../base.h
 CMakeFiles/PDNet_checker.dir/slice.cpp.o: ../cpn.h
+CMakeFiles/PDNet_checker.dir/slice.cpp.o: ../expression_tree.h
 CMakeFiles/PDNet_checker.dir/slice.cpp.o: ../slice.cpp
 CMakeFiles/PDNet_checker.dir/slice.cpp.o: ../v_table.h
 CMakeFiles/PDNet_checker.dir/slice.cpp.o: ../y.tab.h

@@ -8,16 +8,6 @@
 
 extern vector<V_Table *> v_tables;
 extern string end_suffix,return_suffix,begin_suffix,join_suffix;
-template <class T>
-bool exist_in(vector<T> vec,T element)
-{
-    for(unsigned int i=0;i<vec.size();i++)
-        if(element == vec[i])
-            return true;
-
-    return false;
-}
-
 
 
 void GetLTLC(CPN *cpn, TiXmlElement *p, vector<string> &criteria)
@@ -724,7 +714,7 @@ void post_process(CPN *cpn,CPN *cpn_slice,vector<string> transitions)
             else
                 trans_vec = find_previous_T(cpn_slice->place[i].id,cpn,transitions,true);
             for(unsigned int j=0;j<trans_vec.size();j++) {
-                cpn_slice->Add_Arc(trans_vec[j]->id, cpn_slice->place[i].id, "", false, executed);
+                cpn_slice->Add_Arc(trans_vec[j]->id, cpn_slice->place[i].id, "1`tid", false, executed);
                 CSArc csArc1,csArc2;
                 csArc1.arcType = cpn_slice->arc[cpn_slice->arccount-1].arcType;
                 csArc1.arc_exp = cpn_slice->arc[cpn_slice->arccount-1].arc_exp;

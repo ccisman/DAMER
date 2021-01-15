@@ -4,7 +4,6 @@
 
 #include "cpn.h"
 #include "v_table.h"
-#include "base.h"
 #include<cmath>
 
 SortTable sorttable;
@@ -14,6 +13,19 @@ vector<V_Table *> v_tables;//variable tables
 
 
 int gen_P_num=0,gen_T_num=0;
+ID_t id_ptr = 100;
+TID_t init_tid = "\"main\"";
+TID_t pthread_P = "pthread";
+type TID_colorset = String;
+//TID_t tid_increment = 1000;
+//string tid_store_P;
+//string tid_store_type = "tid_store";
+//string oldtid_str = "oldtid";
+
+map<string,string> map_address;//first is address(string),second is variable. address(1)——variable(1)
+
+map<string,unsigned short> place_size;//first is place,second is size. place(1)——address(n)
+map<string,bool> place_isglobal;//first is place,second is isglobal. isglobal and size should be together(can be improved)
 
 map<string,type> map_build_in_type {
         {"void",dot},
@@ -24,21 +36,24 @@ map<string,type> map_build_in_type {
         {"float",Real},
         {"double",Real}
 };
-string arr_suffix = "_arr",begin_suffix = " begin"
-        ,end_suffix = " end",return_suffix = "_v",
-        call_suffix = "()",para_suffix = "_para",
+//map<string,MSI> usrdf_type;
+string controlflag = "control";
+string arr_suffix = "_arr",var_suffix = "_var",begin_suffix = " begin",
+        id_suffix = "_id",tid_str = "tid",
+        end_suffix = " end",return_suffix = "_v",
+        call_suffix = "()",global_suffix = "_global",
         call_statement_suffix = "_call",join_suffix = " join";
 string executed_P_name = "executed_P";
 vector<string> pthread_type = {"pthread_t","pthread_mutex_t","pthread_cond_t"};
 vector<string> pthread_func_type = {"pthread_create","pthread_join","pthread_exit",
                                     "pthread_mutex_init","pthread_mutex_lock","pthread_mutex_unlock",
                                     "pthread_cond_init","pthread_cond_signal","pthread_cond_wait"};
+vector<string> lib_func_type = {"printf","malloc","calloc"};
 
 extern int string_replace(std::string &s1, const std::string &s2, const std::string &s3);
 vector<string> extract_paras(gtree *p);
 void init_pthread_type()
 {
-
     aka temp;
     for(unsigned int i=0;i<pthread_type.size();i++) {
         temp.origin_name = "";
@@ -139,74 +154,42 @@ string opposite_all(string s)
     }
     return result;
 }
+
 void splitExpression(string &s, vector<string>& v)
 {
-    string s1;
-    bool flag_shut = false;
+    string tmp;
+    int arr_count = 0;
     for (unsigned int i = 0; i < s.length(); i++)
     {
-        if (s[i] == '(' || s[i] == ')')
-            continue;
-        else if (s[i] == '#')
-            flag_shut = true;
-        if (s[i] == '<' || s[i] == '>')
-        {
-            if (s[i + 1] == '=')
-                i++;
+//        if (s[i] == '(' || s[i] == ')')
+//            continue;
+//        if(s[i] == '[')
+//            arr_count++;
+//        else if(s[i] == ']')
+//            arr_count--;
+//        int count = is_operator(s,i);
+//        if(count != 0 && arr_count == 0){
+//            v.push_back(tmp);
+//            tmp.clear();
+//            i += count-1;
+//        }
+//        else
+//            tmp = tmp + s[i];
 
-            v.push_back(s1);
-            s1.clear();
-            flag_shut = false;
-        }
-        else if (s[i] == '=')
+//  Here we just extract all those variable occured in string:s. no matter where it is.
+        if(!isdigit(s[i]) && !isalpha(s[i]) && s[i]!='_')
         {
-            v.push_back(s1);
-            s1.clear();
-            flag_shut = false;
-        }
-        else if (s[i] == '|')
-        {
-            if (s[i + 1] == '|')
+            if(!isdigit(s[i+1]) && !isalpha(s[i+1]) && s[i+1]!='_')
                 i++;
-            v.push_back(s1);
-            s1.clear();
-            flag_shut = false;
+            if(!exist_in(v,tmp) && !tmp.empty())
+                v.push_back(tmp);
+            tmp.clear();
         }
-        else if (s[i] == '&')
-        {
-            if (s[i + 1] == '&')
-                i++;
-            v.push_back(s1);
-            s1.clear();
-            flag_shut = false;
-        }
-        else if (s[i] == '+' || s[i] == '-' || s[i] == '*' || s[i] == '/')
-        {
-            v.push_back(s1);
-            s1.clear();
-            flag_shut = false;
-        }
-        else if (s[i] == '!' || s[i] == '=')
-        {
-            if (s[i + 1] == '=')
-                i++;
-            //else
-            //cout << "�����쳣!=��==" << endl;
-            v.push_back(s1);
-            s1.clear();
-            flag_shut = false;
-        }
-        else if (s[i] == '%')
-        {
-            v.push_back(s1);
-            s1.clear();
-            flag_shut = false;
-        }
-        else if (flag_shut == false)
-            s1 = s1 + s[i];
+        else
+            tmp = tmp + s[i];
     }
 
-    v.push_back(s1);
+    v.push_back(tmp);
 }
 string find_P_name(string v_name,string base)
 {
@@ -220,52 +203,198 @@ string find_P_name(string v_name,string base)
     cout<<"can't find P name"<<endl;
     exit(-1);
 }
+int find_v_size(string v_name,string base)
+{
+    for(unsigned int i=0;i<v_tables.size();i++)
+    {
+        if(v_tables[i]->name == base)
+        {
+            return v_tables[i]->get_size(v_name);
+        }
+    }
+    cout<<"can't find v size"<<endl;
+    exit(-1);
+}
+bool find_v_ispointer(string v_name,string base)
+{
+    for(unsigned int i=0;i<v_tables.size();i++)
+    {
+        if(v_tables[i]->name == base)
+        {
+            return v_tables[i]->get_ispointer(v_name);
+        }
+    }
+    cout<<"can't find v ispointer"<<endl;
+    exit(-1);
+}
+bool find_v_isglobal(string v_name,string base){
+
+    for(unsigned int i=0;i<v_tables.size();i++)
+    {
+        if(v_tables[i]->name == base)
+        {
+            return v_tables[i]->get_isglobal(v_name);
+        }
+    }
+    cout<<"can't find v isglobal"<<endl;
+    exit(-1);
+}
+
+//vector<string> find_v_reltab(string v_name,string base)
+//{
+//    for(unsigned int i=0;i<v_tables.size();i++)
+//    {
+//        if(v_tables[i]->name == base)
+//        {
+//            return v_tables[i]->get_pointerrelated(v_name);
+//        }
+//    }
+//    cout<<"can't find v reltab!"<<endl;
+//    exit(-1);
+//}
+
+//***************   create_connect   *************//
+//Input: petri net, related transition, expression, base deal with homonymous variable
+//Function: split the expression, and create connection between T and places splited in the expression
+
+string construct_arcexpstr(string value,string index,string id,string tid){
+    string result;
+
+    if(index == "" && id == "" && tid == "") {
+        result = "1`" + value;
+        return result;
+    }
+
+    result.append("1`{");
+    result.append(value);
+    if(!index.empty()){
+        result.append(",");
+        result.append(index);
+    }
+    if(!id.empty()) {
+        result.append(",");
+        result.append(id);
+    }
+    if(!tid.empty()) {
+        result.append(",");
+        result.append(tid);
+    }
+    result.append("}");
+
+    return result;
+}
+
 void create_connect(CPN *petri, string T, string express, string base)
 {
     string P2;
     vector<string> v;
     string V;
     bool sourceP;
+    bool ispointer,isglobal;
+    int size;
     splitExpression(express, v);
-    set<string> exist_V;
+//    set<string> exist_V;
     for (unsigned int i = 0; i < v.size(); i++)
     {
         if (v[i][0] == '_' || (v[i][0] >= 'a'&&v[i][0] <= 'z') || (v[i][0] >= 'A'&&v[i][0] <= 'Z'))
         {
-            int position = 0;
-            for (unsigned int j = 0; j < v[i].length(); j++)
-            {
-                if (v[i][j] == '[')
-                {
-                    position = j;
-                    break;
-                }
+            auto pos = v[i].find('[');
+            string id,index;
+            if(pos != string::npos){
+                id = v[i].substr(0,pos);
+                index = v[i].substr(pos+1,v[i].size()-pos-2);
             }
-            if (position != 0)
-                v[i] = v[i].substr(0, position);
+            else
+                id = v[i];
+
+            //_v place's arc construct in handle_call
             if(v[i].length()>return_suffix.length() &&
             v[i].substr(v[i].length()-return_suffix.length()) == return_suffix)
                 continue;
 
-            P2 = find_P_name(v[i],base);
+            P2 = find_P_name(id,base);
+            size = find_v_size(id,base);
+            ispointer = find_v_ispointer(id,base);
+            isglobal = find_v_isglobal(id,base);
 
-            V = v[i];
+            auto idpiter = petri->mapPlace.find(P2);
+            id = petri->place[idpiter->second].expression;
+            string tid_flag;
+            if(isglobal)
+                tid_flag = "";
+            else
+                tid_flag = tid_str;
 
-            auto viter = exist_V.find(V);
-            if(viter!=exist_V.end())
-                continue;
+            if(ispointer){
+                //pointer
+
+                V = construct_arcexpstr(id,"",id+id_suffix,tid_flag);
+
+//                vector<string> reltab = find_v_reltab(id,base);
+                for(auto iter = place_size.begin();iter!=place_size.end();iter++){
+
+                    auto giter = place_isglobal.find(iter->first);
+                    if(giter == place_isglobal.end()){
+                        cerr<<"ERROR!place_isglobal and place_size don't match!"<<endl;
+                        exit(-1);
+                    }
+                    string tid_flag1;
+                    if(giter->second)
+                        tid_flag1 = "";
+                    else
+                        tid_flag1 = tid_str;
+
+                    auto piter = petri->mapPlace.find(iter->first);
+                    if(piter == petri->mapPlace.end()){
+                        cerr<<"ERROR!can't find place!"<<endl;
+                        exit(-1);
+                    }
+                    string Exp ,sub_id = petri->place[piter->second].expression;
+                    if(iter->second>1) {
+                        for (unsigned short j = 0; j < iter->second; j++) {
+                            if(j!=0)
+                                Exp += "++";
+                            Exp += construct_arcexpstr(sub_id + to_string(j), to_string(j), sub_id + to_string(j) + id_suffix,
+                                                       tid_flag1);
+                        }
+                    }
+                    else
+                        Exp = construct_arcexpstr(sub_id, "", sub_id + id_suffix, tid_flag1);
+                    petri->Add_Arc_override(T,iter->first,Exp,false,remain,true);
+                    petri->Add_Arc_override(iter->first,T,Exp,true,remain,true);
+                }
+            }
+            if(size > 1){
+                //array
+
+                for(unsigned int j=0;j<size;j++) {
+                    if(j!=0)
+                        V.append("++");
+                    V += construct_arcexpstr(id + to_string(j),to_string(j),id+to_string(j)+id_suffix,tid_flag);
+                }
+            }
+            else
+                V = construct_arcexpstr(id,"",id + id_suffix,tid_flag);
+
+
+//            auto viter = exist_V.find(V);
+//            if(viter!=exist_V.end())
+//                continue;
             auto iter = petri->mapTransition.find(T);
             if(iter == petri->mapTransition.end())
             {
                 cout<<"create_connect can't find T"<<endl;
                 exit(-1);
             }
-            petri->transition[iter->second].relvars.insert(V);
-            exist_V.insert(V);
-            petri->Add_Variable(V,P2);
+//            petri->transition[iter->second].relvars.insert(V);
+//            exist_V.insert(V);
 
-            petri->Add_Arc(P2,T,V,true,data);
-            petri->Add_Arc(T,P2,V,false,data);
+//            auto piter = petri->mapPlace.find(P2);
+
+//            petri->Add_Variable(V,petri->place[piter->second].initMarking.tid,petri->place[piter->second].initMarking.sid);
+
+            petri->Add_Arc_override(P2,T,V,true,data,false);
+            petri->Add_Arc_override(T,P2,V,false,data,false);
 //            sourceP = true;
 //            petri.Add_Arc(P2, T, V, sourceP);//_v库所
 //            sourceP = false;
@@ -278,7 +407,7 @@ void create_connect(CPN *petri, string T, string express, string base)
 void iter_extra(CPN *petri,string newP,string _P){
     vector<string> false_exit = petri->get_falseexit_T(_P);
     for (unsigned int i = 0; i < false_exit.size(); i++)
-        petri->Add_Arc(false_exit[i], newP, "", false, executed);
+        petri->Add_Arc(false_exit[i], newP, "1`tid", false, executed);
 }
 void inside_block(CPN *petri, gtree *tree1, string T)//tree1 indicates a compound_statement node
 {
@@ -358,15 +487,15 @@ void inside_block(CPN *petri, gtree *tree1, string T)//tree1 indicates a compoun
             //call_P[0]代表调用到的第一个函数
 //            for (unsigned int i = 0; i < call_P.size(); i++) {
                 if (mutex_flag == false)
-                    petri->Add_Arc(T, call_P[0], "", false, control);
+                    petri->Add_Arc(T, call_P[0], "1`tid", false, control);
                 else
-                    petri->Add_Arc(mutex_T, call_P[0], "", false, control);
+                    petri->Add_Arc(mutex_T, call_P[0], "1`tid", false, control);
 //            }
         } else {
             if (mutex_flag == false)
-                petri->Add_Arc(T, _P, "", false, control);
+                petri->Add_Arc(T, _P, "1`tid", false, control);
             else
-                petri->Add_Arc(mutex_T, _P, "", false, control);
+                petri->Add_Arc(mutex_T, _P, "1`tid", false, control);
         }
         //int flag = petri.get_call_flag(_P);
 
@@ -421,6 +550,7 @@ void inside_block(CPN *petri, gtree *tree1, string T)//tree1 indicates a compoun
             mutex_T = lock_T[0];
         } else if (tr->place == "pthread_create" + return_suffix) {
             //simplely process
+
             vector<string> paras = extract_paras(tr->child->child->child->child);
             create_P_list.insert(make_pair(paras[0].substr(1), tr->matched_P));
         }
@@ -431,6 +561,19 @@ void inside_block(CPN *petri, gtree *tree1, string T)//tree1 indicates a compoun
             break;
 
     }
+}
+Product_t new_ProductColor(SORTID sid){
+    int psnum = sorttable.productsort[sid].sortnum;
+    Product_t cid = new SortValue*[psnum];
+    for(unsigned int j=0;j<psnum;j++)
+        if(sorttable.productsort[sid].sortid[j].tid == Integer)
+            cid[j] = new IntegerSortValue;
+        else if(sorttable.productsort[sid].sortid[j].tid == Real)
+            cid[j] = new RealSortValue;
+        else if(sorttable.productsort[sid].sortid[j].tid == String)
+            cid[j] = new StringSortValue;
+
+    return cid;
 }
 vector<string> get_statement_exit(gtree *statement1, CPN *petri)
 {
@@ -508,10 +651,10 @@ vector<string> get_statement_exit(gtree *statement1, CPN *petri)
     return temp_v1;
 }
 
-void Tokens::initiate(token_count_t tc, type sort, int PSnum) {
+void Tokens::initiate(token_count_t tc, type sort,SORTID sid) {
     tokencount = tc;
     if(sort == productsort)
-        color = new ProductSortValue(PSnum);
+        color = new ProductSortValue(sid);
     else if(sort == Integer)
         color = new IntegerSortValue;
     else if(sort == Real)
@@ -527,7 +670,7 @@ void Tokens::initiate(token_count_t tc, type sort, int PSnum) {
     }
 }
 
-int ps_cmp(SortValue **ps1,SortValue **ps2,vector<MSI> psinfo)
+int ps_cmp(Product_t ps1,Product_t ps2,vector<MSI> psinfo)
 {
     for(unsigned int i=0;i<psinfo.size();i++)
     {
@@ -581,17 +724,17 @@ void MultiSet::insert(Tokens *token) {
     Tokens *p = tokenQ->next , *q = tokenQ;
 
     if (tid == productsort) {
-        SortValue **cid1,**cid2;
-        int psnum = sorttable.productsort[sid].sortnum;
-        vector<MSI> psinfo = sorttable.productsort[sid].sortid;
-        cid1 = new SortValue*[psnum];
-        cid2 = new SortValue*[psnum];
-        token->color->getColor(cid2,psnum);
+        Product_t cid1,cid2;
+//        int psnum = sorttable.productsort[sid].sortnum;
+//        vector<MSI> psinfo = sorttable.productsort[sid].sortid;
+        cid1 = new_ProductColor(sid);
+        cid2 = new_ProductColor(sid);
+        token->color->getColor(cid2,sid);
         int cmp;
         while(p)
         {
-            p->color->getColor(cid1,psnum);
-            cmp = ps_cmp(cid1,cid2,psinfo);
+            p->color->getColor(cid1,sid);
+            cmp = ps_cmp(cid1,cid2,sorttable.productsort[sid].sortid);
             if(cmp>=0)
                 break;
             q=p;
@@ -694,16 +837,16 @@ bool MultiSet::operator>=(const MultiSet &ms1) {
     {
         while(t2)
         {
-            SortValue **cid1,**cid2;
-            int psnum = sorttable.productsort[sid].sortnum;
+            Product_t cid1,cid2;
+//            int psnum = sorttable.productsort[sid].sortnum;
             vector<MSI> psinfo = sorttable.productsort[sid].sortid;
-            cid1 = new SortValue*[psnum];
-            cid2 = new SortValue*[psnum];
-            t2->color->getColor(cid2,psnum);
+            cid1 = new_ProductColor(sid);
+            cid2 = new_ProductColor(sid);
+            t2->color->getColor(cid2,sid);
             int cmp;
             while(t1)
             {
-                t1->color->getColor(cid1,psnum);
+                t1->color->getColor(cid1,sid);
                 cmp = ps_cmp(cid1,cid2,psinfo);
                 if(cmp>0)
                     return false;
@@ -853,16 +996,16 @@ void MultiSet::MINUS(MultiSet &ms) {
     {
         while(t2)
         {
-            SortValue **cid1,**cid2;
-            int psnum = sorttable.productsort[sid].sortnum;
+            Product_t cid1,cid2;
+//            int psnum = sorttable.productsort[sid].sortnum;
             vector<MSI> psinfo = sorttable.productsort[sid].sortid;
-            cid1 = new SortValue*[psnum];
-            cid2 = new SortValue*[psnum];
-            t2->color->getColor(cid2,psnum);
+            cid1 = new_ProductColor(sid);
+            cid2 = new_ProductColor(sid);
+            t2->color->getColor(cid2,sid);
             int cmp;
             while(t1)
             {
-                t1->color->getColor(cid1,psnum);
+                t1->color->getColor(cid1,sid);
                 cmp = ps_cmp(cid1,cid2,psinfo);
                 if(cmp>0) {
                     cout<<"MINUS error!"<<endl;
@@ -1078,26 +1221,44 @@ void MultiSet::MINUS(MultiSet &ms) {
         cout<<"error tid in MINUS"<<endl;
         exit(-1);
     }
-//    Tokens *temp;
-//    t2 = ms.tokenQ->next;
-//    while(t2)
-//    {
-//        temp = t2;
-//        t2 = t2->next;
-//        delete temp;
-//    }
-//    ms.tokenQ->next = NULL;
 }
 
 void MultiSet::PLUS(MultiSet &ms) {
 
-    Tokens *t1 = tokenQ->next,*t2=ms.tokenQ->next;
-    while(t2)
-    {
-        insert(t2);
-        t2=t2->next;
+    Tokens *t1 = tokenQ->next,*t2=ms.tokenQ->next,*tmp;
+    while(t2) {
+        tmp = new Tokens;
+        tmp->tokencount = t2->tokencount;
+        if (tid == productsort) {
+            Product_t cid;
+            int psnum = sorttable.productsort[sid].sortnum;
+            //vector<MSI> psinfo = sorttable.productsort[sid].sortid;
+            cid = new_ProductColor(sid);
+            t2->color->getColor(cid, sid);
+            tmp->color = new ProductSortValue(sid);
+            tmp->color->setColor(cid, sid);
+            delete[] cid;
+        } else if (tid == Integer) {
+            Integer_t cid;
+            t2->color->getColor(cid);
+            tmp->color = new IntegerSortValue;
+            tmp->color->setColor(cid);
+        } else if (tid == Real) {
+            Real_t cid;
+            t2->color->getColor(cid);
+            tmp->color = new RealSortValue;
+            tmp->color->setColor(cid);
+        } else if (tid == String) {
+            String_t cid;
+            t2->color->getColor(cid);
+            tmp->color = new StringSortValue;
+            tmp->color->setColor(cid);
+        } else if (tid == dot);
+
+        insert(tmp);
+        t2 = t2->next;
     }
-    ms.tokenQ->next = NULL;
+//    ms.tokenQ->next = NULL;
 }
 
 void MultiSet::operator=(const MultiSet &ms) {
@@ -1106,39 +1267,42 @@ void MultiSet::operator=(const MultiSet &ms) {
     color_count = ms.color_count;
     hash_value = ms.hash_value;
     Tokens *t1=tokenQ,*t2 = ms.tokenQ->next;
-    int psnum = 0;
-    if(ms.tid == productsort)
-        psnum = sorttable.productsort[ms.sid].sortnum;
+//    int psnum = 0;
+//    if(ms.tid == productsort)
+//        psnum = sorttable.productsort[ms.sid].sortnum;
     while(t2)
     {
         t1->next = new Tokens;
-        t1->next->initiate(t2->tokencount,ms.tid,psnum);
+        t1->next->initiate(t2->tokencount,ms.tid,sid);
         if(ms.tid == productsort)
         {
-            SortValue **cid1,**cid2;
-            t2->color->getColor(cid1,psnum);
-            t1->next->color->setColor(cid1,psnum);
+            Product_t cid;
+            cid = new_ProductColor(sid);
+            t2->color->getColor(cid,sid);
+            t1->next->color->setColor(cid,sid);
+            delete[] cid;
         }
         else if(ms.tid == Integer)
         {
-            Integer_t cid1,cid2;
-            t2->color->getColor(cid1);
-            t1->next->color->setColor(cid1);
+            Integer_t cid;
+            t2->color->getColor(cid);
+            t1->next->color->setColor(cid);
         }
         else if(ms.tid == Real)
         {
-            Real_t cid1,cid2;
-            t2->color->getColor(cid1);
-            t1->next->color->setColor(cid1);
+            Real_t cid;
+            t2->color->getColor(cid);
+            t1->next->color->setColor(cid);
         }
         else if(ms.tid == String)
         {
-            String_t cid1,cid2;
-            t2->color->getColor(cid1);
-            t1->next->color->setColor(cid1);
+            String_t cid;
+            t2->color->getColor(cid);
+            t1->next->color->setColor(cid);
         }
 
         t2=t2->next;
+        t1=t1->next;
     }
     if(t1->next)
         t1->next->next = NULL;
@@ -1151,10 +1315,10 @@ index_t MultiSet::Hash() {
         hv = color_count*H1FACTOR*H1FACTOR*H1FACTOR;
         Tokens *p;
         int sortnum = sorttable.productsort[sid].sortnum;
-        SortValue **cid = new SortValue*[sortnum];
+        Product_t cid = new_ProductColor(sid);
         for(p=tokenQ->next;p!=NULL;p=p->next)
         {
-            p->color->getColor(cid,sortnum);
+            p->color->getColor(cid,sid);
             hv += p->tokencount*H1FACTOR*H1FACTOR;
             for(int j=0;j<sortnum;++j)
             {
@@ -1229,16 +1393,16 @@ bool MultiSet::operator==(const MultiSet &ms) {
     {
         while(t2)
         {
-            SortValue **cid1,**cid2;
+            Product_t cid1,cid2;
             int psnum = sorttable.productsort[sid].sortnum;
             vector<MSI> psinfo = sorttable.productsort[sid].sortid;
-            cid1 = new SortValue*[psnum];
-            cid2 = new SortValue*[psnum];
-            t2->color->getColor(cid2,psnum);
+            cid1 = new_ProductColor(sid);
+            cid2 = new_ProductColor(sid);
+            t2->color->getColor(cid2,sid);
             int cmp;
             while(t1)
             {
-                t1->color->getColor(cid1,psnum);
+                t1->color->getColor(cid1,sid);
                 cmp = ps_cmp(cid1,cid2,psinfo);
                 if(cmp>0)
                     return false;
@@ -1371,11 +1535,57 @@ bool MultiSet::operator==(const MultiSet &ms) {
     return true;
 }
 
-void CPN::Add_Place(string id, string Type_name, int size,bool control_P,string exp) {
+string uniqueexp(string exp,CPN *cpn){
+
+    bool found = false;
+    while(1) {
+        found = false;
+        for (unsigned int i = 0; i < cpn->placecount; i++) {
+            if (cpn->place[i].expression == exp) {
+                exp = exp + "1";
+                found = true;
+                break;
+            }
+        }
+        if (!found)
+            break;
+
+    }
+    return exp;
+}
+
+void CPN::Add_Place(string id, string Type_name, int size,bool control_P,string exp,bool isglobal) {
     CPlace *pp = &place[placecount++];
+
+//    //tid_store_type
+//    if(Type_name == tid_store_type){
+//        pp->control_P = false;
+//        pp->id = id;
+//        pp->is_cond = false;
+//        pp->is_mutex = false;
+//        pp->expression = exp;
+//        pp->is_executed = false;
+//        Tokens *token = new Tokens;
+//        token->initiate(1,Integer,0);
+//        token->color->setColor(init_tid);
+//        pp->initMarking.tid = Integer;
+//        pp->initMarking.sid = 0;
+//        pp->initMarking.insert(token);
+//        mapPlace.insert(make_pair(id,placecount-1));
+//        return;
+//    }
+    if(exist_in(pthread_type,Type_name))
+        ;
+    else if(size > 1)
+        Type_name = Type_name + arr_suffix;
+    else if(size == 1)
+        Type_name = Type_name + var_suffix;
+
 
     int psnum = 0;
     pp->control_P = control_P;//pthread_mutex should be redifine
+    if(!control_P)
+        exp = uniqueexp(exp,this);
     pp->expression = exp;
     pp->id = id;
     pp->is_cond = false;
@@ -1390,11 +1600,19 @@ void CPN::Add_Place(string id, string Type_name, int size,bool control_P,string 
         pp->is_executed = false;
 
     //dot type
-    if(Type_name == "") {
-        Tokens *token = new Tokens;
-
+    if(Type_name == "dot"){
         pp->initMarking.tid = dot;
         pp->initMarking.sid = 0;
+        mapPlace.insert(make_pair(id,placecount-1));
+        return ;
+    }
+
+    //control type
+    if(Type_name == controlflag) {
+        Tokens *token = new Tokens;
+        auto siter = sorttable.mapSort.find(controlflag);
+        pp->initMarking.tid = siter->second.tid;
+        pp->initMarking.sid = siter->second.sid;
         mapPlace.insert(make_pair(id,placecount-1));
         return ;
     }
@@ -1415,11 +1633,9 @@ void CPN::Add_Place(string id, string Type_name, int size,bool control_P,string 
         return;
     }
 
-    if(size>1) {
-        Type_name = Type_name + arr_suffix;
-    }
-
-
+    //variable type,including pointer array
+    if(isglobal)
+        Type_name += global_suffix;
     auto siter = sorttable.mapSort.find(Type_name);
     if(siter == sorttable.mapSort.end())
     {
@@ -1433,18 +1649,31 @@ void CPN::Add_Place(string id, string Type_name, int size,bool control_P,string 
         psnum = sorttable.productsort[pp->initMarking.sid].sortnum;
 
     Tokens *token;
+
+    place_size.insert(pair<string,unsigned short>(id,size));
+    place_isglobal.insert(pair<string,bool>(id,isglobal));
+
     if(size >1)
     {
+
         for(int i=0;i<size;i++)
         {
+            map_address.insert(pair<string,string>(to_string(id_ptr),exp + to_string(i)));
             token = new Tokens;
-            token->initiate(1,pp->initMarking.tid,psnum);
+            token->initiate(1,pp->initMarking.tid,pp->initMarking.sid);
             if(pp->initMarking.tid == productsort) {
-                SortValue **cid;
-                cid = new SortValue*[psnum];
-
-                cid[psnum-1]->setColor(Integer_t(i));
-                token->color->setColor(cid,psnum);
+                Product_t cid;
+                cid = new_ProductColor(pp->initMarking.sid);
+                if(!isglobal) {
+                    cid[psnum - 3]->setColor(Integer_t(i));//INDEX in cid[psnum-3]
+                    cid[psnum - 2]->setColor(Integer_t(id_ptr++));
+                    cid[psnum - 1]->setColor(init_tid);
+                }
+                else{
+                    cid[psnum-2]->setColor(Integer_t(i));
+                    cid[psnum-1]->setColor(Integer_t(id_ptr++));
+                }
+                token->color->setColor(cid,pp->initMarking.sid);
                 pp->initMarking.insert(token);
                 delete[] cid;
             }
@@ -1456,18 +1685,24 @@ void CPN::Add_Place(string id, string Type_name, int size,bool control_P,string 
     }
     else if(size == 1)
     {
+        map_address.insert(pair<string,string>(to_string(id_ptr),exp));
         token = new Tokens;
-        token->initiate(1,pp->initMarking.tid,psnum);
+        token->initiate(1,pp->initMarking.tid,pp->initMarking.sid);
 
         if(pp->initMarking.tid == productsort) {
-            SortValue **cid;
-            cid = new SortValue*[psnum];
-            token->color->setColor(cid,psnum);
+            Product_t cid;
+            cid = new_ProductColor(pp->initMarking.sid);
+            if(!isglobal) {
+                cid[psnum - 2]->setColor(Integer_t(id_ptr++));
+                cid[psnum - 1]->setColor(init_tid);
+            }
+            else
+                cid[psnum - 1]->setColor(Integer_t(id_ptr++));
+            token->color->setColor(cid,pp->initMarking.sid);
             pp->initMarking.insert(token);
             delete[] cid;
         }
         else {
-
             switch(pp->initMarking.tid)
             {
                 case Integer:
@@ -1497,10 +1732,11 @@ void CPN::Add_Place(string id, string Type_name, int size,bool control_P,string 
     mapPlace.insert(make_pair(id,placecount-1));
 }
 
-void CPN::Add_Transition(string id, string guard, string exp) {
+void CPN::Add_Transition(string id, string guard, string base) {
     CTransition *tt = &transition[transitioncount++];
     tt->id = id;
     if(guard != "") {
+        guard = "1`" + translate_exp2arcexp(this,guard,base);
         tt->guard.construct(guard);
         tt->hasguard = true;
     }
@@ -1515,30 +1751,61 @@ void CPN::Add_Arc(string source, string target, string exp, bool sourceP,Arc_Typ
     if(exp != "") {
         //aa->arc_exp.deconstruct();
         aa->arc_exp.construct(exp);
+
+        //Add_variable
+        string related_P;
+        SORTID sid;
+        type tid;
+        SORTNUM_t psnum;
+        if(sourceP)
+            related_P = source;
+        else
+            related_P = target;
+        auto piter = mapPlace.find(related_P);
+        if(piter == mapPlace.end()){
+            cerr << "ERROR!Can't find Place!"<<endl;
+            exit(-1);
+        }
+        sid = place[piter->second].initMarking.sid;
+        tid = place[piter->second].initMarking.tid;
+        if(tid == productsort)
+            psnum = sorttable.productsort[sid].sortnum;
+        else
+            psnum = 1;
+        Add_Variable(aa->arc_exp.root,tid,sid,0,psnum-1);
+
         aa->onlydot = false;
     }
-    else
+    else {
         aa->onlydot = true;
+        aa->arc_exp.exp = "";
+        aa->arc_exp.root = NULL;
+    }
     aa->isp2t = sourceP;
     aa->source_id = source;
     aa->target_id = target;
 }
 
-void CPN::Add_Arc_override(string source, string target, string exp, bool sourceP,Arc_Type arcType) {
+void CPN::Add_Arc_override(string source, string target, string exp, bool sourceP,Arc_Type arcType,bool be_overrided) {
     CArc *aa;
     for(int i=arccount-1;i>=0;i--)
     {
         aa = &arc[i];
         if(aa->source_id == source && aa->target_id == target)
         {
+            if(be_overrided)
+                return;
             aa->arcType = arcType;
             if(exp != "") {
                 aa->arc_exp.deconstruct();
                 aa->arc_exp.construct(exp);
                 aa->onlydot = false;
             }
-            else
+            else {
                 aa->onlydot = true;
+                aa->arc_exp.exp = "";
+                aa->arc_exp.root = NULL;
+            }
             aa->isp2t = sourceP;
             aa->source_id = source;
             aa->target_id = target;
@@ -1547,22 +1814,21 @@ void CPN::Add_Arc_override(string source, string target, string exp, bool source
     }
     Add_Arc(source,target,exp,sourceP,arcType);
 
-
 }
 
-void CPN::Add_Variable(string id, string related_P) {
+string CPN::Add_Variable(string id, type tid,SORTID sid) {
     auto iter = mapVariable.find(id);
     if(iter==mapVariable.end())
     {
         Variable *var = &vartable[varcount++];
         var->id = id;
-        auto iter1 = mapPlace.find(related_P);
-        var->sid = place[iter1->second].initMarking.sid;
-        var->tid = place[iter1->second].initMarking.tid;
+
+        var->sid = sid;
+        var->tid = tid;
         int psnum = 0;
         if(var->tid == productsort) {
             psnum = sorttable.productsort[var->sid].sortnum;
-            var->value = new ProductSortValue(psnum);
+            var->value = new ProductSortValue(sid);
         }
         else if(var->tid == Integer)
             var->value = new IntegerSortValue;
@@ -1570,8 +1836,42 @@ void CPN::Add_Variable(string id, string related_P) {
             var->value = new RealSortValue;
         else if(var->tid == String)
             var->value = new StringSortValue;
-        mapVariable.insert(make_pair(id,varcount-1));
+        mapVariable.insert(make_pair(var->id,varcount-1));
+        return id;
     }
+    else{
+
+        if(vartable[iter->second].tid != tid
+        || vartable[iter->second].sid != sid)
+        {
+            Variable *var = &vartable[varcount++];
+            var->id = id + "@" + to_string(tid) + to_string(sid);
+            auto iter2 = mapVariable.find(var->id);
+            if(iter2 != mapVariable.end()) {
+                varcount--;
+                return var->id;
+            }
+            var->sid = sid;
+            var->tid = tid;
+            int psnum = 0;
+            if(var->tid == productsort) {
+                psnum = sorttable.productsort[var->sid].sortnum;
+                var->value = new ProductSortValue(sid);
+            }
+            else if(var->tid == Integer)
+                var->value = new IntegerSortValue;
+            else if(var->tid == Real)
+                var->value = new RealSortValue;
+            else if(var->tid == String)
+                var->value = new StringSortValue;
+            mapVariable.insert(make_pair(var->id,varcount-1));
+            return var->id;
+        }
+        else
+            return id;
+    }
+    cerr<<"ERROR!In Add_Variable!"<<endl;
+    exit(-1);
 }
 
 void CPN::init() {
@@ -1587,43 +1887,175 @@ void CPN::init() {
 
     vartable = new Variable[100];
 
+//    string P = gen_P();
+//    tid_store_P = P;
+//    Add_Place(P,tid_store_type,1,false,"tid_store",true);
 }
 
 void CPN::initDecl() {
 
     map<string,type>::iterator miter;
+
+    MSI control,m_int,m_str;
+
+    control.tid = String;
+    control.sid = 0;
+    sorttable.mapSort.insert(pair<string,MSI>(controlflag,control));
+
+    m_int.tid = Integer;
+    m_int.sid = 0;
+    m_str.tid = String;
+    m_str.sid = 0;
+
     for(miter=map_build_in_type.begin();miter!=map_build_in_type.end();miter++)
     {
         //normal build_in type
-        MSI m;
+        MSI m,m1;
         m.tid = miter->second;
         m.sid = 0;
+
         sorttable.mapSort.insert(pair<string,MSI>(miter->first,m));
 
         //build_in type array
         ProductSort pp;
         pp.id = miter->first + arr_suffix;
-        pp.sortnum = 2;
+        pp.sortnum = 4;
         pp.mytype = productsort;
         pp.sortname.push_back(miter->first);
-        pp.sortname.push_back("int");
+        pp.hasindex = true;
+        pp.hastid = true;
+        pp.sortname.push_back("index");
+        pp.sortname.push_back("id");
+        pp.sortname.push_back("tid");
 
         pp.sortid.push_back(m);
-        m.tid = Integer;
-        pp.sortid.push_back(m);
+        pp.sortid.push_back(m_int);
+        pp.sortid.push_back(m_int);
+        pp.sortid.push_back(m_str);
 
 
-        m.sid = SortTable::psptr++;
-        m.tid = productsort;
+        m1.sid = SortTable::psptr++;
+        m1.tid = productsort;
 
-        sorttable.mapSort.insert(pair<string,MSI>(pp.id,m));
+        sorttable.mapSort.insert(pair<string,MSI>(pp.id,m1));
         sorttable.productsort.push_back(pp);
+
+        //build_in type var
+        ProductSort pp1;
+        pp1.id = miter->first + var_suffix;
+        pp1.sortnum = 3;
+        pp1.mytype = productsort;
+        pp1.sortname.push_back(miter->first);
+        pp1.hastid = true;
+        pp1.sortname.push_back("id");
+        pp1.sortname.push_back("tid");
+
+        pp1.sortid.push_back(m);
+        pp1.sortid.push_back(m_int);
+        pp1.sortid.push_back(m_str);
+
+
+        m1.sid = SortTable::psptr++;
+        m1.tid = productsort;
+
+        sorttable.mapSort.insert(pair<string,MSI>(pp1.id,m1));
+        sorttable.productsort.push_back(pp1);
+
+        //build_in type array global
+        ProductSort pp2;
+        pp2.id = miter->first + arr_suffix + global_suffix;
+        pp2.sortnum = 3;
+        pp2.mytype = productsort;
+        pp2.sortname.push_back(miter->first);
+        pp2.hasindex = true;
+        pp2.sortname.push_back("index");
+        pp2.sortname.push_back("id");
+//        pp.sortname.push_back("tid");
+
+        pp2.sortid.push_back(m);
+        pp2.sortid.push_back(m_int);
+        pp2.sortid.push_back(m_int);
+//        pp2.sortid.push_back(m_int);
+
+
+        m1.sid = SortTable::psptr++;
+        m1.tid = productsort;
+
+        sorttable.mapSort.insert(pair<string,MSI>(pp2.id,m1));
+        sorttable.productsort.push_back(pp2);
+
+        //build_in type var global
+        ProductSort pp3;
+        pp3.id = miter->first + var_suffix + global_suffix;
+        pp3.sortnum = 2;
+        pp3.mytype = productsort;
+        pp3.sortname.push_back(miter->first);
+        pp3.sortname.push_back("id");
+//        pp3.sortname.push_back("tid");
+
+        pp3.sortid.push_back(m);
+        pp3.sortid.push_back(m_int);
+//        pp1.sortid.push_back(m_str);
+
+
+        m1.sid = SortTable::psptr++;
+        m1.tid = productsort;
+
+        sorttable.mapSort.insert(pair<string,MSI>(pp3.id,m1));
+        sorttable.productsort.push_back(pp3);
     }
 }
 
-vector<pair<string,string>> process_struct_declaration_list(gtree *p)
+void getinfofromdeclarator(gtree *declarator,bool &pointer_flag,int &arr_size,string id){
+    if(declarator->type != DECLARATOR){
+        cerr << "ERROR!getinfofromdeclarator should be a declarator node!"<<endl;
+        exit(-1);
+    }
+
+    gtree *direct_declarator;
+    pointer_flag = false;
+    arr_size = 0;
+    string identifier;
+    if(declarator->child->type == POINTER){
+        direct_declarator = declarator->child->next;
+        pointer_flag = true;
+    }
+    else
+        direct_declarator = declarator->child;
+    if(direct_declarator->child->type == DIRECT_DECLARATOR && direct_declarator->child->next->place == "("){
+        cerr << "ERROR!We don't support function in struct_declarator for now!"<<endl;
+        exit(-1);
+    }
+    else if(direct_declarator->child->type == DIRECT_DECLARATOR){
+        //we just support 1 dimension array for now
+        //multiple dimension just need some address translation
+        if(direct_declarator->child->next->next->type == CONSTANT_EXPRESSION){
+            string size = direct_declarator->child->next->next->place;
+            if(isdigit(size[0]))
+                arr_size = atoi(size.c_str());
+            else{
+                cerr << "We don't support non-determined array for now!"<<endl;
+                exit(-1);
+            }
+        }
+        else{
+            cerr << "We don't support non-determined array for now!"<<endl;
+            exit(-1);
+        }
+        while(direct_declarator->type==DIRECT_DECLARATOR)
+            direct_declarator = direct_declarator->child;
+        if(direct_declarator->type == IDENTIFIER)
+            id = direct_declarator->place;
+        else{
+            cerr << "We don't support declarator like:int (*a) for now!"<<endl;
+            exit(-1);
+        }
+    }
+}
+
+vector<var_type*> process_struct_declaration_list(gtree *p)
 {
-    vector<pair<string,string>> sortname;
+    vector<var_type*> var_list;
     gtree *struct_declaration_list = p;
     while(struct_declaration_list->type==STRUCT_DECLARATION_LIST)
         struct_declaration_list = struct_declaration_list->child;
@@ -1633,7 +2065,7 @@ vector<pair<string,string>> process_struct_declaration_list(gtree *p)
         gtree *specifier_qualifier_list = struct_declaration->child;
         gtree *struct_declarator_list = struct_declaration->child->next;
         string specifier = "";
-        vector<string> declarators;
+        vector<var_type> declarators;
 
         while(specifier_qualifier_list != NULL)
         {
@@ -1659,23 +2091,34 @@ vector<pair<string,string>> process_struct_declaration_list(gtree *p)
         {
             if(struct_declarator->child->type == DECLARATOR)
             {
-                if(struct_declarator->child->child->type == POINTER)
-                {
-                    cout<<"error! pointer doesn't not support for now."<<endl;
-                    exit(-1);
-                } else
-                {
-                    declarators.push_back(struct_declarator->child->child->child->place);
-                }
+                bool pointer_flag;
+                int arr_size;
+                string id;
+                getinfofromdeclarator(struct_declarator->child,pointer_flag,arr_size,id);
+                var_type *v_type;
+                v_type->init(specifier,id,pointer_flag,1,&arr_size);
+                var_list.push_back(v_type);
+//                if(struct_declarator->child->child->type == POINTER){
+//                    cout<<"error! pointer doesn't not support for now."<<endl;
+//                    exit(-1);
+//                }
+//                else{
+//                    declarators.push_back(struct_declarator->child->child->child->place);
+//                }
+            }
+            else{
+                cerr << "ERROR!struct_declarator should have declarator for now!"<<endl;
+                exit(-1);
             }
             struct_declarator = struct_declarator->parent->next->next;
         }
-        for(unsigned int i=0;i<declarators.size();i++)
-            sortname.push_back(make_pair(specifier,declarators[i]));
-
+//        for(unsigned int i=0;i<declarators.size();i++) {
+//            if(declarators[i].get_pointer_flag())
+//                sortname.push_back(make_pair(specifier, declarators[i]));
+//        }
         struct_declaration = struct_declaration->parent->next;
     }
-    return sortname;
+    return var_list;
 }
 
 void CPN::getDecl(gtree *tree){
@@ -1685,35 +2128,142 @@ void CPN::getDecl(gtree *tree){
         if(tree->child->next->type == REMAIN || (tree->child->next->next != NULL &&
                                                  tree->child->next->next->type == REMAIN))
         {
-            ProductSort pp;
+            MSI m,m1,m2,m_int;
+            m_int.tid = Integer;
+            m_int.sid = 0;
+
+            ProductSort pp,pp1,pp2,pp3,pp_base;
             gtree *struct_declare_list;
+            string usrdefine_typename;
+            vector<string> base_sortname,base_membername;
+            vector<MSI> base_sortid;
+            int base_sortnum;
             if(tree->child->next->type == REMAIN)
             {
-                pp.id = "";
+                usrdefine_typename = "";
                 struct_declare_list = tree->child->next->next->child;
             }
             else {
-                pp.id = tree->child->next->place;
+                usrdefine_typename = tree->child->next->place;
                 struct_declare_list = tree->child->next->next->next->child;
             }
 
-            vector<pair<string,string>> sortname = process_struct_declaration_list(struct_declare_list);
-
-            pp.mytype = productsort;
-            SORTID sortcount = sortname.size();
-
-            pp.sortnum = sortcount;
-            for(SORTID i;i<sortcount;i++) {
-                pp.sortname.push_back(sortname[i].first);
-                pp.membername.push_back(sortname[i].second);
+            vector<var_type*> var_list = process_struct_declaration_list(struct_declare_list);
+            base_sortnum = var_list.size();
+            for(SORTID i;i<base_sortnum;i++) {
+                base_sortname.push_back(var_list[i]->get_tag());
+                if(var_list[i]->get_pointer_flag())
+                    base_sortid.push_back(m_int);
+                else {
+                    auto iter = map_build_in_type.find(var_list[i]->get_tag());
+                    MSI tmp_msi;
+                    if (iter == map_build_in_type.end()) {
+                        auto uiter = sorttable.mapSort.find(var_list[i]->get_tag());
+                        if(uiter == sorttable.mapSort.end()){
+                            cerr << "ERROR variable type!"<<endl;
+                            exit(-1);
+                        }
+                        tmp_msi = uiter->second;
+                    }
+                    else {
+                        tmp_msi.tid = iter->second;
+                        tmp_msi.sid = 0;
+                    }
+                    base_sortid.push_back(tmp_msi);
+                }
+                base_membername.push_back(var_list[i]->get_name());
             }
+            //base_type var
+            pp_base.id = usrdefine_typename;
+            pp_base.mytype = productsort;
+            pp_base.sortnum = base_sortnum;
+            pp_base.sortid = base_sortid;
+            pp_base.membername = base_membername;
+
+            sorttable.productsort.push_back(pp_base);
+
+            m.sid = SortTable::psptr++;
+            m.tid = productsort;
+
+            sorttable.mapSort.insert(pair<string,MSI>(pp_base.id,m));
+
+            //usrdefine_type var
+            pp.id = usrdefine_typename + var_suffix;
+            pp.mytype = productsort;
+            pp.sortnum = base_sortnum + 2;
+            pp.sortid = base_sortid;
+            pp.sortid.push_back(m_int);
+            pp.sortid.push_back(m_int);
+            pp.sortname.push_back("id");
+            pp.sortname.push_back("tid");
+            pp.membername = base_membername;
+
             sorttable.productsort.push_back(pp);
 
-            MSI m;
             m.sid = SortTable::psptr++;
             m.tid = productsort;
 
             sorttable.mapSort.insert(pair<string,MSI>(pp.id,m));
+
+            //usrdefine_type arr
+            pp1.id = usrdefine_typename + arr_suffix;
+            pp1.mytype = productsort;
+            pp1.sortnum = base_sortnum + 3;
+            pp1.sortid = base_sortid;
+            pp1.sortid.push_back(m_int);
+            pp1.sortid.push_back(m_int);
+            pp1.sortid.push_back(m_int);
+            pp1.sortname.push_back("id");
+            pp1.sortname.push_back("index");
+            pp1.sortname.push_back("tid");
+            pp1.membername = base_membername;
+
+            sorttable.productsort.push_back(pp1);
+
+            m.sid = SortTable::psptr++;
+            m.tid = productsort;
+
+            sorttable.mapSort.insert(pair<string,MSI>(pp1.id,m));
+
+            //usrdefine_type var global
+            pp2.id = usrdefine_typename + var_suffix + global_suffix;
+            pp2.mytype = productsort;
+            pp2.sortnum = base_sortnum + 1;
+            pp2.sortid = base_sortid;
+            pp2.sortid.push_back(m_int);
+//            pp.sortid.push_back(m_int);
+            pp2.sortname.push_back("id");
+//            pp.sortname.push_back("tid");
+            pp2.membername = base_membername;
+
+            sorttable.productsort.push_back(pp2);
+
+            m.sid = SortTable::psptr++;
+            m.tid = productsort;
+
+            sorttable.mapSort.insert(pair<string,MSI>(pp2.id,m));
+
+            //usrdefine_type var
+            pp3.id = usrdefine_typename + arr_suffix + global_suffix;
+            pp3.mytype = productsort;
+            pp3.sortnum = base_sortnum + 2;
+            pp3.sortid = base_sortid;
+            pp3.sortid.push_back(m_int);
+            pp3.sortid.push_back(m_int);
+            pp3.sortname.push_back("id");
+            pp3.sortname.push_back("index");
+            pp3.membername = base_membername;
+
+            sorttable.productsort.push_back(pp3);
+
+            m.sid = SortTable::psptr++;
+            m.tid = productsort;
+
+            sorttable.mapSort.insert(pair<string,MSI>(pp3.id,m));
+
+            for(unsigned int i=0;i<var_list.size();i++){
+                delete var_list[i];
+            }
         }
     }
     getDecl(tree->child);
@@ -1735,7 +2285,7 @@ CPN::~CPN() {
     delete [] vartable;
 }
 
-void CPN::init_Place(string id, Tokens *token) {
+void CPN::init_Place(string id, Tokens *token,type tid,SORTID sid) {
     map<string,index_t>::iterator iter = mapPlace.find(id);
     if(iter == mapPlace.end())
     {
@@ -1744,401 +2294,1005 @@ void CPN::init_Place(string id, Tokens *token) {
     }
     CPlace *pp = &place[iter->second];
     pp->initMarking.clear();
+    pp->initMarking.tid = tid;
+    pp->initMarking.sid = sid;
     pp->initMarking.insert(token);
 }
 
-int is_Operator(string s)
-{
-    if (s == "+" || s == "-" || s == "*" || s == "/"
-    || s == "&" || s == "|" || s == "^" || s == "%")
-        return 2;
-    else if(s == "!" || s == "@")
-        return 1;
-    return 0;
+/*init_Place just support non-array normal type for now */
+void CPN::init_Place(string id, string init_str){
+    map<string,index_t>::iterator iter = mapPlace.find(id);
+    if(iter == mapPlace.end())
+    {
+        cout<<"can't find id in init_Place."<<endl;
+        exit(-1);
+    }
+    CPlace *pp = &place[iter->second];
+//    pp->initMarking.clear();
+
+    condition_tree tree;
+    init_str = "1`" + init_str;
+    tree.construct(init_str);
+    MultiSet ms;
+
+
+    if(pp->initMarking.tid == productsort){
+        Product_t cid;
+        cid = new_ProductColor(pp->initMarking.sid);
+        type subtid = sorttable.productsort[pp->initMarking.sid].sortid[0].tid;
+        if(subtid == Integer){
+            ms.tid = Integer;
+            ms.Exp2MS(this,tree.root,0,0,false);
+            Integer_t subcid;
+            ms.tokenQ->next->color->getColor(subcid);
+            pp->initMarking.tokenQ->next->color->getColor(cid,pp->initMarking.sid);
+            cid[0]->setColor(subcid);
+            pp->initMarking.tokenQ->next->color->setColor(cid,pp->initMarking.sid);
+        }
+        else if(subtid == Real){
+            ms.tid = Real;
+            ms.Exp2MS(this,tree.root,0,0,false);
+            Real_t subcid;
+            ms.tokenQ->next->color->getColor(subcid);
+            pp->initMarking.tokenQ->next->color->getColor(cid,pp->initMarking.sid);
+            cid[0]->setColor(subcid);
+            pp->initMarking.tokenQ->next->color->setColor(cid,pp->initMarking.sid);
+        }
+        else if(subtid == String){
+            ms.tid = String;
+            ms.Exp2MS(this,tree.root,0,0,false);
+            String_t subcid;
+            ms.tokenQ->next->color->getColor(subcid);
+            pp->initMarking.tokenQ->next->color->getColor(cid,pp->initMarking.sid);
+            cid[0]->setColor(subcid);
+            pp->initMarking.tokenQ->next->color->setColor(cid,pp->initMarking.sid);
+        }
+        delete[] cid;
+    }
+    else{
+        cerr<<"ERROR!Variable Places' Sort must be productsort!"<<endl;
+        exit(-1);
+    }
+
+//    pp->initMarking.Exp2MS(this,tree.root,0,0);
 }
 
-Real_t operate(string s1,string s2,string Operator)
+bool is_Operator(string s)
 {
-    Real_t v1,v2;
-    v1 = atof(s1.c_str());
-    if(s2!="")
-        v2 = atof(s2.c_str());
-    if(Operator == "+")
+    if (s == "+" || s == "-" || s == "*" || s == "/"
+    || s == "&" || s == "|" || s == "^" || s == "%"
+    || s == "!" || s == "@")
+        return true;
+    return false;
+}
+
+bool is_BoolOperator(string s)
+{
+    if (s == ">" || s == "<" || s == ">=" || s == "<=" || s == "==" || s == "!="||s == "&&" || s == "||")
+        return true;
+    return false;
+}
+
+template<class T>
+T operate(T s1,T s2,string Operator) {
+    T v1, v2;
+    v1 = s1;
+    v2 = s2;
+    if (Operator == "+")
         return v1 + v2;
-    else if(Operator == "-")
+    else if (Operator == "-")
         return v1 - v2;
-    else if(Operator == "*")
+    else if (Operator == "*")
         return v1 * v2;
-    else if(Operator == "/")
-        return v1 / v2;
-    else if(Operator == "&")
+    else if (Operator == "/") {
+        if (v2 != 0)
+            return v1 / v2;
+        else {
+            cerr << "divide 0 ERROR!" << endl;
+            exit(-1);
+        }
+    } else if (Operator == "&")
         return int(v1) & int(v2);
-    else if(Operator == "|")
+    else if (Operator == "|")
         return int(v1) | int(v2);
-    else if(Operator == "^")
+    else if (Operator == "^")
         return int(v1) ^ int(v2);
-    else if(Operator == "%")
+    else if (Operator == "%")
         return int(v1) % int(v2);
-    else if(Operator == "!")
+    else if (Operator == "!")
         return !(int(v1));
-    else if(Operator == "@")
+    else if (Operator == "@")
         return -v1;
 }
 
-bool operate_reloperator(string s1,string s2,string Operator)
-{
-    Real_t v1,v2;
-    v1 = atof(s1.c_str());
-    v2 = atof(s2.c_str());
-
-    if(Operator == ">")
-        return v1>v2;
-    else if(Operator == "<")
-        return v1<v2;
-    else if(Operator == ">=")
-        return v1>=v2;
-    else if(Operator == "<=")
-        return v1<=v2;
-    else if(Operator == "==")
-        return v1==v2;
-    else if(Operator == "!=")
-        return v1!=v2;
-    else if(Operator == "&&")
-        return v1 && v2;
-    else if(Operator == "||")
+template<class T>
+bool booloperate(T s1,T s2,string Operator) {
+    T v1, v2;
+    v1 = s1;
+    v2 = s2;
+    if (Operator == ">")
+        return v1 > v2;
+    else if (Operator == ">=")
+        return v1 >= v2;
+    else if (Operator == "<")
+        return v1 < v2;
+    else if (Operator == "<=")
+        return v1 <= v2;
+    else if (Operator == "==")
+        return v1 == v2;
+    else if (Operator == "!=")
+        return v1 != v2;
+    else if (Operator == "||")
         return v1 || v2;
+    else if (Operator == "&&")
+        return v1 && v2;
 
 }
 
-void CPN::CTN_cal(condition_tree_node *CTN) {
-    //recursion stops when node_type is variable or color
-    if(CTN == NULL)
+bool booloperate(string s1,string s2,string Operator){
+    string v1=s1,v2=s2;
+    if (Operator == ">")
+        return v1 > v2;
+    else if (Operator == ">=")
+        return v1 >= v2;
+    else if (Operator == "<")
+        return v1 < v2;
+    else if (Operator == "<=")
+        return v1 <= v2;
+    else if (Operator == "==")
+        return v1 == v2;
+    else if (Operator == "!=")
+        return v1 != v2;
+}
+
+void color_copy(type tid,SORTID sid,SortValue *src,SortValue *des){
+    if(!src)
         return;
-    if(CTN->node_type == RelationOperator)
-    {
-        string value1,value2;
-        CTN_cal(CTN->left);
-        CTN_cal(CTN->right);
-        if(CTN->left->node_type == variable)
-        {
-            string var1 = CTN->left->node_name;
-            auto iter = mapVariable.find(var1);
-            if(iter == mapVariable.end())
-            {
-                cout<<"can't find var in CTN_cal"<<endl;
-                exit(-1);
-            }
-            Variable *var  = &vartable[iter->second];
-            if(var->tid == Integer) {
-                Integer_t v;
-                var->value->getColor(v);
-                value1 = to_string(v);
-            }
-            else if(var->tid == Real) {
-                Real_t v;
-                var->value->getColor(v);
-                value1 = to_string(v);
-            }
-        }
-        else
-            value1 = CTN->left->value;
-        if(CTN->right->node_type == variable)
-        {
-            string var2 = CTN->right->node_name;
-            auto iter = mapVariable.find(var2);
-            if(iter == mapVariable.end())
-            {
-                cout<<"can't find var in CTN_cal"<<endl;
-                exit(-1);
-            }
-            Variable *var  = &vartable[iter->second];
-            if(var->tid == Integer) {
-                Integer_t v;
-                var->value->getColor(v);
-                value1 = to_string(v);
-            }
-            else if(var->tid == Real) {
-                Real_t v;
-                var->value->getColor(v);
-                value1 = to_string(v);
-            }
-        }
-        else
-            value2 = CTN->right->value;
-
-        bool res = operate_reloperator(value1,value2,CTN->node_name);
-        if(res == true)
-            CTN->value = "1";
-        else
-            CTN->value = "0";
+    if(tid == productsort){
+        Product_t cid;
+        cid = new_ProductColor(sid);
+//        int psnum = sorttable.productsort[sid].sortnum;
+//        cid = new SortValue*[psnum];
+        src->getColor(cid,sid);
+        des->setColor(cid,sid);
+        delete[] cid;
     }
-    else if(CTN->node_type == Operator)
-    {
-        //**Operator is used for Integer and Real
-        int count = is_Operator(CTN->node_name);
-        if(count == 2)
-        {
-            string value1,value2;
-            CTN_cal(CTN->left);
-            CTN_cal(CTN->right);
-            if(CTN->left->node_type == variable)
-            {
-                string var1 = CTN->left->node_name;
-                auto iter = mapVariable.find(var1);
-                if(iter == mapVariable.end())
-                {
-                    cout<<"can't find var in CTN_cal"<<endl;
-                    exit(-1);
-                }
-                Variable *var  = &vartable[iter->second];
-                if(var->tid == Integer) {
-                    Integer_t v;
-                    var->value->getColor(v);
-                    value1 = to_string(v);
-                }
-                else if(var->tid == Real) {
-                    Real_t v;
-                    var->value->getColor(v);
-                    value1 = to_string(v);
-                }
-            }
-            else
-                value1 = CTN->left->value;
-            if(CTN->right->node_type == variable)
-            {
-                string var2 = CTN->right->node_name;
-                auto iter = mapVariable.find(var2);
-                if(iter == mapVariable.end())
-                {
-                    cout<<"can't find var in CTN_cal"<<endl;
-                    exit(-1);
-                }
-                Variable *var  = &vartable[iter->second];
-                if(var->tid == Integer) {
-                    Integer_t v;
-                    var->value->getColor(v);
-                    value2 = to_string(v);
-                }
-                else if(var->tid == Real) {
-                    Real_t v;
-                    var->value->getColor(v);
-                    value2 = to_string(v);
-                }
-            }
-            else
-                value2 = CTN->right->value;
-            Real_t res = operate(value1,value2,CTN->node_name);
-            CTN->value = to_string(res);
-        }
-        else if(count == 1)
-        {
-            string value1;
-            CTN_cal(CTN->left);
-            if(CTN->left->node_type == variable)
-            {
-                string var1 = CTN->left->node_name;
-                auto iter = mapVariable.find(var1);
-                if(iter == mapVariable.end())
-                {
-                    cout<<"can't find var in CTN_cal"<<endl;
-                    exit(-1);
-                }
-                Variable *var  = &vartable[iter->second];
-                if(var->tid == Integer) {
-                    Integer_t v;
-                    var->value->getColor(v);
-                    value1 = to_string(v);
-                }
-                else if(var->tid == Real) {
-                    Real_t v;
-                    var->value->getColor(v);
-                    value1 = to_string(v);
-                }
-            }
-            else
-                value1 = CTN->left->value;
-            Real_t res = operate(value1,"",CTN->node_name);
-            CTN->value = to_string(res);
-        }
-        else
-        {
-            cout<<"error in CTN value!"<<endl;
-            exit(-1);
-        }
+    else if(tid == Integer){
+        Integer_t cid;
+        src->getColor(cid);
+        des->setColor(cid);
     }
-    else if(CTN->node_type == variable)
-    {
-        string var1 = CTN->node_name;
-        auto iter = mapVariable.find(var1);
-        if(iter == mapVariable.end())
-        {
-            cout<<"can't find var in CTN_cal"<<endl;
-            exit(-1);
-        }
-        Variable *var  = &vartable[iter->second];
-        if(var->tid == Integer) {
-            Integer_t v;
-            var->value->getColor(v);
-            CTN->value = to_string(v);
-        }
-        else if(var->tid == Real) {
-            Real_t v;
-            var->value->getColor(v);
-            CTN->value = to_string(v);
-        }
+    else if(tid == Real){
+        Real_t cid;
+        src->getColor(cid);
+        des->setColor(cid);
     }
-    else if(CTN->node_type == color)
-    {
-
+    else if(tid == String){
+        String_t cid;
+        src->getColor(cid);
+        des->setColor(cid);
     }
 }
 
-void CPN::CT2MS(condition_tree ct, MultiSet &ms) {
-    if(ct.root == NULL)
-    {
-        Tokens *token = new Tokens;
-        token->initiate(1,dot,0);
-        ms.insert(token);
+//*******translate_exp2arcexp*****************************//
+//*******function:trans new tid automatically*************//
+//*******now just support *,&,[]*************************//
+string translate_exp2arcexp(CPN *cpn,string s,string base){
+    int count;
+    string tmp,result = "";
+    int array_count = 0,parenthesis_count = 0;
+    for(unsigned int i=0;i<s.size();i++){
+        count = is_operator(s,i);
+        if(s[i]=='[')
+            array_count++;
+        if(s[i]==']')
+            array_count--;
+        if(s[i]=='(')
+            parenthesis_count++;
+
+        if(count != 0 && array_count == 0 && parenthesis_count == 0 && !tmp.empty()){
+            result.append(translate_exp2arcexp(cpn,tmp,base));
+            result.append(s.substr(i,count));
+            tmp.clear();
+            i += count-1;
+        }
+        else
+            tmp = tmp + s[i];
+
+        if(s[i]==')')
+            parenthesis_count--;
     }
-    CTN2MS(ct.root,ms);
+    if(tmp[0]=='(' && tmp[tmp.size()-1]==')') {
+        tmp = tmp.substr(1, tmp.size() - 2);
+        result.append(translate_exp2arcexp(cpn,tmp,base));
+        return result;
+    }
+
+    if(tmp[0] == '*'){
+        // pointer gets value
+        string pointer = tmp.substr(1);
+        result = result + CaseFlag + translate_exp2arcexp(cpn,pointer,base);
+
+        for(auto iter = map_address.begin();iter!=map_address.end();iter++){
+            result.append(":");
+            result.append(iter->first);
+            result.append("=>");
+            result.append(iter->second);
+        }
+        result.append(":default;");
+    }
+    else if(tmp[0] == '&'){
+        //assume & just for variable or arr[exp]
+
+        string var = tmp.substr(1);
+        int arr_pos = var.find('[');
+        if(arr_pos != string::npos){
+            string id,index;
+            int id_start;
+            for (id_start = arr_pos - 1; id_start >= 0; id_start--)
+                if (isdigit(tmp[id_start]) || isalpha(tmp[id_start]) || tmp[id_start] == '_');
+                else
+                    break;
+
+            if(id_start!=-1){
+                cerr<<"translate_exp error occur!"<<endl;
+                exit(-1);
+            }
+            id = var.substr(id_start + 1, arr_pos - id_start - 1);
+            string tmp_P = find_P_name(id,base);
+            if(tmp_P != pthread_P) {
+                auto iter = cpn->mapPlace.find(tmp_P);
+                if (iter == cpn->mapPlace.end()) {
+                    cerr << "can't find tmp_P in trans_exp2arcexp!" << endl;
+                    exit(-1);
+                }
+                id = cpn->place[iter->second].expression;
+            }
+            index = var.substr(arr_pos + 1, var.size() - arr_pos - 2);
+            result += id + to_string(0) + id_suffix + "+" + translate_exp2arcexp(cpn,index,base);
+        }
+        else{
+            result += var + id_suffix;
+        }
+    }
+    else {
+        int arr_pos = tmp.find('[');
+        string id, index;
+
+        if (arr_pos != string::npos) {
+            int id_start;
+            for (id_start = arr_pos - 1; id_start >= 0; id_start--)
+                if (isdigit(tmp[id_start]) || isalpha(tmp[id_start]) || tmp[id_start] == '_');
+                else
+                    break;
+
+            if(id_start!=-1){
+                cerr<<"translate_exp error occur!"<<endl;
+                exit(-1);
+            }
+            id = tmp.substr(id_start + 1, arr_pos - id_start - 1);
+
+            string tmp_P = find_P_name(id,base);
+            if(tmp_P != pthread_P) {
+                auto iter = cpn->mapPlace.find(tmp_P);
+                if (iter == cpn->mapPlace.end()) {
+                    cerr << "can't find tmp_P in trans_exp2arcexp!" << endl;
+                    exit(-1);
+                }
+                id = cpn->place[iter->second].expression;
+            }
+            index = tmp.substr(arr_pos + 1, tmp.size() - arr_pos - 2);
+            bool is_pointer = find_v_ispointer(id, base);
+            int size = find_v_size(id, base);
+
+            if (!is_pointer) {
+                result = result + CaseFlag + translate_exp2arcexp(cpn,index, base);
+                for (int i = 0; i < size; i++) {
+                    result.append(":");
+                    result.append(to_string(i));
+                    result.append("=>");
+                    result.append(id + to_string(i));
+                }
+                result = result + ":default;";
+            } else {
+                //pointer
+
+                result.append(translate_exp2arcexp(cpn,"*(" + id + "+" + index + ")",base));
+            }
+
+        } else {
+            string id = tmp;
+            if(tmp[0] == '_' || isalpha(tmp[0])) {
+                int size = find_v_size(id, base);
+                string tmp_P = find_P_name(id,base);
+                if(tmp_P != pthread_P) {
+                    auto iter = cpn->mapPlace.find(tmp_P);
+                    if (iter == cpn->mapPlace.end()) {
+                        cerr << "can't find tmp_P in trans_exp2arcexp!" << endl;
+                        exit(-1);
+                    }
+                    id = cpn->place[iter->second].expression;
+                }
+                if (size > 1)
+                    result += id + to_string(0) + id_suffix;
+                else
+                    result += id;
+            }
+            else
+                result += id;
+        }
+    }
+    return result;
 }
 
-void CPN::get_tuplecolor(condition_tree_node *ctn,vector<SortValue*> &color,vector<mapsort_info> sortid) {
-//    if(ctn->node_type == TokenOperator && ctn->node_name == ",")
-//    {
-    if (ctn->left->node_type == TokenOperator && ctn->left->node_name == ",") {
-        get_tuplecolor(ctn->left, color,sortid);
+//*******translate_exp2tid******************//
+//*******function:trans new tid*************//
+//*******now just support tid or tid[index]*//
+string translate_exp2tid(CPN *cpn,string s, string base){
+    string id,index,result;
+    int arr_pos = s.find('[');
+    if(arr_pos != string::npos) {
+        id = s.substr(0, arr_pos);
+        index = s.substr(arr_pos + 1, s.size() - arr_pos - 2);
+        int size = find_v_size(id, base);
+        string tmp_P = find_P_name(id,base);
+        if(tmp_P != pthread_P) {
+            auto iter = cpn->mapPlace.find(tmp_P);
+            if (iter == cpn->mapPlace.end()) {
+                cerr << "can't find tmp_P in trans_exp2tid!" << endl;
+                exit(-1);
+            }
+            id = cpn->place[iter->second].expression;
+        }
+        string tmp_P1 = find_P_name(index,base);
+        if(tmp_P1 != pthread_P) {
+            auto iter = cpn->mapPlace.find(tmp_P1);
+            if (iter == cpn->mapPlace.end()) {
+                cerr << "can't find tmp_P in trans_exp2tid!" << endl;
+                exit(-1);
+            }
+            index = cpn->place[iter->second].expression;
+        }
+        result = result + CaseFlag + index;
+        for (int i = 0; i < size; i++) {
+            result.append(":");
+            result.append(to_string(i));
+            result.append("=>");
+            result.append("\"" + id + "_" + to_string(i) + "\"");
+        }
+        result = result + ":default;";
     }
-    else{
-        SortValue *u;
-        CTN_cal(ctn->left);
-        if(color.size()>=sortid.size())
-        {
-            cout<<"exp's dimension is larger than multiset!"<<endl;
-            exit(-1);
+    else {
+        id = s;
+        string tmp_P = find_P_name(id,base);
+        if(tmp_P != pthread_P) {
+            auto iter = cpn->mapPlace.find(tmp_P);
+            if (iter == cpn->mapPlace.end()) {
+                cerr << "can't find tmp_P in trans_exp2arcexp!" << endl;
+                exit(-1);
+            }
+            id = cpn->place[iter->second].expression;
         }
-        if(sortid[color.size()].tid == Integer) {
-            u = new IntegerSortValue;
-            u->setColor(atoi(ctn->left->value.c_str()));
-        }
-        else if(sortid[color.size()].tid == Real) {
-            u = new RealSortValue;
-            u->setColor(atof(ctn->left->value.c_str()));
-        }
-        else if(sortid[color.size()].tid == String) {
-            u = new StringSortValue;
-            u->setColor(ctn->left->value);
-        }
-        color.push_back(u);
+        result = "\"" + id + "\"";
     }
-    if (ctn->right->node_type == TokenOperator && ctn->right->node_name == ",") {
-        get_tuplecolor(ctn->right, color,sortid);
-    }
-    else{
-        SortValue *u;
-        CTN_cal(ctn->right);
-        if(color.size()>=sortid.size())
-        {
-            cout<<"exp's dimension is larger than multiset!"<<endl;
-            exit(-1);
-        }
-        if(sortid[color.size()].tid == Integer) {
-            u = new IntegerSortValue;
-            u->setColor(atoi(ctn->right->value.c_str()));
-        }
-        else if(sortid[color.size()].tid == Real) {
-            u = new RealSortValue;
-            u->setColor(atof(ctn->right->value.c_str()));
-        }
-        else if(sortid[color.size()].tid == String) {
-            u = new StringSortValue;
-            u->setColor(ctn->right->value);
-        }
-        color.push_back(u);
-    }
+    return result;
+}
+
+//string translate_exp2renameexp(CPN *cpn,string s,string base){
+//    string tmp,tmp_P,result;
+//    for(unsigned int i=0;i<s.size();i++){
+//        if(isdigit(s[i]) || isalpha(s[i]) || s[i]=='_')
+//            tmp = tmp + s[i];
+//        else{
+//            tmp_P = find_P_name(tmp,base);
+//            tmp.clear();
+//            auto iter = cpn->mapPlace.find(tmp_P);
+//            result += cpn->place[iter->second].expression;
+//            result = result + s[i];
+//        }
 //    }
-}
+//    result += tmp;
+//    return result;
+//}
 
-void CPN::CTN2COLOR(condition_tree_node *ctn,MultiSet &ms)
-{
-    if(ctn->node_type == TokenOperator && ctn->node_name == ",")
-    {
-        vector<SortValue *> color;
-        get_tuplecolor(ctn,color,sorttable.productsort[ms.sid].sortid);
-        Tokens *token = new Tokens;
-        int psnum = color.size();
-        SortValue **cid = new SortValue*[color.size()];
-        for(unsigned int i=0;i<color.size();i++)
-        {
-            cid[i]=color[i];
-        }
-        token->initiate(1,productsort,psnum);
-        token->color->setColor(cid,psnum);
-        ms.insert(token);
-    }
-    else
-    {
-        CTN_cal(ctn);
-        Tokens *token = new Tokens;
-        token->initiate(1,ms.tid,0);
-        if(ms.tid == Integer) {
-            Integer_t cid = atoi(ctn->value.c_str());
-            token->color->setColor(cid);
-        }
-        else if(ms.tid == Real)
-        {
-            Real_t cid = atof(ctn->value.c_str());
-            token->color->setColor(cid);
-        }
-        else if(ms.tid == String)
-        {
-            String_t cid = ctn->value;
-            token->color->setColor(cid);
-        }
-        ms.insert(token);
-    }
-}
+void MultiSet::Exp2MS(CPN *cpn,condition_tree_node *tree,unsigned short down,unsigned short up,bool in_bool_op) {
+    MultiSet lms,rms;
+    lms.sid=rms.sid=sid;
+    lms.tid=rms.tid=tid;
 
-void CPN::CTN2MS(condition_tree_node *ctn, MultiSet &ms) {
-    if(ctn == NULL)
+    vector<mapsort_info> sortid;
+
+    if(tree == NULL)
         return;
-    if(ctn->node_type==TokenOperator && ctn->node_name == "++")
-    {
-        if(ctn->left->node_type == TokenOperator && ctn->left->node_name == "++")
-        {
-            CTN2MS(ctn->left,ms);
+    if(tree->node_type == TokenOperator){
+        lms.Exp2MS(cpn,tree->left,down,up,in_bool_op);
+        rms.Exp2MS(cpn,tree->right,down,up,in_bool_op);
+        if(tree->node_name == "++") {
+            PLUS(lms);
+            PLUS(rms);
         }
-        else
-        {
-            CTN2COLOR(ctn->left,ms);
+        else if(tree->node_name == "--"){
+            PLUS(lms);
+
+            //negative PLUS
+            Tokens *tokens = rms.tokenQ->next;
+            while(tokens){
+                tokens->tokencount = - tokens->tokencount;
+                tokens = tokens->next;
+            }
+            PLUS(rms);
         }
-        if(ctn->right->node_type == TokenOperator && ctn->right->node_name == "++")
-        {
-            CTN2MS(ctn->right,ms);
+        else{
+            cerr<<"ERROR!We just support '++' and '--' for now!"<<endl;
+            exit(-1);
         }
-        else
-        {
-            CTN2COLOR(ctn->right,ms);
+        //to avoid 0 tokencount
+        Tokens *tokens = tokenQ;
+        while(tokens->next){
+            if(tokens->next->tokencount == 0){
+                Tokens *tmp = tokens->next;
+                tokens->next = tokens->next->next;
+
+                delete tmp;
+            }
+            tokens = tokens->next;
+            if(!tokens)
+                break;
         }
     }
-    else
-    {
-        CTN2COLOR(ctn,ms);
+    else if(tree->node_type == Token){
+        lms.Exp2MS(cpn,tree->left,down,up,in_bool_op);
+        lms.tokenQ->next->tokencount = tree->num;
+        PLUS(lms);
+
     }
+    else if(tree->node_type == Tuple){
+        lms.Exp2MS(cpn,tree->left,down,down,in_bool_op);
+        rms.Exp2MS(cpn,tree->right,down+1,up,in_bool_op);
+
+        Tokens *lToken = lms.tokenQ->next,*rToken = rms.tokenQ->next;
+        if(tid == productsort){
+            Product_t cid1,cid2,cid;
+//            int psnum = sorttable.productsort[sid].sortnum;
+            cid1 = new_ProductColor(sid);
+            cid2 = new_ProductColor(sid);
+            cid = new_ProductColor(sid);
+
+//            lToken->color = new ProductSortValue(sid);
+//            rToken->color = new ProductSortValue(sid);
+            lToken->color->getColor(cid1,sid);
+            rToken->color->getColor(cid2,sid);
+
+            color_copy(sorttable.productsort[sid].sortid[down].tid,sid,cid1[down],cid[down]);
+            for(unsigned int i=down+1;i<=up;i++)
+                color_copy(sorttable.productsort[sid].sortid[i].tid,sid,cid2[i],cid[i]);
+
+            Tokens *tokens = new Tokens;
+            tokens->color = new ProductSortValue(sid);
+            tokens->color->setColor(cid,sid);
+            insert(tokens);
+
+            delete[] cid;
+            delete[] cid1;
+            delete[] cid2;
+        }
+        else{
+            cerr<<"ERROR!Tuple can not occur in tid that is not productsort!"<<endl;
+            exit(-1);
+        }
+    }
+    else if(tree->node_type == CaseOperator){
+        MultiSet cms;
+        lms.Exp2MS(cpn,tree->left,down,up,in_bool_op);
+        if(tree->right)
+            rms.Exp2MS(cpn,tree->right,down,up,in_bool_op);
+        cms.tid = Integer;
+        cms.sid = 0;
+        cms.Exp2MS(cpn,tree->condition,0,0,false);
+
+        Integer_t result;
+        cms.tokenQ->next->color->getColor(result);
+        if(result != 0)
+            PLUS(lms);
+        else
+            PLUS(rms);
+        if(in_bool_op){
+            tid = lms.tid;
+            sid = lms.sid;
+        }
+        cms.clear();
+    }
+    else if(tree->node_type == Operator){
+        if(down!=up){
+            cerr<<"ERROR!Operator's down and up must be consistent!"<<endl;
+            exit(-1);
+        }
+        type tmp_tid;
+        if(tid == productsort)
+            tmp_tid = sorttable.productsort[sid].sortid[down].tid;
+        else
+            tmp_tid = tid;
+        if(is_BoolOperator(tree->node_name) && tmp_tid == Integer){
+            lms.Exp2MS(cpn,tree->left,down,up,true);
+            if(tree->right)
+                rms.Exp2MS(cpn,tree->right,down,up,true);
+            Integer_t sub_cid;
+            if(lms.tid == String){
+                String_t cid1,cid2;
+
+                lms.tokenQ->next->color->getColor(cid1);
+                rms.tokenQ->next->color->getColor(cid2);
+                if (booloperate(cid1, cid2, tree->node_name))
+                    sub_cid = 1;
+                else
+                    sub_cid = 0;
+            }
+            else if(lms.tid == Real){
+                Real_t cid1,cid2;
+
+                lms.tokenQ->next->color->getColor(cid1);
+                rms.tokenQ->next->color->getColor(cid2);
+                if (booloperate(cid1, cid2, tree->node_name))
+                    sub_cid = 1;
+                else
+                    sub_cid = 0;
+            }
+            else if(lms.tid == Integer){
+                Integer_t cid1,cid2;
+
+                lms.tokenQ->next->color->getColor(cid1);
+                rms.tokenQ->next->color->getColor(cid2);
+                if (booloperate(cid1, cid2, tree->node_name))
+                    sub_cid = 1;
+                else
+                    sub_cid = 0;
+            }
+            else{
+                cerr << "ERROR!BoolOperator error!"<<endl;
+                exit(-1);
+            }
+            if(tid == productsort){
+                Product_t cid;
+                cid = new_ProductColor(sid);
+                cid[down]->setColor(sub_cid);
+                Tokens *token = new Tokens;
+                token->color = new ProductSortValue(sid);
+                token->color->setColor(cid, sid);
+                insert(token);
+                delete[] cid;
+            }
+            else{
+                Integer_t cid;
+                cid = sub_cid;
+                Tokens *token = new Tokens;
+                token->color = new IntegerSortValue;
+                token->color->setColor(cid);
+                insert(token);
+            }
+
+        }
+        else if(is_BoolOperator(tree->node_name)){
+            cerr << "ERROR!we assume boolop just appears in Integer exp!";
+            exit(-1);
+        }
+        else {
+            if (tid == productsort) {
+                lms.Exp2MS(cpn, tree->left, down, up,in_bool_op);
+                if (tree->right)
+                    rms.Exp2MS(cpn, tree->right, down, up,in_bool_op);
+                Product_t cid1, cid2, cid;
+//            int psnum = sorttable.productsort[sid].sortnum;
+                cid1 = new_ProductColor(sid);
+                if (tree->right)
+                    cid2 = new_ProductColor(sid);
+                cid = new_ProductColor(sid);
+
+                Tokens *ltoken = lms.tokenQ->next, *rtoken;
+                if (tree->right)
+                    rtoken = rms.tokenQ->next;
+
+                ltoken->color->getColor(cid1, sid);
+                if (tree->right)
+                    rtoken->color->getColor(cid2, sid);
+
+                type t = sorttable.productsort[sid].sortid[down].tid;
+                if (t == Integer) {
+                    Integer_t sub_col1, sub_col2, sub_col;
+                    cid1[down]->getColor(sub_col1);
+                    if (tree->right)
+                        cid2[down]->getColor(sub_col2);
+                    if (is_Operator(tree->node_name))
+                        sub_col = operate(sub_col1, sub_col2, tree->node_name);
+//                else if(is_BoolOperator(tree->node_name)) {
+//                    if (booloperate(sub_col1, sub_col2, tree->node_name))
+//                        sub_col = 1;
+//                    else
+//                        sub_col = 0;
+//                }
+                    cid[down]->setColor(sub_col);
+                } else if (t == Real) {
+                    Real_t sub_col1, sub_col2, sub_col;
+                    cid1[down]->getColor(sub_col1);
+                    if (tree->right)
+                        cid2[down]->getColor(sub_col2);
+                    if (is_Operator(tree->node_name))
+                        sub_col = operate(sub_col1, sub_col2, tree->node_name);
+//                else if(is_BoolOperator(tree->node_name)) {
+//                    if (booloperate(sub_col1, sub_col2, tree->node_name))
+//                        sub_col = 1;
+//                    else
+//                        sub_col = 0;
+//                }
+                    cid[down]->setColor(sub_col);
+                } else if (t == String) {
+//                if(is_Operator(tree->node_name)) {
+                    cerr << "ERROR!String can not operate!" << endl;
+                    exit(-1);
+//                }
+//                else if(is_BoolOperator(tree->node_name)){
+//                    String_t sub_col1,sub_col2;
+//
+//                    cid1[down]->getColor(sub_col1);
+//                    if(tree->right)
+//                        cid2[down]->getColor(sub_col2);
+//                    if (booloperate(sub_col1, sub_col2, tree->node_name))
+//                        sub_col = 1;
+//                    else
+//                        sub_col = 0;
+//                }
+                }
+                Tokens *token = new Tokens;
+                token->color = new ProductSortValue(sid);
+                token->color->setColor(cid, sid);
+                insert(token);
+
+                delete[] cid1;
+                if (tree->right)
+                    delete[] cid2;
+                delete[] cid;
+            } else if (tid == Integer) {
+                lms.Exp2MS(cpn, tree->left, down, up,in_bool_op);
+                if (tree->right)
+                    rms.Exp2MS(cpn, tree->right, down, up,in_bool_op);
+
+                Integer_t cid1, cid2, cid;
+                Tokens *ltoken = lms.tokenQ->next, *rtoken;
+                if (tree->right)
+                    rtoken = rms.tokenQ->next;
+
+                ltoken->color->getColor(cid1);
+                if (tree->right)
+                    rtoken->color->getColor(cid2);
+
+                if (is_Operator(tree->node_name))
+                    cid = operate(cid1, cid2, tree->node_name);
+//            else if(is_BoolOperator(tree->node_name)) {
+//                if (booloperate(cid1, cid2, tree->node_name))
+//                    cid = 1;
+//                else
+//                    cid = 0;
+//            }
+                Tokens *token = new Tokens;
+                token->color = new IntegerSortValue;
+                token->color->setColor(cid);
+                insert(token);
+            } else if (tid == Real) {
+                lms.Exp2MS(cpn, tree->left, down, up,in_bool_op);
+                if (tree->right)
+                    rms.Exp2MS(cpn, tree->right, down, up,in_bool_op);
+                Real_t cid1, cid2, cid;
+                Tokens *ltoken = lms.tokenQ->next, *rtoken;
+                if (tree->right)
+                    rtoken = rms.tokenQ->next;
+
+                ltoken->color->getColor(cid1);
+                if (tree->right)
+                    rtoken->color->getColor(cid2);
+
+                if (is_Operator(tree->node_name))
+                    cid = operate(cid1, cid2, tree->node_name);
+//            else if(is_BoolOperator(tree->node_name)) {
+//                if (booloperate(cid1, cid2, tree->node_name))
+//                    cid = 1;
+//                else
+//                    cid = 0;
+//            }
+                Tokens *token = new Tokens;
+                token->color = new RealSortValue;
+                token->color->setColor(cid);
+                insert(token);
+            } else if (tid == String) {
+                cerr << "ERROR!String can not operate!" << endl;
+                exit(-1);
+            } else {
+                cerr << "TYPE ERROR!" << endl;
+                exit(-1);
+            }
+        }
+    }
+    else if(tree->node_type == color){
+        if(down!=up){
+            cerr<<"ERROR!color's down and up must consistent!"<<endl;
+            exit(-1);
+        }
+        if(in_bool_op){
+            if(tree->value[0]=='\"') {
+                String_t cid;
+                cid = tree->value;
+                Tokens *token = new Tokens;
+                token->color = new StringSortValue;
+                token->color->setColor(cid);
+                insert(token);
+                tid = String;
+                sid = 0;
+            }
+            else if(tree->value.find('.')==string::npos) {
+                Integer_t cid;
+                cid = atoi(tree->value.c_str());
+                Tokens *token = new Tokens;
+                token->color = new IntegerSortValue;
+                token->color->setColor(cid);
+                insert(token);
+                tid = Integer;
+                sid = 0;
+            }
+            else {
+                Real_t cid;
+                cid = atof(tree->value.c_str());
+                Tokens *token = new Tokens;
+                token->color = new RealSortValue;
+                token->color->setColor(cid);
+                insert(token);
+                tid = Real;
+                sid = 0;
+            }
+        }
+        else {
+            if (tid == productsort) {
+
+                Product_t cid;
+//            int psnum = sorttable.productsort[sid].sortnum;
+                cid = new_ProductColor(sid);
+                if (sorttable.productsort[sid].sortid[down].tid == Integer) {
+                    Integer_t subcolor;
+                    subcolor = atoi(tree->value.c_str());
+                    cid[down]->setColor(subcolor);
+                    Tokens *token = new Tokens;
+                    token->color = new ProductSortValue(sid);
+                    token->color->setColor(cid, sid);
+                    insert(token);
+                } else if (sorttable.productsort[sid].sortid[down].tid == Real) {
+                    Real_t subcolor;
+                    subcolor = atof(tree->value.c_str());
+                    cid[down]->setColor(subcolor);
+                    Tokens *token = new Tokens;
+                    token->color = new ProductSortValue(sid);
+                    token->color->setColor(cid, sid);
+                    insert(token);
+                } else if (sorttable.productsort[sid].sortid[down].tid == String) {
+                    String_t subcolor;
+                    subcolor = tree->value;
+                    cid[down]->setColor(subcolor);
+                    Tokens *token = new Tokens;
+                    token->color = new ProductSortValue(sid);
+                    token->color->setColor(cid, sid);
+                    insert(token);
+                } else {
+                    cerr << "TYPE ERROR!" << endl;
+                    exit(-1);
+                }
+                delete[] cid;
+            } else if (tid == Integer) {
+                //Integer is more complicated ,because it includes bool type
+
+                if (tree->value[0] == '\"') {
+                    String_t cid;
+                    cid = tree->value;
+                    Tokens *token = new Tokens;
+                    token->color = new StringSortValue;
+                    token->color->setColor(cid);
+                    insert(token);
+                } else if (tree->value.find('.') == string::npos) {
+                    Integer_t cid;
+                    cid = atoi(tree->value.c_str());
+                    Tokens *token = new Tokens;
+                    token->color = new IntegerSortValue;
+                    token->color->setColor(cid);
+                    insert(token);
+                } else {
+                    Real_t cid;
+                    cid = atof(tree->value.c_str());
+                    Tokens *token = new Tokens;
+                    token->color = new RealSortValue;
+                    token->color->setColor(cid);
+                    insert(token);
+                }
+            } else if (tid == Real) {
+                Real_t cid;
+                cid = atof(tree->value.c_str());
+                Tokens *token = new Tokens;
+                token->color = new RealSortValue;
+                token->color->setColor(cid);
+                insert(token);
+            } else if (tid == String) {
+                String_t cid;
+                cid = tree->value;
+                Tokens *token = new Tokens;
+                token->color = new StringSortValue;
+                token->color->setColor(cid);
+                insert(token);
+            } else if (tid == dot) {
+                Tokens *token = new Tokens;
+                insert(token);
+            } else {
+                cerr << "TYPE ERROR!" << endl;
+                exit(-1);
+            }
+        }
+    }
+    else if(tree->node_type == variable){
+        if(down!=up){
+            cerr<<"ERROR!color's down and up must consistent!"<<endl;
+            exit(-1);
+        }
+        auto iter = cpn->mapVariable.find(tree->node_name);
+        if(iter == cpn->mapVariable.end()){
+            cerr << "ERROR!can't find variable!"<<endl;
+            exit(-1);
+        }
+        Variable *v = &cpn->vartable[iter->second];
+        if(in_bool_op){
+            if(v->tid == String) {
+                String_t cid;
+                v->value->getColor(cid);
+                Tokens *token = new Tokens;
+                token->color = new StringSortValue;
+                token->color->setColor(cid);
+                insert(token);
+                tid = String;
+                sid = 0;
+            }
+            else if(v->tid == Integer) {
+                Integer_t cid;
+                v->value->getColor(cid);
+                Tokens *token = new Tokens;
+                token->color = new IntegerSortValue;
+                token->color->setColor(cid);
+                insert(token);
+                tid = Integer;
+                sid = 0;
+            }
+            else {
+                Real_t cid;
+                v->value->getColor(cid);
+                Tokens *token = new Tokens;
+                token->color = new RealSortValue;
+                token->color->setColor(cid);
+                insert(token);
+                tid = Real;
+                sid = 0;
+            }
+        }
+        else {
+            if (tid == productsort) {
+                Product_t cid;
+//            int psnum = sorttable.productsort[sid].sortnum;
+                cid = new_ProductColor(sid);
+                if (sorttable.productsort[sid].sortid[down].tid == Integer) {
+                    if (v->tid == Integer) {
+                        Integer_t subcolor;
+                        v->value->getColor(subcolor);
+                        cid[down]->setColor(subcolor);
+                        Tokens *token = new Tokens;
+                        token->color = new ProductSortValue(sid);
+                        token->color->setColor(cid, sid);
+                        insert(token);
+                    } else if (v->tid == Real) {
+                        Real_t subcolor;
+                        v->value->getColor(subcolor);
+                        cid[down]->setColor(subcolor);
+                        Tokens *token = new Tokens;
+                        token->color = new ProductSortValue(sid);
+                        token->color->setColor(cid, sid);
+                        insert(token);
+                    } else {
+                        String_t subcolor;
+                        v->value->getColor(subcolor);
+                        cid[down]->setColor(subcolor);
+                        Tokens *token = new Tokens;
+                        token->color = new ProductSortValue(sid);
+                        token->color->setColor(cid, sid);
+                        insert(token);
+                    }
+                } else if (sorttable.productsort[sid].sortid[down].tid == Real) {
+                    Real_t subcolor;
+                    v->value->getColor(subcolor);
+                    cid[down]->setColor(subcolor);
+                    Tokens *token = new Tokens;
+                    token->color = new ProductSortValue(sid);
+                    token->color->setColor(cid, sid);
+                    insert(token);
+                } else if (sorttable.productsort[sid].sortid[down].tid == String) {
+                    String_t subcolor;
+                    v->value->getColor(subcolor);
+                    cid[down]->setColor(subcolor);
+                    Tokens *token = new Tokens;
+                    token->color = new ProductSortValue(sid);
+                    token->color->setColor(cid, sid);
+                    insert(token);
+                } else {
+                    cerr << "TYPE ERROR!" << endl;
+                    exit(-1);
+                }
+                delete[] cid;
+            } else if (tid == Integer) {
+                Integer_t cid;
+                v->value->getColor(cid);
+                Tokens *token = new Tokens;
+                token->color = new IntegerSortValue;
+                token->color->setColor(cid);
+                insert(token);
+            } else if (tid == Real) {
+                Real_t cid;
+                v->value->getColor(cid);
+                Tokens *token = new Tokens;
+                token->color = new RealSortValue;
+                token->color->setColor(cid);
+                insert(token);
+            } else if (tid == String) {
+                String_t cid;
+                v->value->getColor(cid);
+                Tokens *token = new Tokens;
+                token->color = new StringSortValue;
+                token->color->setColor(cid);
+                insert(token);
+            } else if (tid == dot) {
+                Tokens *token = new Tokens;
+                insert(token);
+            } else {
+                cerr << "TYPE ERROR!" << endl;
+                exit(-1);
+            }
+        }
+    }
+
+    //release memory
+    if(tree->left)
+        lms.clear();
+    if(tree->right)
+        lms.clear();
 }
 
 void CPN::process_declarator(gtree *declarator, string tag, string base, bool para)
 {
     bool call_declare_flag = false;//true when declarator is function declaration
     bool init_flag = false;//true when has init
-    string init_value;
-    gtree *identifier;
+    bool array_flag = false;
+    int array_size = 0;
+    bool point_flag = false;
+    string init_str;
+//    string init_value;
+    gtree *direct_declarator,*identifier;
     string exp;
-    bool ispoint = false;
+    MultiSet init_ms;
+
+
     if (declarator->child->next == NULL)
-        identifier = declarator->child;
+        direct_declarator = declarator->child;
     else
-        identifier = declarator->child->next;
+        direct_declarator = declarator->child->next;
+
+    while(direct_declarator->type == DIRECT_DECLARATOR){
+        if(direct_declarator->child)
+            direct_declarator = direct_declarator->child;
+        else
+            break;
+    }
+    if(direct_declarator && direct_declarator->place == "("){
+        cerr<<"ERROR!we don't support direct_declaration begin with '('"<<endl;
+        exit(-1);
+    }
+    identifier = direct_declarator;
     if(identifier == NULL)
         exp = declarator->place;
     else {
@@ -2146,35 +3300,31 @@ void CPN::process_declarator(gtree *declarator, string tag, string base, bool pa
     }
     if (declarator->next == NULL || declarator->next->type != REMAIN || declarator->next->place != "=")//无初始化
         init_flag = false;
-    else//有初始化,暂不支持数组初始化
+    else//now we just support initializing for non-array normal type
     {
         init_flag = true;
         gtree *init = declarator->next->next;
-        string temp_s;
+
         if (init->child->type == ASSIGNMENT_EXPRESSION)
-            temp_s = init->child->place;
+            init_str = init->child->place;
         else
         {
             cout << "暂不支持数组初始化!" << endl;
             exit(-1);
         }
-        condition_tree temp_CT;
-        temp_CT.construct(temp_s);
-        CTN_cal(temp_CT.root);
-        init_value = temp_CT.root->value;
+
     }
     if (declarator->child->type == POINTER)
-        ispoint = true;
+        point_flag = true;
     else
-        ispoint = false;
-    bool array_flag = false;
-    int array_size = 0;
+        point_flag = false;
+
     if (identifier->parent->next != NULL && identifier->parent->next->type == REMAIN && identifier->parent->next->place == "[")//数组
     {
         array_flag = true;
-        if (identifier->parent->next->next->type == CONSTANT_EXPRESSION && para == false)
+        if (identifier->parent->next->next->type == CONSTANT_EXPRESSION && !para)
             array_size = atoi(identifier->parent->next->next->child->place.c_str());
-        else if(identifier->parent->next->next->type == CONSTANT_EXPRESSION && para == true)
+        else if(identifier->parent->next->next->type == CONSTANT_EXPRESSION && para)
             array_size = 1;
         else
         {
@@ -2188,56 +3338,74 @@ void CPN::process_declarator(gtree *declarator, string tag, string base, bool pa
     {
         array_size = 1;
     }
-    if (!call_declare_flag)
-    {
-        if(tag != "pthread_t") {
+    if (!call_declare_flag) {
+        bool isglobal;
+        if (!para) {
+            if (base == global_table_name)
+                isglobal = true;
+            else
+                isglobal = false;
+        } else
+            isglobal = false;
+
+        string _P;
+        if (tag != "pthread_t") {
             //Add variable place
-            if (array_flag == true && para == true)
-                ispoint = true;
+            if (array_flag && para)
+                point_flag = true;
 
-            string _P = gen_P();
-            Add_Place(_P, tag, array_size, false, exp);
+            _P = gen_P();
+            if (point_flag)
+                tag = "int";//ID is a type of int
 
-            if (init_flag == true) {
-                Tokens *token = new Tokens;
-                auto iter = map_build_in_type.find(tag);
-                if(iter == map_build_in_type.end())
-                {
-                    cout<<"can't find tag in map_build_in_type"<<endl;
+            Add_Place(_P, tag, array_size, false, exp, isglobal);
+
+            if (init_flag) {
+//                Tokens *token = new Tokens;
+//                if (iter->second == Integer) {
+//                    token->init_a_token(iter->second, atoi(init_value.c_str()));
+//                } else if (iter->second == Real) {
+//                    token->init_a_token(iter->second, atof(init_value.c_str()));
+//                } else if (iter->second == String) {
+//                    token->init_a_token(iter->second, init_value);
+//                }
+                auto siter = sorttable.mapSort.find(tag);
+                if (siter == sorttable.mapSort.end()) {
+                    cout << "can't find tag in mapSort" << endl;
                     exit(-1);
                 }
-                if (iter->second == Integer) {
-                    token->init_a_token(iter->second, atoi(init_value.c_str()));
-                } else if (iter->second == Real) {
-                    token->init_a_token(iter->second, atof(init_value.c_str()));
-                } else if (iter->second == String) {
-                    token->init_a_token(iter->second, init_value);
+//                token->color->setColor()
+                if (array_flag) {
+                    cerr << "ERROR!Do not support initializing for array for now!" << endl;
+                    exit(-1);
                 }
-                init_Place(_P, token);
+
+                init_Place(_P, init_str);
             }
+        }
+        else
+            _P = pthread_P;
 
-
-            //it is for v_tables
-            gtree *compound = declarator;
-            if (declarator->parent->type == PARAMETER_DECLARATION) {
-                while (compound->parent->type != FUNCTION_DEFINITION)
-                    compound = compound->parent;
-                while (compound->type != COMPOUND_STATEMENT)
-                    compound = compound->next;
-                compound->para.push_back(make_pair(identifier->place, _P));
-            } else {
-                string table_name;
-                while (compound != NULL && compound->type != COMPOUND_STATEMENT)
-                    compound = compound->parent;
-                if (compound == NULL)
-                    table_name = "global";
-                else
-                    table_name = compound->place;
-                for (unsigned int i = 0; i < v_tables.size(); i++) {
-                    if (table_name == v_tables[i]->name) {
-                        v_tables[i]->insert(identifier->place, _P);
-                        break;
-                    }
+        //it is for v_tables
+        gtree *compound = declarator;
+        if (declarator->parent->type == PARAMETER_DECLARATION) {
+            while (compound->parent->type != FUNCTION_DEFINITION)
+                compound = compound->parent;
+            while (compound->type != COMPOUND_STATEMENT)
+                compound = compound->next;
+            compound->para.push_back(make_pair(identifier->place, _P));
+        } else {
+            string table_name;
+            while (compound != NULL && compound->type != COMPOUND_STATEMENT)
+                compound = compound->parent;
+            if (compound == NULL)
+                table_name = global_table_name;
+            else
+                table_name = compound->place;
+            for (unsigned int i = 0; i < v_tables.size(); i++) {
+                if (table_name == v_tables[i]->name) {
+                    v_tables[i]->insert(identifier->place, _P, array_size, point_flag);
+                    break;
                 }
             }
         }
@@ -2442,12 +3610,15 @@ vector<string> extract_paras(gtree *p)
 {
     //p must be a postfix_expression
     vector<string> res;
-    if(p->type!=POSTFIX_EXPRESSION || p->child->type != POSTFIX_EXPRESSION || p->child->next->place!="(")
+    gtree *tmp = p;
+    while(tmp && tmp->type!=PRIMARY_EXPRESSION)
+        tmp = tmp->child;
+    if(!tmp->parent->next || tmp->parent->next->place!="(")
     {
         cout<<"extract_paras's para must be a call_postfix!"<<endl;
         exit(-1);
     }
-    gtree *argument_list = p->child->next->next,*assignment;
+    gtree *argument_list = tmp->parent->next->next,*assignment;
     if(argument_list->place == ")")
         return res;
     while(argument_list->type!=ASSIGNMENT_EXPRESSION)
@@ -2469,7 +3640,7 @@ void CPN::create_v_table(gtree *p){
         up = up->parent;
     if(p->para.size()!=0) {
         for (unsigned int i = 0; i < p->para.size(); i++)
-            table->insert(p->para[i].first, p->para[i].second);
+            table->insert(p->para[i].first, p->para[i].second,1,true);
         string identifier;
         gtree *func = p->parent;
         if (func->child->next->child->type == POINTER)
@@ -2515,12 +3686,13 @@ void CPN::visit_declaration(gtree *p)
         p1 = p1->parent;
     if (p1 != NULL)
         func = p1->place;
+    else
+        func = global_table_name;
     process_declaration(p,func);
 }
 
 void CPN::visit_statement(gtree *p)
 {
-
     if(p->child->type == SELECTION_STATEMENT || p->child->type == ITERATION_STATEMENT)
     {
         //construct  P、T
@@ -2528,15 +3700,19 @@ void CPN::visit_statement(gtree *p)
         gtree *statement = p;
 //        while(statement->type != STATEMENT)
 //            statement = statement->parent;
+        gtree *com = p;
+        while(com->type!=COMPOUND_STATEMENT)
+            com = com->parent;
+        string base = com->place;
         statement->matched_P = control_P;
-        Add_Place(control_P,"",0,true,p->place);
+        Add_Place(control_P,controlflag,0,true,p->place,true);
         string control_T1 = gen_T(),control_T2 = gen_T();
         string condition = p->child->child->next->next->place;
-        Add_Transition(control_T1,condition,condition);
-        Add_Arc(control_P,control_T1,"",true,control);
+        Add_Transition(control_T1,condition,base);
+        Add_Arc(control_P,control_T1,"1`tid",true,control);
         string condition_op = opposite_all(condition);
-        Add_Transition(control_T2,condition_op,condition_op);
-        Add_Arc(control_P,control_T2,"",true,control);
+        Add_Transition(control_T2,condition_op,base);
+        Add_Arc(control_P,control_T2,"1`tid",true,control);
 
         //set enter,enter_P
         vector<string> enter,enter_P;
@@ -2553,15 +3729,15 @@ void CPN::visit_statement(gtree *p)
 //        while(statement->type != STATEMENT)
 //            statement = statement->parent;
         statement->matched_P = control_P;
-        Add_Place(control_P,"",0,true,p->place);
+        Add_Place(control_P,controlflag,0,true,p->place,true);
         string control_T = gen_T();
         Add_Transition(control_T,"",p->place);
-        Add_Arc(control_P,control_T,"",true,control);
+        Add_Arc(control_P,control_T,"1`tid",true,control);
 
         //set exit,enter
         vector<string> enter,exit_T;
         enter.push_back(control_T);
-        exit_T.push_back(control_T);
+        exit_T.push_back(control_T);//compound_statement's exit_T will clear this
         //enter_P.push_back(control_P);
         set_enter_T(control_P,enter);
         set_exit_T(control_P,exit_T);
@@ -2592,7 +3768,7 @@ void CPN::visit_function(gtree *p){
 
     string begin_P = gen_P();
     p->matched_P = begin_P;
-    Add_Place(begin_P,"",0,true,func + begin_suffix);
+    Add_Place(begin_P,controlflag,0,true,func + begin_suffix,true);
     mapFunction.insert(make_pair(func + begin_suffix,begin_P));
     string begin_T = gen_T();
     Add_Transition(begin_T,"",func + begin_suffix);
@@ -2600,10 +3776,10 @@ void CPN::visit_function(gtree *p){
     enter.push_back(begin_T);
     set_enter_T(begin_P,enter);
 
-    Add_Arc(begin_P,begin_T,"",true,control);
+    Add_Arc(begin_P,begin_T,"1`tid",true,control);
 
     string end_P = gen_P();
-    Add_Place(end_P,"",0,true,func+ end_suffix);
+    Add_Place(end_P,controlflag,0,true,func+ end_suffix,true);
     mapFunction.insert(make_pair(func + end_suffix,end_P));
 //    vector<string> correspond_P;
 //    correspond_P.push_back(end_P);
@@ -2656,19 +3832,172 @@ void CPN::visit_function(gtree *p){
 }
 
 void handle_unary_expression(CPN *cpn,gtree *p,string T,string base,string exp){
-    string left = p->place;
-    string left_P = find_P_name(left,base);
-    cpn->Add_Arc_override(T,left_P,exp,false,write);
-    cpn->Add_Arc_override(left_P,T,left,true,write);
-    string V = left;
-    cpn->Add_Variable(left,left_P);
-    auto iter = cpn->mapTransition.find(T);
-    if(iter == cpn->mapTransition.end())
-    {
-        cout<<"can't find control_T in create_PDNet"<<endl;
-        exit(-1);
+//    string left = p->place;
+//    string left_P = find_P_name(left,base);
+    string Exp1,Exp2,id,exp_tmp,left_P;
+
+    exp_tmp = translate_exp2arcexp(cpn,exp,base);
+
+    if(p->child->type == POSTFIX_EXPRESSION && p->child->child && p->child->child->type == POSTFIX_EXPRESSION
+    && p->child->child->next && p->child->child->next->place == "["){
+        //array or pointer
+
+
+        string index;
+        bool ispointer,isglobal;
+        int size;
+        id = p->child->child->place;
+        left_P = find_P_name(id,base);
+        ispointer = find_v_ispointer(id,base);
+        isglobal = find_v_isglobal(id,base);
+        index = p->child->child->next->next->place;
+        index = translate_exp2arcexp(cpn,index,base);
+
+        auto idpiter = cpn->mapPlace.find(left_P);
+        id = cpn->place[idpiter->second].expression;
+
+        string tid_flag;
+        if(isglobal)
+            tid_flag = "";
+        else
+            tid_flag = tid_str;
+
+        if(!ispointer) {
+            size = find_v_size(id, base);
+
+            for (int i = 0; i < size; i++) {
+                if (i != 0)
+                    Exp2.append("++");
+                string tmp;
+                tmp = construct_arcexpstr(id + to_string(i), to_string(i), id + to_string(i) + id_suffix,
+                                          tid_flag);
+                Exp2.append(tmp);
+            }
+            Exp1 = Exp2;
+
+            string readcase, writecase;
+            writecase = readcase = CaseFlag + index;
+            for (int i = 0; i < size; i++) {
+                string tmp1, tmp2;
+                tmp1 = construct_arcexpstr(id + to_string(i), to_string(i), id + to_string(i) + id_suffix,
+                                           tid_flag);
+                tmp2 = construct_arcexpstr(exp_tmp, to_string(i), id + to_string(i) + id_suffix,
+                                           tid_flag);
+                readcase.append(":");
+                readcase.append(to_string(i));
+                readcase.append("=>");
+                readcase.append(tmp1);
+                writecase.append(":");
+                writecase.append(to_string(i));
+                writecase.append("=>");
+                writecase.append(tmp2);
+            }
+            readcase.append(":default;");
+            writecase.append(":default;");
+            Exp1.append("++");
+            Exp1.append(writecase);
+            Exp1.append("--");
+            Exp1.append(readcase);
+        }
+        else{
+            Exp1 = construct_arcexpstr(id,"",id+id_suffix,tid_flag);
+            Exp2 = Exp1;
+            for(auto iter = place_size.begin();iter != place_size.end();iter++){
+                auto giter = place_isglobal.find(iter->first);
+                if(giter == place_isglobal.end()){
+                    cerr<<"ERROR!place_isglobal and place_size don't match!"<<endl;
+                    exit(-1);
+                }
+                string tid_flag1;
+                if(giter->second)
+                    tid_flag1 = "";
+                else
+                    tid_flag1 = tid_str;
+
+                auto piter = cpn->mapPlace.find(iter->first);
+                if(piter == cpn->mapPlace.end()){
+                    cerr<<"ERROR!can't find place!"<<endl;
+                    exit(-1);
+                }
+                string Exp_tmp1,Exp_tmp2,tmp,sub_id = cpn->place[piter->second].expression;
+                string writecase,readcase;
+                readcase = writecase = CaseFlag + id + "+" + index;
+
+
+                if(iter->second>1) {
+                    for(unsigned short j = 0;j < iter->second;j++){
+                        writecase.append(":");
+                        writecase.append(sub_id + to_string(j) + id_suffix);
+                        writecase.append("=>");
+                        writecase.append(construct_arcexpstr(exp_tmp,to_string(j),sub_id + to_string(j) + id_suffix,tid_flag1));
+                        readcase.append(":");
+                        readcase.append(sub_id + to_string(j) + id_suffix);
+                        readcase.append("=>");
+                        readcase.append(construct_arcexpstr(sub_id + to_string(j), to_string(j), sub_id + to_string(j) + id_suffix,
+                                                        tid_flag1));
+                    }
+                    readcase.append(":default;");
+                    writecase.append(":default;");
+                    Exp_tmp1 = readcase;
+                    Exp_tmp2 = writecase;
+                }
+                else{
+                    tmp = construct_arcexpstr(sub_id, "", sub_id + id_suffix, tid_flag1);
+                    Exp_tmp1 += tmp;
+                    writecase.append(":");
+                    writecase.append(sub_id + id_suffix);
+                    writecase.append("=>");
+                    writecase.append(construct_arcexpstr(exp_tmp,"",sub_id + id_suffix,tid_flag1));
+                    writecase.append(":");
+                    writecase.append(tmp);
+                    writecase.append(";");
+                    Exp_tmp2 = writecase;
+                }
+                cpn->Add_Arc_override(T,iter->first,Exp_tmp2,false,remain,true);
+                cpn->Add_Arc_override(iter->first,T,Exp_tmp1,true,remain,true);
+            }
+        }
+        cpn->Add_Arc_override(T,left_P,Exp1,false,write,false);
+        cpn->Add_Arc_override(left_P,T,Exp2,true,write,false);
     }
-    cpn->transition[iter->second].relvars.insert(V);
+    else{
+        //not array
+
+
+        id = p->place;
+        left_P = find_P_name(id,base);
+        bool ispointer,isglobal;
+        ispointer = find_v_ispointer(id,base);
+        isglobal = find_v_isglobal(id,base);
+        auto idpiter = cpn->mapPlace.find(left_P);
+        id = cpn->place[idpiter->second].expression;
+
+        string tid_flag;
+        if(isglobal)
+            tid_flag = "";
+        else
+            tid_flag = tid_str;
+
+        Exp1 = construct_arcexpstr(exp_tmp,"",id + id_suffix,tid_flag);
+        Exp2 = construct_arcexpstr(id,"",id + id_suffix,tid_flag);
+
+        cpn->Add_Arc_override(T,left_P,Exp1,false,write,false);
+        cpn->Add_Arc_override(left_P,T,Exp2,true,write,false);
+    }
+
+
+//    cpn->Add_Arc_override(T,left_P,,false,write);
+//    cpn->Add_Arc_override(left_P,T,,true,write);
+//    string V = left;
+//    auto piter = cpn->mapPlace.find(left_P);
+//    cpn->Add_Variable(left,cpn->place[piter->second].initMarking.tid,cpn->place[piter->second].initMarking.sid);
+//    auto iter = cpn->mapTransition.find(T);
+//    if(iter == cpn->mapTransition.end())
+//    {
+//        cout<<"can't find control_T in create_PDNet"<<endl;
+//        exit(-1);
+//    }
+//    cpn->transition[iter->second].relvars.insert(id);
 }
 
 void handle_conditional_expression(CPN *cpn,gtree *p,string T,string base){
@@ -2731,6 +4060,10 @@ void CPN::handle_expression(gtree *p) {
 }
 
 void CPN::handle_call(gtree *p) {
+    gtree *com = p;
+    while (com->type != COMPOUND_STATEMENT)
+        com = com->parent;
+    string base = com->place;
     if(exist_in(pthread_func_type,p->child->place))
     {
         // get statement_P and paras
@@ -2767,8 +4100,58 @@ void CPN::handle_call(gtree *p) {
 
 
             //add thread arc
+            string newtid = translate_exp2tid(this,thread_v,base);
             vector<string> enter_T = get_enter_T(statement_P);
-            Add_Arc(enter_T[0], func_begin_P, "", false, control);
+            Add_Arc(enter_T[0], func_begin_P, "1`" + newtid, false, control);
+
+            //add copy
+
+//            Add_Arc(tid_store_P,enter_T[0],oldtid,true,data);
+//            Add_Arc(enter_T[0],tid_store_P,oldtid + "+" +to_string(tid_increment),false,data);
+
+            int tmp_id_ptr = 0;
+            for(auto iter = place_size.begin();iter!=place_size.end();iter++) {
+
+                auto giter = place_isglobal.find(iter->first);
+                if (giter == place_isglobal.end()) {
+                    cerr << "ERROR!place_isglobal and place_size don't match!" << endl;
+                    exit(-1);
+                }
+                string tid_flag1, newtid_flag1;
+                if (giter->second)
+                    continue;
+                else {
+                    tid_flag1 = tid_str;
+                    newtid_flag1 = newtid;
+                }
+                auto piter = mapPlace.find(iter->first);
+                if (piter == mapPlace.end()) {
+                    cerr << "ERROR!can't find place!" << endl;
+                    exit(-1);
+                }
+                string Exp, newExp, sub_id = place[piter->second].expression;
+                if (iter->second > 1) {
+                    for (unsigned short j = 0; j < iter->second; j++) {
+                        if (j != 0)
+                            newExp += "++";
+//                            Exp += "++";
+//                        Exp += construct_arcexpstr(sub_id + to_string(j), to_string(j),
+//                                                   sub_id + to_string(j) + id_suffix,
+//                                                   tid_flag1);
+                        newExp +=
+                                  construct_arcexpstr("0", to_string(j),
+                                                       to_string(tmp_id_ptr++),
+                                                      newtid_flag1);
+                    }
+                } else {
+//                    Exp = construct_arcexpstr(sub_id, "", sub_id + id_suffix, tid_flag1);
+                    newExp =
+                             construct_arcexpstr("0", "", to_string(tmp_id_ptr++),
+                                                 newtid_flag1);
+                }
+                Add_Arc_override(enter_T[0], iter->first, newExp, false, remain, false);
+//                Add_Arc_override(iter->first, enter_T[0], Exp, true, remain, false);
+            }
         }
         else if(p->child->place == "pthread_join")
         {
@@ -2795,7 +4178,9 @@ void CPN::handle_call(gtree *p) {
 
             //add thread arc
             vector<string> enter_T = get_enter_T(statement_P);
-            Add_Arc(func_end_P,enter_T[0], "", true, control);
+
+            string jointid = translate_exp2tid(this,thread_v,base);
+            Add_Arc(func_end_P,enter_T[0], "1`" + jointid, true, control);
         }
         else if(p->child->place == "pthread_exit")
         {
@@ -2813,7 +4198,7 @@ void CPN::handle_call(gtree *p) {
             }
             string last_func_end = iter1->second;
             vector<string> enter_T = get_enter_T(statement_P);
-            Add_Arc(enter_T[0], last_func_end, "", false,executed);
+            Add_Arc(enter_T[0], last_func_end, "1`tid", false,executed);
         }
         else if(p->child->place == "pthread_mutex_init")
         {
@@ -2899,22 +4284,22 @@ void CPN::handle_call(gtree *p) {
             T1 = gen_T();
             T2 = gen_T();
 
-            Add_Place(P1,"",0,true,"signalP1");
-            Add_Place(P2,"",0,true,"signalP2");
-            Add_Place(P3,"",0,true,"signalP3");
+            Add_Place(P1,controlflag,0,true,"signalP1",true);
+            Add_Place(P2,controlflag,0,true,"signalP2",true);
+            Add_Place(P3,controlflag,0,true,"signalP3",true);
             Add_Transition(T1,"","signalT1");
             Add_Transition(T2,"","signalT2");
 
             //construct arcs
-            Add_Arc(enter_T[0],P1,"",false,control);
-            Add_Arc(enter_T[0],P3,"",false,executed);
+            Add_Arc(enter_T[0],P1,"1`tid",false,control);
+            Add_Arc(enter_T[0],P3,"1`tid",false,executed);
             Add_Arc(enter_T[0],mutex_P,"",false,control);
             Add_Arc(cond_P,T1,"",true,control);
-            Add_Arc(P1,T1,"",true,control);
-            Add_Arc(T1,P2,"",false,control);
+            Add_Arc(P1,T1,"1`tid",true,control);
+            Add_Arc(T1,P2,"1`tid",false,control);
             Add_Arc(mutex_P,T2,"",true,control);
-            Add_Arc(P2,T2,"",true,control);
-            Add_Arc(P3,T2,"",true,control);
+            Add_Arc(P2,T2,"1`tid",true,control);
+            Add_Arc(P3,T2,"1`tid",true,control);
 
             //set exit
             vector<string> exit_T;
@@ -2928,20 +4313,42 @@ void CPN::handle_call(gtree *p) {
 //            set_correspond_P(statement_P,cor_P);
         }
     }
+    else if(exist_in(lib_func_type,p->child->place)){
+        // get statement_P and paras
+        gtree *statement = p;
+        while (statement->type != STATEMENT)
+            statement = statement->parent;
+        string statement_P = statement->matched_P;
+
+        vector<string> paras;
+        paras = extract_paras(p);
+        if(p->child->place == "printf")
+            ;
+        else if(p->child->place == "malloc"){
+
+        }
+        else if(p->child->place == "calloc"){
+
+        }
+    }
     else {
-        gtree *com = p;
-        while (com->type != COMPOUND_STATEMENT)
-            com = com->parent;
-        string base = com->place;
+//process all the variable as local variable
+//        bool isglobal = find_v_isglobal(base);
+        string tid_flag;
+//        if(isglobal)
+//            tid_flag = "";
+//        else
+            tid_flag = tid_str;
+
         string call_func_id = p->child->place, call_func_P_begin, call_func_P_end;
 
         //construct call structure
         string call_P = gen_P();
         string call_T = gen_T();
         p->matched_P = call_P;
-        Add_Place(call_P, "", 0, true, p->child->place + call_suffix);
+        Add_Place(call_P, controlflag, 0, true, p->child->place + call_suffix,true);
         Add_Transition(call_T, "", p->child->place + call_suffix);
-        Add_Arc(call_P, call_T, "", true, control);
+        Add_Arc(call_P, call_T, "1`tid", true, control);
 
         vector<string> enter;
         enter.push_back(call_T);
@@ -3000,11 +4407,28 @@ void CPN::handle_call(gtree *p) {
             for (unsigned int i = 0; i < begin_place->para_list.size(); i++) {
                 string para = begin_place->para_list[i].first;
 
-                para += para_suffix;
-                Add_Variable(para, begin_place->para_list[i].second);
+//                para += para_suffix;
+                auto piter = mapPlace.find(begin_place->para_list[i].second);
+                if(piter == mapPlace.end()){
+                    cerr<<"ERROR!can't find Place!"<<endl;
+                    exit(-1);
+                }
 
-                Add_Arc(call_T, begin_place->para_list[i].second, v[i], false, write);
-                Add_Arc(begin_place->para_list[i].second, call_T, para, true, write);
+                //now just consider normal type
+                if(place[piter->second].initMarking.tid != productsort){
+                    cerr<<"ERROR!variable place's sort must be productsort!"<<endl;
+                    exit(-1);
+                }
+
+//                type v_tid = sorttable.productsort[place[piter->second].initMarking.sid].sortid[0].tid;
+//                SORTID v_sid = sorttable.productsort[place[piter->second].initMarking.sid].sortid[0].sid;
+
+
+                string exp1,exp2;
+                exp1 = construct_arcexpstr(translate_exp2arcexp(this,v[i],base), "", para + id_suffix, tid_flag);
+                exp2 = construct_arcexpstr(para, "", para + id_suffix, tid_flag);
+                Add_Arc(call_T, begin_place->para_list[i].second, exp1, false, write);
+                Add_Arc(begin_place->para_list[i].second, call_T, exp2, true, write);
                 create_connect(this, call_T, v[i], base);
             }
         }
@@ -3012,14 +4436,26 @@ void CPN::handle_call(gtree *p) {
         auto iter = mapFunction.find(call_func_P_begin);
         string ret_tag = iter->second;
         if(ret_tag!="void") {
+
+            //we don't support array return for now
+
             string return_P = gen_P();
             string return_v = p->child->place + return_suffix;
 
-            Add_Place(return_P, ret_tag, 1, false, return_v);
+            // return place is a local place
+            Add_Place(return_P, ret_tag, 1, false, return_v,false);
+
             vector<pair<string, string>> returns = get_returns(call_func_P_begin);
             for (unsigned int i = 0; i < returns.size(); i++) {
-                Add_Arc(returns[i].first, return_P, returns[i].second, false, write);
-                Add_Arc(return_P, returns[i].first, return_v, true, write);
+                string Exp1,Exp2,exp_tmp;
+
+                exp_tmp = translate_exp2arcexp(this,returns[i].second,base);
+
+
+                Exp1 = construct_arcexpstr(exp_tmp,"",return_v + id_suffix,tid_flag);
+                Exp2 = construct_arcexpstr(return_v,"",return_v + id_suffix,tid_flag);
+                Add_Arc(returns[i].first, return_P, Exp1, false, write);
+                Add_Arc(return_P, returns[i].first, Exp2, true, write);
             }
 
 
@@ -3030,9 +4466,13 @@ void CPN::handle_call(gtree *p) {
                 last_P = last_call->matched_P;
                 last_T = get_enter_T(last_P);
                 for (unsigned int j = 0; j < last_T.size(); j++) {
-                    Add_Arc(last_T[j], return_P, return_v, false, data);
-                    Add_Arc(return_P, last_T[j], return_v, true, data);
-                    Add_Variable(return_v, return_P);
+                    string Exp;
+                    Exp = construct_arcexpstr(return_v,"",return_v + id_suffix,tid_flag);
+                    Add_Arc(last_T[j], return_P, Exp, false, data);
+                    Add_Arc(return_P, last_T[j], Exp, true, data);
+
+//                    auto piter = mapPlace.find(return_P);
+//                    Add_Variable(return_v, place[piter->second].initMarking.tid,place[piter->second].initMarking.sid);
 
                 }
                 last_call = last_call->parent;
@@ -3049,7 +4489,7 @@ void CPN::handle_call(gtree *p) {
 //            exit(-1);
 //        }
 //        string called_begin_P = iter_begin->second;
-        Add_Arc(call_T, call_func_P_begin, "", false, call_enter);
+        Add_Arc(call_T, call_func_P_begin, "1`tid", false, call_enter);
 //        auto iter1 = mapFunction.find(called_identifier + end_suffix);
 //        if(iter1 == mapFunction.end())
 //        {
@@ -3073,11 +4513,11 @@ void CPN::handle_call(gtree *p) {
 string CPN::Add_executed_P(vector<string> source_T,vector<string> target_T){
 
     string executed_P = gen_P();
-    Add_Place(executed_P,"",0,true,executed_P_name);
+    Add_Place(executed_P,controlflag,0,true,executed_P_name,true);
     for (unsigned int i = 0; i < source_T.size(); i++)
-        Add_Arc(source_T[i], executed_P, "", false, executed);
+        Add_Arc(source_T[i], executed_P, "1`tid", false, executed);
     for (unsigned int i = 0; i < target_T.size(); i++)
-        Add_Arc(executed_P, target_T[i], "", true, control);
+        Add_Arc(executed_P, target_T[i], "1`tid", true, control);
     return executed_P;
 }
 
@@ -3127,13 +4567,13 @@ void CPN::handle_iter_sel(gtree *p) {
     string child_P1,child_P2;
 
     child_P1 = statement1->matched_P;
-    Add_Arc(control_T1,child_P1,"",false,control);
+    Add_Arc(control_T1,child_P1,"1`tid",false,control);
     vector<string> temp;
     temp.push_back(control_T1);
     Add_executed_P(temp,get_enter_T(child_P1));
     if(statement2) {
         child_P2 = statement2->matched_P;
-        Add_Arc(control_T2,child_P2,"",false,control);
+        Add_Arc(control_T2,child_P2,"1`tid",false,control);
         temp.clear();
         temp.push_back(control_T2);
         Add_executed_P(temp,get_enter_T(child_P2));
@@ -3145,10 +4585,10 @@ void CPN::handle_iter_sel(gtree *p) {
         //false_exit
         for(unsigned int i=0;i<falseexit.size();i++)
         {
-            Add_Arc(falseexit[i],control_P,"",false,executed);
+            Add_Arc(falseexit[i],control_P,"1`tid",false,executed);
             string enter_P = statement->enter_P;//just consider call one time now
             if(enter_P != "")
-                Add_Arc(falseexit[i],enter_P,"",false,executed);
+                Add_Arc(falseexit[i],enter_P,"1`tid",false,executed);
         }
     }
 }
@@ -3196,7 +4636,7 @@ void CPN::supply_func(gtree *p) {
         vector<string> enter_T = get_enter_T(iter1->second);
         auto iter2 = mapFunction.find(identifier + end_suffix);
 
-        Add_Arc(enter_T[0], iter2->second, "", false, executed);
+        Add_Arc(enter_T[0], iter2->second, "1`tid", false, executed);
         return;
     }
     gtree *statement = statement_list;
@@ -3244,7 +4684,7 @@ void CPN::supply_func(gtree *p) {
         for (unsigned int i = 0; i < v.size(); i++)
         {
 
-            Add_Arc_override(v[i], func_end, "", false,call_exit);
+            Add_Arc_override(v[i], func_end, "1`tid", false,call_exit,false);
 //                if (func_v != "")
 //                {
 //                    petri.Add_Arc(v[i], func_v, "0", false);
@@ -3284,7 +4724,7 @@ void CPN::supply_jump_statement(gtree *p){
             exit(-1);
         }
         string last_func_end = iter_end->second;
-        Add_Arc(control_T, last_func_end, "", false, call_exit);
+        Add_Arc(control_T, last_func_end, "1`tid", false, call_exit);
 
         auto iter_begin = mapFunction.find(identifier + begin_suffix);
         if (iter_begin == mapFunction.end()) {
@@ -3330,6 +4770,7 @@ void CPN::supply_compound(gtree *p) {
 
     //set exit
     vector<string> exit_T;
+
     exit_T = get_statement_exit(p->parent, this);
     if(exit_T.size()!=0)
         set_exit_T(statement_P,exit_T);
@@ -3350,7 +4791,7 @@ void organize_call(CPN *cpn,gtree *p){
         next_P = call_P[i+1];
         last_T = cpn->get_enter_T(last_P)[0];
         next_T = cpn->get_enter_T(next_P)[0];
-        cpn->Add_Arc(last_T,next_P,"",false,call_connect);
+        cpn->Add_Arc(last_T,next_P,"1`tid",false,call_connect);
 
         auto iter = cpn->mapPlace.find(last_P);
         string call_exp = cpn->place[iter->second].expression;
@@ -3358,12 +4799,12 @@ void organize_call(CPN *cpn,gtree *p){
         string end_exp = call_exp;
         auto iter_end = cpn->mapFunction.find(end_exp);
         last_end_P = iter_end->second;
-        cpn->Add_Arc(last_end_P,next_T,"",true,control);
+        cpn->Add_Arc(last_end_P,next_T,"1`tid",true,control);
     }
     last_P = call_P[i];
     next_P = statement_P;
     last_T = cpn->get_enter_T(last_P)[0];
-    cpn->Add_Arc(last_T,next_P,"",false,call_connect);
+    cpn->Add_Arc(last_T,next_P,"1`tid",false,call_connect);
     for(unsigned int j=0;j<statement_T.size();j++)
     {
         next_T = statement_T[j];
@@ -3373,7 +4814,7 @@ void organize_call(CPN *cpn,gtree *p){
         string end_exp = call_exp;
         auto iter_end = cpn->mapFunction.find(end_exp);
         last_end_P = iter_end->second;
-        cpn->Add_Arc(last_end_P,next_T,"",true,control);
+        cpn->Add_Arc(last_end_P,next_T,"1`tid",true,control);
     }
 }
 
@@ -3485,14 +4926,21 @@ void CPN::print_CPN(string filename) {
     //out << "-----------------------------------" << endl;
 
     for (int i = 0; i < arccount; i++) {
+        string tmp_exp = arc[i].arc_exp.exp;
+        int pos = 0;
+        pos = tmp_exp.find('\"');
+        while(pos != string::npos){
+            tmp_exp = tmp_exp.substr(0,pos) + "\\" + tmp_exp.substr(pos);
+            pos = tmp_exp.find('\"',pos + 2);
+        }
         if (arc[i].arcType == executed)
-            out << "{" << arc[i].source_id << "," << arc[i].target_id << "[color=\"red\"]}" << endl;
+            out << arc[i].source_id << "->" << arc[i].target_id << "[color=\"red\",label=\""<< tmp_exp<<"\"]" << endl;
         else if (arc[i].arcType == write)
-            out << "{" << arc[i].source_id << "," << arc[i].target_id << "[color=\"blue\"]}" << endl;
+            out << arc[i].source_id << "->" << arc[i].target_id << "[color=\"blue\",label=\""<< tmp_exp<<"\"]" << endl;
         else if (arc[i].arcType == data)
-            out << "{" << arc[i].source_id << "," << arc[i].target_id << "[color=\"blue\"]}" << endl;
+            out << arc[i].source_id << "->" << arc[i].target_id << "[color=\"blue\",label=\""<< tmp_exp<<"\"]" << endl;
         else
-            out << "{" << arc[i].source_id << "," << arc[i].target_id << "}" << endl;
+            out << arc[i].source_id << "->" << arc[i].target_id << "[label=\""<< tmp_exp<<"\"]" << endl;
     }
     out.close();
 
@@ -3568,7 +5016,8 @@ void CPN::copy_childNet(CPN *cpnet,vector<string> places,vector<string> transiti
             cout<<"can't find place in copy_childtree"<<endl;
             exit(-1);
         }
-        memcpy(&place[placecount++],&cpnet->place[iter->second],sizeof(CPlace));
+        place[placecount++]=cpnet->place[iter->second];
+//        memcpy(&place[placecount++],&cpnet->place[iter->second],sizeof(CPlace));
 //        place[placecount++] = cpnet->place[iter->second];
 //        for(auto iter=place[placecount-1].producer.begin();iter!=place[placecount-1].producer.end();)
 //        {
@@ -3596,7 +5045,8 @@ void CPN::copy_childNet(CPN *cpnet,vector<string> places,vector<string> transiti
             cout<<"can't find transition in copy_childtree"<<endl;
             exit(-1);
         }
-        memcpy(&transition[transitioncount++],&cpnet->transition[iter->second],sizeof(CTransition));
+        transition[transitioncount++] = cpnet->transition[iter->second];
+//        memcpy(&transition[transitioncount++],&cpnet->transition[iter->second],sizeof(CTransition));
 //        transition[transitioncount++] = cpnet->transition[iter->second];
 //        for(auto iter=transition[transitioncount-1].producer.begin();iter!=transition[transitioncount-1].producer.end();)
 //        {
@@ -3640,6 +5090,7 @@ void delete_arc(CPN *cpn,string source,string target){
                 cpn->arc[j] = cpn->arc[j+1];
             }
             cpn->arccount--;
+            i--;
         }
 //    cout<<"can't find delete_arc!"<<endl;
 //    exit(-1);
@@ -3691,22 +5142,54 @@ void CPN::delete_compound(gtree *p) {
         delete_arc(this,pre_exe_P,statement_T);
         for(unsigned int i=0;i<after_P.size();i++) {
             delete_arc(this, statement_T, after_P[i]);
-            Add_Arc(father_T,after_P[i],"",false,control);
+            Add_Arc(father_T,after_P[i],"1`tid",false,control);
         }
         vector<string> first_after_T = get_enter_T(after_P[0]);
         for(unsigned int i=0;i<first_after_T.size();i++)
-            Add_Arc(pre_exe_P,first_after_T[i],"",true,control);
+            Add_Arc(pre_exe_P,first_after_T[i],"1`tid",true,control);
 
         if(iter_flag == true){
             vector<string> last_T = get_enter_T(after_P[after_P.size()-1]);
             for(unsigned int i=0;i<last_T.size();i++)
-                Add_Arc(last_T[i],pre_exe_P,"",false,executed);
+                Add_Arc(last_T[i],pre_exe_P,"1`tid",false,executed);
         }
     }
     delete_compound(p->child);
     delete_compound(p->next);
 }
 
+void CPN::Add_Variable(condition_tree_node *tree, type tid, SORTID sid, unsigned short down, unsigned short up) {
+    if(!tree)
+        return;
+    if(tree->node_type == Tuple){
+        Add_Variable(tree->left,tid,sid,down,down);
+        Add_Variable(tree->right,tid,sid,down+1,up);
+    }
+    else{
+        Add_Variable(tree->left,tid,sid,down,up);
+        Add_Variable(tree->right,tid,sid,down,up);
+    }
+
+    if(tree->node_type == variable){
+        if(down != up){
+            cerr << "ERROR!in Add_Variable,variable's up and down don't consistent!"<<endl;
+            exit(-1);
+        }
+        type sub_tid ;
+        SORTID sub_sid;
+
+        if(tid == productsort){
+            sub_tid = sorttable.productsort[sid].sortid[down].tid;
+            sub_sid = sorttable.productsort[sid].sortid[down].sid;
+        }
+        else{
+            sub_tid = tid;
+            sub_sid = sid;
+        }
+        tree->node_name = tree->value = Add_Variable(tree->node_name,sub_tid,sub_sid);
+    }
+
+}
 
 NUM_t MultiSet::tokennum() {
     int sum = 0;
@@ -3715,4 +5198,81 @@ NUM_t MultiSet::tokennum() {
         sum += p->tokencount;
         p=p->next;
     }
+}
+
+void ProductSortValue::setColor(Product_t cid, SORTID sid) {
+//    vector<mapsort_info> sortid = sorttable.productsort[sid].sortid;
+    int size = sorttable.productsort[sid].sortnum;
+    for(unsigned int i=0;i<size;i++){
+        //actually productsort can't be a subsort of productsort
+        if(sorttable.productsort[sid].sortid[i].tid == productsort){
+//            int psnum = sorttable.productsort[sortid[i].sid].sortnum;
+//            Product_t tmp;
+//            tmp = new_ProductColor(sortid[i].sid);
+//            cid[i]->getColor(tmp,sortid[i].sid);
+//            valueindex[i]->setColor(tmp,sortid[i].sid);
+//            delete[] tmp;
+            cerr<<"ERROR!product sort can't be a subsort of productsort!"<<endl;
+            exit(-1);
+        }
+        else if(sorttable.productsort[sid].sortid[i].tid == Integer){
+            Integer_t tmp;
+            cid[i]->getColor(tmp);
+            valueindex[i]->setColor(tmp);
+        }
+        else if(sorttable.productsort[sid].sortid[i].tid == Real){
+            Real_t tmp;
+            cid[i]->getColor(tmp);
+            valueindex[i]->setColor(tmp);
+        }
+        else if(sorttable.productsort[sid].sortid[i].tid == String){
+            String_t tmp;
+            cid[i]->getColor(tmp);
+            valueindex[i]->setColor(tmp);
+        }
+    }
+}
+
+void ProductSortValue::getColor(Product_t cid, SORTID sid) {
+//    vector<mapsort_info> sortid = sorttable.productsort[sid].sortid;
+    int size = sorttable.productsort[sid].sortnum;
+    for(unsigned int i=0;i<size;i++){
+        if(sorttable.productsort[sid].sortid[i].tid == productsort){
+            Product_t tmp;
+            int psnum = sorttable.productsort[sid].sortnum;
+            tmp = new SortValue*[psnum];
+            valueindex[i]->getColor(tmp,sorttable.productsort[sid].sortid[i].sid);
+            cid[i]->setColor(tmp,sorttable.productsort[sid].sortid[i].sid);
+            delete[] tmp;
+            cerr<<"ProductSort can't consist of productsort!"<<endl;
+            exit(-1);
+        }
+        else if(sorttable.productsort[sid].sortid[i].tid == Integer){
+            Integer_t tmp;
+            valueindex[i]->getColor(tmp);
+            cid[i]->setColor(tmp);
+        }
+        else if(sorttable.productsort[sid].sortid[i].tid == Real){
+            Real_t tmp;
+            valueindex[i]->getColor(tmp);
+            cid[i]->setColor(tmp);
+        }
+        else if(sorttable.productsort[sid].sortid[i].tid == String){
+            String_t tmp;
+            valueindex[i]->getColor(tmp);
+            cid[i]->setColor(tmp);
+        }
+    }
+}
+
+ProductSortValue::ProductSortValue(SORTID sid) {
+    sortnum = sorttable.productsort[sid].sortnum;
+    valueindex = new SortValue*[sortnum];
+    for(unsigned int i=0;i<sortnum;i++)
+        if(sorttable.productsort[sid].sortid[i].tid == Integer)
+            valueindex[i] = new IntegerSortValue;
+        else if(sorttable.productsort[sid].sortid[i].tid == Real)
+            valueindex[i] = new RealSortValue;
+        else if(sorttable.productsort[sid].sortid[i].tid == String)
+            valueindex[i] = new StringSortValue;
 }

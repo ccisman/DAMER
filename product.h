@@ -2,7 +2,7 @@
 // Created by hecong on 2020/10/10.
 //
 #include "cpn_rg.h"
-#include "base.h"
+//#include "base.h"
 #include "BA/buchi.h"
 #define CHASHSIZE 1048576  //2^20
 #define UNREACHABLE 0xffffffff

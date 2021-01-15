@@ -135,12 +135,6 @@
 		<Unit filename="/home/lewis/Documents/PDNet/PDNet_checker/base.h">
 			<Option target="PDNet_checker"/>
 		</Unit>
-		<Unit filename="/home/lewis/Documents/PDNet/PDNet_checker/condition_tree.cpp">
-			<Option target="PDNet_checker"/>
-		</Unit>
-		<Unit filename="/home/lewis/Documents/PDNet/PDNet_checker/condition_tree.h">
-			<Option target="PDNet_checker"/>
-		</Unit>
 		<Unit filename="/home/lewis/Documents/PDNet/PDNet_checker/cpn.cpp">
 			<Option target="PDNet_checker"/>
 		</Unit>
@@ -154,6 +148,12 @@
 			<Option target="PDNet_checker"/>
 		</Unit>
 		<Unit filename="/home/lewis/Documents/PDNet/PDNet_checker/criteria.cpp">
+			<Option target="PDNet_checker"/>
+		</Unit>
+		<Unit filename="/home/lewis/Documents/PDNet/PDNet_checker/expression_tree.cpp">
+			<Option target="PDNet_checker"/>
+		</Unit>
+		<Unit filename="/home/lewis/Documents/PDNet/PDNet_checker/expression_tree.h">
 			<Option target="PDNet_checker"/>
 		</Unit>
 		<Unit filename="/home/lewis/Documents/PDNet/PDNet_checker/lex.y.cpp">

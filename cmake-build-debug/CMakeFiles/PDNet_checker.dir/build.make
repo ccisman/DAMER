@@ -148,22 +148,9 @@ CMakeFiles/PDNet_checker.dir/cpn.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PDNet_checker.dir/cpn.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lewis/Documents/PDNet/PDNet_checker/cpn.cpp -o CMakeFiles/PDNet_checker.dir/cpn.cpp.s
 
-CMakeFiles/PDNet_checker.dir/condition_tree.cpp.o: CMakeFiles/PDNet_checker.dir/flags.make
-CMakeFiles/PDNet_checker.dir/condition_tree.cpp.o: ../condition_tree.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/PDNet_checker.dir/condition_tree.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PDNet_checker.dir/condition_tree.cpp.o -c /home/lewis/Documents/PDNet/PDNet_checker/condition_tree.cpp
-
-CMakeFiles/PDNet_checker.dir/condition_tree.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/PDNet_checker.dir/condition_tree.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lewis/Documents/PDNet/PDNet_checker/condition_tree.cpp > CMakeFiles/PDNet_checker.dir/condition_tree.cpp.i
-
-CMakeFiles/PDNet_checker.dir/condition_tree.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PDNet_checker.dir/condition_tree.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lewis/Documents/PDNet/PDNet_checker/condition_tree.cpp -o CMakeFiles/PDNet_checker.dir/condition_tree.cpp.s
-
 CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o: CMakeFiles/PDNet_checker.dir/flags.make
 CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o: ../cpn_rg.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o -c /home/lewis/Documents/PDNet/PDNet_checker/cpn_rg.cpp
 
 CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.i: cmake_force
@@ -176,7 +163,7 @@ CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.s: cmake_force
 
 CMakeFiles/PDNet_checker.dir/slice.cpp.o: CMakeFiles/PDNet_checker.dir/flags.make
 CMakeFiles/PDNet_checker.dir/slice.cpp.o: ../slice.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/PDNet_checker.dir/slice.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/PDNet_checker.dir/slice.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PDNet_checker.dir/slice.cpp.o -c /home/lewis/Documents/PDNet/PDNet_checker/slice.cpp
 
 CMakeFiles/PDNet_checker.dir/slice.cpp.i: cmake_force
@@ -189,7 +176,7 @@ CMakeFiles/PDNet_checker.dir/slice.cpp.s: cmake_force
 
 CMakeFiles/PDNet_checker.dir/product.cpp.o: CMakeFiles/PDNet_checker.dir/flags.make
 CMakeFiles/PDNet_checker.dir/product.cpp.o: ../product.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/PDNet_checker.dir/product.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/PDNet_checker.dir/product.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PDNet_checker.dir/product.cpp.o -c /home/lewis/Documents/PDNet/PDNet_checker/product.cpp
 
 CMakeFiles/PDNet_checker.dir/product.cpp.i: cmake_force
@@ -202,7 +189,7 @@ CMakeFiles/PDNet_checker.dir/product.cpp.s: cmake_force
 
 CMakeFiles/PDNet_checker.dir/BA/tinystr.cpp.o: CMakeFiles/PDNet_checker.dir/flags.make
 CMakeFiles/PDNet_checker.dir/BA/tinystr.cpp.o: ../BA/tinystr.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/PDNet_checker.dir/BA/tinystr.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/PDNet_checker.dir/BA/tinystr.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PDNet_checker.dir/BA/tinystr.cpp.o -c /home/lewis/Documents/PDNet/PDNet_checker/BA/tinystr.cpp
 
 CMakeFiles/PDNet_checker.dir/BA/tinystr.cpp.i: cmake_force
@@ -215,7 +202,7 @@ CMakeFiles/PDNet_checker.dir/BA/tinystr.cpp.s: cmake_force
 
 CMakeFiles/PDNet_checker.dir/BA/tinyxml.cpp.o: CMakeFiles/PDNet_checker.dir/flags.make
 CMakeFiles/PDNet_checker.dir/BA/tinyxml.cpp.o: ../BA/tinyxml.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/PDNet_checker.dir/BA/tinyxml.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/PDNet_checker.dir/BA/tinyxml.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PDNet_checker.dir/BA/tinyxml.cpp.o -c /home/lewis/Documents/PDNet/PDNet_checker/BA/tinyxml.cpp
 
 CMakeFiles/PDNet_checker.dir/BA/tinyxml.cpp.i: cmake_force
@@ -228,7 +215,7 @@ CMakeFiles/PDNet_checker.dir/BA/tinyxml.cpp.s: cmake_force
 
 CMakeFiles/PDNet_checker.dir/BA/tinyxmlerror.cpp.o: CMakeFiles/PDNet_checker.dir/flags.make
 CMakeFiles/PDNet_checker.dir/BA/tinyxmlerror.cpp.o: ../BA/tinyxmlerror.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/PDNet_checker.dir/BA/tinyxmlerror.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/PDNet_checker.dir/BA/tinyxmlerror.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PDNet_checker.dir/BA/tinyxmlerror.cpp.o -c /home/lewis/Documents/PDNet/PDNet_checker/BA/tinyxmlerror.cpp
 
 CMakeFiles/PDNet_checker.dir/BA/tinyxmlerror.cpp.i: cmake_force
@@ -241,7 +228,7 @@ CMakeFiles/PDNet_checker.dir/BA/tinyxmlerror.cpp.s: cmake_force
 
 CMakeFiles/PDNet_checker.dir/BA/tinyxmlparser.cpp.o: CMakeFiles/PDNet_checker.dir/flags.make
 CMakeFiles/PDNet_checker.dir/BA/tinyxmlparser.cpp.o: ../BA/tinyxmlparser.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/PDNet_checker.dir/BA/tinyxmlparser.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/PDNet_checker.dir/BA/tinyxmlparser.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PDNet_checker.dir/BA/tinyxmlparser.cpp.o -c /home/lewis/Documents/PDNet/PDNet_checker/BA/tinyxmlparser.cpp
 
 CMakeFiles/PDNet_checker.dir/BA/tinyxmlparser.cpp.i: cmake_force
@@ -254,7 +241,7 @@ CMakeFiles/PDNet_checker.dir/BA/tinyxmlparser.cpp.s: cmake_force
 
 CMakeFiles/PDNet_checker.dir/BA/Syntax_Tree.cpp.o: CMakeFiles/PDNet_checker.dir/flags.make
 CMakeFiles/PDNet_checker.dir/BA/Syntax_Tree.cpp.o: ../BA/Syntax_Tree.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/PDNet_checker.dir/BA/Syntax_Tree.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/PDNet_checker.dir/BA/Syntax_Tree.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PDNet_checker.dir/BA/Syntax_Tree.cpp.o -c /home/lewis/Documents/PDNet/PDNet_checker/BA/Syntax_Tree.cpp
 
 CMakeFiles/PDNet_checker.dir/BA/Syntax_Tree.cpp.i: cmake_force
@@ -267,7 +254,7 @@ CMakeFiles/PDNet_checker.dir/BA/Syntax_Tree.cpp.s: cmake_force
 
 CMakeFiles/PDNet_checker.dir/BA/VWAA.cpp.o: CMakeFiles/PDNet_checker.dir/flags.make
 CMakeFiles/PDNet_checker.dir/BA/VWAA.cpp.o: ../BA/VWAA.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/PDNet_checker.dir/BA/VWAA.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/PDNet_checker.dir/BA/VWAA.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PDNet_checker.dir/BA/VWAA.cpp.o -c /home/lewis/Documents/PDNet/PDNet_checker/BA/VWAA.cpp
 
 CMakeFiles/PDNet_checker.dir/BA/VWAA.cpp.i: cmake_force
@@ -280,7 +267,7 @@ CMakeFiles/PDNet_checker.dir/BA/VWAA.cpp.s: cmake_force
 
 CMakeFiles/PDNet_checker.dir/BA/buchi.cpp.o: CMakeFiles/PDNet_checker.dir/flags.make
 CMakeFiles/PDNet_checker.dir/BA/buchi.cpp.o: ../BA/buchi.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/PDNet_checker.dir/BA/buchi.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/PDNet_checker.dir/BA/buchi.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PDNet_checker.dir/BA/buchi.cpp.o -c /home/lewis/Documents/PDNet/PDNet_checker/BA/buchi.cpp
 
 CMakeFiles/PDNet_checker.dir/BA/buchi.cpp.i: cmake_force
@@ -293,7 +280,7 @@ CMakeFiles/PDNet_checker.dir/BA/buchi.cpp.s: cmake_force
 
 CMakeFiles/PDNet_checker.dir/criteria.cpp.o: CMakeFiles/PDNet_checker.dir/flags.make
 CMakeFiles/PDNet_checker.dir/criteria.cpp.o: ../criteria.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/PDNet_checker.dir/criteria.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/PDNet_checker.dir/criteria.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PDNet_checker.dir/criteria.cpp.o -c /home/lewis/Documents/PDNet/PDNet_checker/criteria.cpp
 
 CMakeFiles/PDNet_checker.dir/criteria.cpp.i: cmake_force
@@ -306,7 +293,7 @@ CMakeFiles/PDNet_checker.dir/criteria.cpp.s: cmake_force
 
 CMakeFiles/PDNet_checker.dir/v_table.cpp.o: CMakeFiles/PDNet_checker.dir/flags.make
 CMakeFiles/PDNet_checker.dir/v_table.cpp.o: ../v_table.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object CMakeFiles/PDNet_checker.dir/v_table.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/PDNet_checker.dir/v_table.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PDNet_checker.dir/v_table.cpp.o -c /home/lewis/Documents/PDNet/PDNet_checker/v_table.cpp
 
 CMakeFiles/PDNet_checker.dir/v_table.cpp.i: cmake_force
@@ -319,7 +306,7 @@ CMakeFiles/PDNet_checker.dir/v_table.cpp.s: cmake_force
 
 CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: CMakeFiles/PDNet_checker.dir/flags.make
 CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o: ../pdnet_parseoption.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o -c /home/lewis/Documents/PDNet/PDNet_checker/pdnet_parseoption.cpp
 
 CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.i: cmake_force
@@ -330,6 +317,19 @@ CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lewis/Documents/PDNet/PDNet_checker/pdnet_parseoption.cpp -o CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.s
 
+CMakeFiles/PDNet_checker.dir/expression_tree.cpp.o: CMakeFiles/PDNet_checker.dir/flags.make
+CMakeFiles/PDNet_checker.dir/expression_tree.cpp.o: ../expression_tree.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object CMakeFiles/PDNet_checker.dir/expression_tree.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PDNet_checker.dir/expression_tree.cpp.o -c /home/lewis/Documents/PDNet/PDNet_checker/expression_tree.cpp
+
+CMakeFiles/PDNet_checker.dir/expression_tree.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/PDNet_checker.dir/expression_tree.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lewis/Documents/PDNet/PDNet_checker/expression_tree.cpp > CMakeFiles/PDNet_checker.dir/expression_tree.cpp.i
+
+CMakeFiles/PDNet_checker.dir/expression_tree.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PDNet_checker.dir/expression_tree.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lewis/Documents/PDNet/PDNet_checker/expression_tree.cpp -o CMakeFiles/PDNet_checker.dir/expression_tree.cpp.s
+
 # Object files for target PDNet_checker
 PDNet_checker_OBJECTS = \
 "CMakeFiles/PDNet_checker.dir/main.cpp.o" \
@@ -339,7 +339,6 @@ PDNet_checker_OBJECTS = \
 "CMakeFiles/PDNet_checker.dir/pre_process.cpp.o" \
 "CMakeFiles/PDNet_checker.dir/base.cpp.o" \
 "CMakeFiles/PDNet_checker.dir/cpn.cpp.o" \
-"CMakeFiles/PDNet_checker.dir/condition_tree.cpp.o" \
 "CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o" \
 "CMakeFiles/PDNet_checker.dir/slice.cpp.o" \
 "CMakeFiles/PDNet_checker.dir/product.cpp.o" \
@@ -352,7 +351,8 @@ PDNet_checker_OBJECTS = \
 "CMakeFiles/PDNet_checker.dir/BA/buchi.cpp.o" \
 "CMakeFiles/PDNet_checker.dir/criteria.cpp.o" \
 "CMakeFiles/PDNet_checker.dir/v_table.cpp.o" \
-"CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o"
+"CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o" \
+"CMakeFiles/PDNet_checker.dir/expression_tree.cpp.o"
 
 # External object files for target PDNet_checker
 PDNet_checker_EXTERNAL_OBJECTS =
@@ -364,7 +364,6 @@ PDNet_checker: CMakeFiles/PDNet_checker.dir/lex.y.cpp.o
 PDNet_checker: CMakeFiles/PDNet_checker.dir/pre_process.cpp.o
 PDNet_checker: CMakeFiles/PDNet_checker.dir/base.cpp.o
 PDNet_checker: CMakeFiles/PDNet_checker.dir/cpn.cpp.o
-PDNet_checker: CMakeFiles/PDNet_checker.dir/condition_tree.cpp.o
 PDNet_checker: CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o
 PDNet_checker: CMakeFiles/PDNet_checker.dir/slice.cpp.o
 PDNet_checker: CMakeFiles/PDNet_checker.dir/product.cpp.o
@@ -378,6 +377,7 @@ PDNet_checker: CMakeFiles/PDNet_checker.dir/BA/buchi.cpp.o
 PDNet_checker: CMakeFiles/PDNet_checker.dir/criteria.cpp.o
 PDNet_checker: CMakeFiles/PDNet_checker.dir/v_table.cpp.o
 PDNet_checker: CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o
+PDNet_checker: CMakeFiles/PDNet_checker.dir/expression_tree.cpp.o
 PDNet_checker: CMakeFiles/PDNet_checker.dir/build.make
 PDNet_checker: CMakeFiles/PDNet_checker.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/lewis/Documents/PDNet/PDNet_checker/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Linking CXX executable PDNet_checker"

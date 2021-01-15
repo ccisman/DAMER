@@ -14,10 +14,12 @@
 #include <string.h>
 #include "AST.h"
 #include "y.tab.h"
-#include "condition_tree.h"
+#include "base.h"
+//#include "condition_tree.h"
+#include "expression_tree.h"
 #include <gperftools/tcmalloc.h>
 #include <gperftools/malloc_extension.h>
-#define H1FACTOR 13
+#define H1FACTOR 13//hash offset
 
 using namespace std;
 
@@ -29,10 +31,15 @@ typedef int Integer_t;
 typedef double Real_t;
 typedef string String_t;
 typedef unsigned short MS_size_t;
-typedef unsigned short token_count_t;
+typedef short token_count_t;
 typedef unsigned int index_t;
+typedef unsigned short ID_t;
+typedef String_t TID_t;
+typedef Integer_t INDEX_t;
+typedef unsigned short SORTNUM_t;
 
-
+class SortValue;
+typedef SortValue** Product_t;
 class CPN;
 class SortTable;
 struct mapsort_info;
@@ -58,10 +65,13 @@ class ProductSort:public Sort
 {
 public:
     string id;
-    int sortnum;
+    SORTNUM_t sortnum;
     vector<string> sortname;
     vector<string> membername;//used for 'struct,union' in program
     vector<mapsort_info> sortid;
+    bool hastid;
+    bool hasindex;
+    ProductSort(){hastid=hasindex=false;}
 };
 
 //UserSort is a user declared enumerable sort
@@ -120,14 +130,15 @@ public:
 class SortValue
 {
 public:
+//    type mytype;
     virtual ~SortValue(){};
 //    virtual void setColor(COLORID cid)=0;
 //    virtual void getColor(COLORID &cid)=0;
-    virtual void setColor(SortValue **cid,int size)=0;
+    virtual void setColor(Product_t cid,SORTID sid)=0;
     virtual void setColor(Integer_t cid)=0;
     virtual void setColor(Real_t cid)=0;
     virtual void setColor(String_t cid)=0;
-    virtual void getColor(SortValue **cid,int size)=0;
+    virtual void getColor(Product_t cid,SORTID sid)=0;
     virtual void getColor(Integer_t &cid)=0;
     virtual void getColor(Real_t &cid)=0;
     virtual void getColor(String_t &cid)=0;
@@ -138,23 +149,20 @@ class ProductSortValue:public SortValue
 {
 private:
     //this is a index;
-    SortValue **valueindex;
+    Product_t valueindex;
+    unsigned int sortnum;
 public:
-    ProductSortValue(int sortnum) {
-        valueindex = new SortValue*[sortnum];
-    }
+    ProductSortValue(SORTID sid);
     ~ProductSortValue() {
+        for(unsigned int i=0;i<sortnum;i++)
+            delete valueindex[i];
         delete [] valueindex;
     }
 
 //    void setColor(COLORID cid){};
 //    void getColor(COLORID &cid){};
-    void setColor(SortValue **cid,int size) {
-        memcpy(valueindex,cid,sizeof(SortValue*)*size);
-    }
-    void getColor(SortValue **cid,int size) {
-        memcpy(cid,valueindex,sizeof(SortValue*)*size);
-    }
+    virtual void setColor(Product_t cid,SORTID sid);
+    virtual void getColor(Product_t cid,SORTID sid);
     virtual void setColor(Integer_t cid){};
     virtual void setColor(Real_t cid){};
     virtual void setColor(String_t cid){};
@@ -219,10 +227,11 @@ class IntegerSortValue:public SortValue
 private:
     Integer_t value;
 public:
+    IntegerSortValue(){}
 //    virtual void setColor(COLORID cid){};
 //    virtual void getColor(COLORID &cid){};
-    virtual void setColor(SortValue **cid,int size){};
-    virtual void getColor(SortValue **cid,int size){};
+    virtual void setColor(Product_t cid,SORTID sid){};
+    virtual void getColor(Product_t cid,SORTID sid){};
     virtual void setColor(Integer_t cid){value = cid;};
     virtual void setColor(Real_t cid){};
     virtual void setColor(String_t cid){};
@@ -237,10 +246,11 @@ class RealSortValue:public SortValue
 private:
     Real_t value;
 public:
+    RealSortValue(){}
 //    virtual void setColor(COLORID cid){};
 //    virtual void getColor(COLORID &cid){};
-    virtual void setColor(SortValue **cid,int size){};
-    virtual void getColor(SortValue **cid,int size){};
+    virtual void setColor(Product_t cid,SORTID sid){};
+    virtual void getColor(Product_t cid,SORTID sid){};
     virtual void setColor(Integer_t cid){};
     virtual void setColor(Real_t cid){value = cid;};
     virtual void setColor(String_t cid){};
@@ -255,10 +265,11 @@ class StringSortValue:public SortValue
 private:
     String_t value;
 public:
+    StringSortValue(){}
 //    virtual void setColor(COLORID cid){};
 //    virtual void getColor(COLORID &cid){};
-    virtual void setColor(SortValue **cid,int size){};
-    virtual void getColor(SortValue **cid,int size){};
+    virtual void setColor(Product_t cid,SORTID sid){};
+    virtual void getColor(Product_t cid,SORTID sid){};
     virtual void setColor(Integer_t cid){};
     virtual void setColor(Real_t cid){};
     virtual void setColor(String_t cid){value = cid;};
@@ -281,7 +292,7 @@ public:
         if(color!=NULL)
             delete color;
     }
-    void initiate(token_count_t tc,type sort,int PSnum=0);
+    void initiate(token_count_t tc,type sort,SORTID sid);
     void init_a_token(type tid,Integer_t value);
     void init_a_token(type tid,Real_t value);
     void init_a_token(type tid,String_t value);
@@ -299,13 +310,14 @@ public:
 
     MultiSet(){tokenQ = new Tokens;tokenQ->next=NULL;color_count = 0;}
     ~MultiSet(){
-        Tokens *temp;
-        while(tokenQ)
+        Tokens *temp = tokenQ->next,*temp1;
+        while(temp)
         {
-            temp = tokenQ;
-            tokenQ = tokenQ->next;
+            temp1 = temp->next;
             delete temp;
+            temp = temp1;
         }
+        delete tokenQ;
     }
     index_t Hash();
     void clear();
@@ -315,6 +327,8 @@ public:
     void operator=(const MultiSet &ms);
     void MINUS(MultiSet &ms);
     void PLUS(MultiSet &ms);
+
+    void Exp2MS(CPN *cpn,condition_tree_node *tree,unsigned short down,unsigned short up,bool in_bool_op);
 
     NUM_t tokennum();
 
@@ -408,12 +422,27 @@ typedef struct CPN_Place
     //***PDNet added end***/
 
     CPN_Place(){expression="";}
+    void operator=(CPN_Place &plc){
+        //copy except producer and consumer
+        id = plc.id;
+        initMarking = plc.initMarking;
+        expression=plc.expression;
+        enter = plc.enter;
+        exit = plc.exit;
+        false_exit = plc.false_exit;
+        call_P = plc.call_P;
+        correspond_P = plc.correspond_P;
+        returns = plc.returns;
+        para_list = plc.para_list;
+        is_executed = plc.is_executed;
+        control_P = plc.control_P;
+        is_mutex = plc.is_mutex;
+        is_cond = plc.is_cond;
+    }
 
     void printTokens(string &str);
 //    ~CPN_Place(){
-//        if(initMarking!=NULL)
-//            delete [] initMarking;
-//
+//        delete initMarking;
 //    }
 } CPlace;
 
@@ -424,7 +453,13 @@ typedef struct CPN_Transition
     bool hasguard;
     vector<CSArc> producer;
     vector<CSArc> consumer;
-    set<string> relvars;
+    void operator=(CPN_Transition &trans){
+        //copy except produce and consumer
+        id = trans.id;
+        guard = trans.guard;
+        hasguard = trans.hasguard;
+    }
+//    set<string> relvars;
     //vector<Variable> relvararray;
 
     //***PDNet added start***/
@@ -441,6 +476,16 @@ typedef struct CPN_Arc
     condition_tree arc_exp;
     Arc_Type arcType;
     bool onlydot;
+
+    void operator=(CPN_Arc &arc){
+        id = arc.id;
+        isp2t = arc.isp2t;
+        source_id = arc.source_id;
+        target_id = arc.target_id;
+        arc_exp = arc.arc_exp;
+        arcType = arc.arcType;
+        onlydot = arc.onlydot;
+    }
 //    MultiSet arc_MS;
 //    ~CPN_Arc() {
 //        arc_exp.destructor(arc_exp.root);
@@ -468,11 +513,11 @@ public:
     map<string,string> mapJoin;//map pthread_create with join
 
     //***PDNet added start***/
-    void CTN_cal(condition_tree_node *CTN);
-    void CT2MS(condition_tree ct,MultiSet &ms);
-    void CTN2MS(condition_tree_node *ctn,MultiSet &ms);
-    void CTN2COLOR(condition_tree_node *ctn,MultiSet &ms);
-    void get_tuplecolor(condition_tree_node *ctn,vector<SortValue *> &color,vector<mapsort_info> sortid);
+//    void CTN_cal(condition_tree_node *CTN);
+//    void CT2MS(condition_tree ct,MultiSet &ms);
+//    void CTN2MS(condition_tree_node *ctn,MultiSet &ms);
+//    void CTN2COLOR(condition_tree_node *ctn,MultiSet &ms);
+//    void get_tuplecolor(condition_tree_node *ctn,vector<SortValue *> &color,vector<mapsort_info> sortid);
     //***PDNet added end***/
 
     CPN();
@@ -482,12 +527,15 @@ public:
     void getDecl(gtree *tree);
     void initDecl();
     void init();
-    void Add_Place(string id,string Type_name,int size,bool control_P,string exp);
+    void Add_Place(string id,string Type_name,int size,bool control_P,string exp,bool isglobal);
     void Add_Transition(string id,string guard,string exp);
     void Add_Arc(string source,string target,string exp,bool sourceP,Arc_Type arcType);
-    void Add_Arc_override(string source,string target,string exp,bool sourceP,Arc_Type arcType);
-    void Add_Variable(string id,string related_P);
-    void init_Place(string id,Tokens *token);
+    void Add_Arc_override(string source,string target,string exp,bool sourceP,Arc_Type arcType,bool be_overrided);
+    string Add_Variable(string id,type tid,SORTID sid);
+    void Add_Variable(condition_tree_node *tree,type tid,SORTID sid,unsigned short down,unsigned short up);
+    void init_Place(string id,Tokens *token,type tid,SORTID sid);
+    void init_Place(string id, string init_str);
+//    void set_Global(string id);
     void process_declaration(gtree *declaration,string base);
     void process_declarator(gtree *declarator, string tag, string base, bool para);
     void process_para_type_list(gtree *para_type_list, string base_Vname);
@@ -529,6 +577,33 @@ private:
 };
 
 
+
+class var_type{
+private:
+    string tag;
+    string name;
+    bool pointer_flag;
+    int dimension;
+    int *size_table;
+public:
+    var_type(){size_table = NULL;}
+    ~var_type(){if(size_table)delete size_table;}
+    void init(string t,string id,bool pointer_f,int dim,int size[]){
+        tag = t;
+        name = id;
+        pointer_flag = pointer_f;
+        dimension = dim;
+        size_table = new int[dim];
+        for(int i=0;i<dim;i++)
+            size_table[i] = size[i];
+    }
+    bool get_pointer_flag(){return pointer_flag;}
+    int *get_size_table(){return size_table;}
+    int get_dimension(){return dimension;}
+    string get_tag(){return tag;}
+    string get_name(){return name;}
+};
+
 //void Tokenscopy(Tokens &t1,const Tokens &t2,type tid,int PSnum=0);
 extern string executed_P_name;
 extern string arr_suffix;
@@ -537,4 +612,8 @@ extern vector<string> pthread_type,pthread_func_type;
 void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P, vector<string>&final_T);
 void post_process(CPN *cpn,CPN *cpn_slice,vector<string> transitions);
 void init_pthread_type();
+extern Product_t new_ProductColor(SORTID sid);
+extern string translate_exp2arcexp(CPN *cpn,string s,string base);
+extern void color_copy(type tid,SORTID sid,SortValue *src,SortValue *des);
+extern type TID_colorset;
 #endif //PDNET_CHECKER_CPN_H

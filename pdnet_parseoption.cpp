@@ -4,8 +4,6 @@
 
 #include "pdnet_parseoption.h"
 #include<map>
-#include "AST.h"
-#include "base.h"
 #include "cpn_rg.h"
 #include "v_table.h"
 #include "product.h"
@@ -227,7 +225,7 @@ void only_slice(string check_file,LTLCategory ltltype,int num,bool gen_picture,b
 
     //1.preprocess and build program's AST
     gtree * tree = create_tree(check_file,true);
-    cut_tree(tree);
+//    cut_tree(tree);
     if(showtree) {
         intofile_tree(tree);
         makeGraph("tree.dot", "tree.png");
@@ -468,6 +466,45 @@ void construct_and_slice(string check_file,LTLCategory ltltype,int num,bool gen_
     delete cpnet;
 }
 
+void testing_rg(string check_file){
+    gtree *tree = create_tree(check_file, true);
+    cut_tree(tree);
+//    if (showtree) {
+//        intofile_tree(tree);
+//        makeGraph("tree.dot", "tree.png");
+//    }
+    CPN *cpnet = new CPN;
+
+    v_tables.clear();
+    init_v_table();
+
+    //2.construct program's CPN
+    cpnet->init();
+    cpnet->initDecl();
+    cpnet->getDecl(tree);
+    cpnet->create_PDNet(tree);
+    string filename_prefix;
+    if(1) {
+        filename_prefix = "directbuild";
+        cpnet->print_CPN(filename_prefix + ".txt");
+        readGraph(filename_prefix + ".txt", filename_prefix + ".dot");
+        makeGraph(filename_prefix + ".dot", filename_prefix + ".png");
+    }
+    cpnet->delete_compound(tree);
+//    if(1) {
+//        filename_prefix = "after";
+//        cpnet->print_CPN(filename_prefix + ".txt");
+//        readGraph(filename_prefix + ".txt", filename_prefix + ".dot");
+//        makeGraph(filename_prefix + ".dot", filename_prefix + ".png");
+//    }
+    cpnet->set_producer_consumer();
+
+    RG rg;
+    rg.init(cpnet);
+    rg.GENERATE(cpnet);
+    rg.print_RG("rg.txt",cpnet);
+}
+
 bool cmdlinet::parse(int argc, char **argv) {
     for(int i=1;i<argc;i++){
         if(argv[i][0] == '-'){
@@ -516,38 +553,98 @@ optcount_t cmdlinet::opt_exist(std::string optstring) {
 }
 
 void cmdlinet::doit() {
-    if(opt_exist("-help")){
-        help();
-        return;
-    }
-    LTLCategory ltltype = LTLV;
-    bool showtree=false,showcpn=false,showtime=false;
-    unsigned short fnum = 1;
-    if(opt_exist("-showtree")){
-        showtree = true;
-    }
-    if(opt_exist("-showcpn")){
-        showcpn = true;
-    }
-    if(opt_exist("-fnum")){
-        option_t option;
-        option = get_option("-fnum");
-        fnum = atoi(option.value[0].c_str());
-        if(fnum == 0){
-            std::cerr<<"You should input a correct formula num, the minimum formula num is 1"<<std::endl;
-            exit(-1);
-        }
-    }
+//    if(opt_exist("-help")){
+//        help();
+//        return;
+//    }
+//    LTLCategory ltltype = LTLV;
+//    bool showtree=false,showcpn=false,showtime=false;
+//    unsigned short fnum = 1;
+//    if(opt_exist("-showtree")){
+//        showtree = true;
+//    }
+//    if(opt_exist("-showcpn")){
+//        showcpn = true;
+//    }
+//    if(opt_exist("-fnum")){
+//        option_t option;
+//        option = get_option("-fnum");
+//        fnum = atoi(option.value[0].c_str());
+//        if(fnum == 0){
+//            std::cerr<<"You should input a correct formula num, the minimum formula num is 1"<<std::endl;
+//            exit(-1);
+//        }
+//    }
+//    init_pthread_type();
+//    if(opt_exist("-directbuild")){
+//        direct_build(filename,ltltype,fnum,showcpn,showtree);
+//    }
+//    else if(opt_exist("-slice")){
+//        only_slice(filename,ltltype,fnum,showcpn,showtree);
+//    }
+//    else if(opt_exist("-compare")){
+//        construct_and_slice(filename,ltltype,fnum,showcpn,showtree);
+//    }
+
+
+
     init_pthread_type();
-    if(opt_exist("-directbuild")){
-        direct_build(filename,ltltype,fnum,showcpn,showtree);
-    }
-    else if(opt_exist("-slice")){
-        only_slice(filename,ltltype,fnum,showcpn,showtree);
-    }
-    else if(opt_exist("-compare")){
-        construct_and_slice(filename,ltltype,fnum,showcpn,showtree);
-    }
+    construct_and_slice("../test/test.c",LTLF,1,false,false);
+//    clock_t start,end;
+//    start = clock();
+//    testing_rg("../test/fib_bench-1.c");
+//    end = clock();
+//    cout << (end-start)/1000.0 << endl;
+//    direct_build("../test/fib_bench-1.c",LTLV,1,true,true);
+
+//    cout<<s<<endl;
+
+
+
+
+    CPN *cpnet;
+    cpnet = new CPN;
+
+//    init_v_table();
+//    cpnet->init();
+//    cpnet->initDecl();
+//    cpnet->Add_Variable("x",Integer,0);
+//
+//    auto iter = cpnet->mapVariable.find("x");
+//    cpnet->vartable[iter->second].value->setColor(1);
+
+    string s="1`{x,x_id+100,case@tid:\"MAIN\"=>\"t1\":\"t1\"=>\"t2\":\"default\";}++1`{x,x_id.x_tid}";
+    string s1="{-1+2*3,100+x_id,2}";
+    string s2="1`\"1.234\"==\"1.23\"";
+    condition_tree *tree = new condition_tree;
+    tree->construct(s2);
+    MultiSet ms;
+
+    auto iter1 = sorttable.mapSort.find("int_var");
+
+    ms.tid = Integer;//iter1->second.tid;
+    ms.sid = 0;//iter1->second.sid;
+    ms.Exp2MS(cpnet,tree->root,0,0,false);
+//    condition_tree *tree = new condition_tree;
+//    tree->construct(s2);
+//    MultiSet ms;
+//
+//    auto iter1 = sorttable.mapSort.find("int_var");
+//
+//    ms.tid = iter1->second.tid;
+//    ms.sid = iter1->second.sid;
+//    ms.Exp2MS(cpnet,tree->root,0,2);
+//
+//    init_v_table();
+//    v_tables[0]->insert("x","P1",3,false);
+//    string result = translate_exp2arcexp(cpnet,"x[a+b]","global");
+//
+//    cpnet->Add_Place("P1","float",1,false,"x",false);
+//    cpnet->init_Place("P1","1.2+2.3+3.4");
+
+
+
+    int a=1;
 }
 
 void cmdlinet::help() {

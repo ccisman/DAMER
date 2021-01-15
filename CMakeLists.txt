@@ -4,11 +4,11 @@ project(PDNet_checker)
 
 set(CMAKE_CXX_STANDARD 14)
 set(LINK_DIR /usr/local/lib)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -Ofast")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -O0")
 link_directories(${LINK_DIR})
 link_libraries(tcmalloc)
 
-add_executable(PDNet_checker main.cpp AST.cpp y.tab.cpp lex.y.cpp y.tab.h AST.h v_table.h pre_process.cpp base.h base.cpp cpn.h cpn.cpp condition_tree.h condition_tree.cpp cpn_rg.h cpn_rg.cpp slice.cpp product.cpp product.h
+add_executable(PDNet_checker main.cpp AST.cpp y.tab.cpp lex.y.cpp y.tab.h AST.h v_table.h pre_process.cpp base.h base.cpp cpn.h cpn.cpp cpn_rg.h cpn_rg.cpp slice.cpp product.cpp product.h
         BA/tinystr.cpp
         BA/tinystr.h
         BA/tinyxml.cpp
@@ -22,5 +22,5 @@ add_executable(PDNet_checker main.cpp AST.cpp y.tab.cpp lex.y.cpp y.tab.h AST.h 
         BA/buchi.h
         BA/buchi.cpp
         BA/set.h
-        criteria.cpp v_table.cpp pdnet_parseoption.h pdnet_parseoption.cpp)
+        criteria.cpp v_table.cpp pdnet_parseoption.h pdnet_parseoption.cpp expression_tree.cpp expression_tree.h)
 target_link_libraries(PDNet_checker tcmalloc)

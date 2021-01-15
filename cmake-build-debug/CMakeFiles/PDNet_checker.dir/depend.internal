@@ -41,26 +41,21 @@ CMakeFiles/PDNet_checker.dir/BA/tinyxmlparser.cpp.o
  /home/lewis/Documents/PDNet/PDNet_checker/BA/tinyxmlparser.cpp
 CMakeFiles/PDNet_checker.dir/base.cpp.o
  /home/lewis/Documents/PDNet/PDNet_checker/base.cpp
-CMakeFiles/PDNet_checker.dir/condition_tree.cpp.o
- /home/lewis/Documents/PDNet/PDNet_checker/AST.h
- /home/lewis/Documents/PDNet/PDNet_checker/condition_tree.cpp
- /home/lewis/Documents/PDNet/PDNet_checker/condition_tree.h
- /home/lewis/Documents/PDNet/PDNet_checker/cpn.h
- /home/lewis/Documents/PDNet/PDNet_checker/y.tab.h
 CMakeFiles/PDNet_checker.dir/cpn.cpp.o
  /home/lewis/Documents/PDNet/PDNet_checker/AST.h
  /home/lewis/Documents/PDNet/PDNet_checker/base.h
- /home/lewis/Documents/PDNet/PDNet_checker/condition_tree.h
  /home/lewis/Documents/PDNet/PDNet_checker/cpn.cpp
  /home/lewis/Documents/PDNet/PDNet_checker/cpn.h
+ /home/lewis/Documents/PDNet/PDNet_checker/expression_tree.h
  /home/lewis/Documents/PDNet/PDNet_checker/v_table.h
  /home/lewis/Documents/PDNet/PDNet_checker/y.tab.h
 CMakeFiles/PDNet_checker.dir/cpn_rg.cpp.o
  /home/lewis/Documents/PDNet/PDNet_checker/AST.h
- /home/lewis/Documents/PDNet/PDNet_checker/condition_tree.h
+ /home/lewis/Documents/PDNet/PDNet_checker/base.h
  /home/lewis/Documents/PDNet/PDNet_checker/cpn.h
  /home/lewis/Documents/PDNet/PDNet_checker/cpn_rg.cpp
  /home/lewis/Documents/PDNet/PDNet_checker/cpn_rg.h
+ /home/lewis/Documents/PDNet/PDNet_checker/expression_tree.h
  /home/lewis/Documents/PDNet/PDNet_checker/y.tab.h
 CMakeFiles/PDNet_checker.dir/criteria.cpp.o
  /home/lewis/Documents/PDNet/PDNet_checker/AST.h
@@ -71,12 +66,15 @@ CMakeFiles/PDNet_checker.dir/criteria.cpp.o
  /home/lewis/Documents/PDNet/PDNet_checker/BA/tinystr.h
  /home/lewis/Documents/PDNet/PDNet_checker/BA/tinyxml.h
  /home/lewis/Documents/PDNet/PDNet_checker/base.h
- /home/lewis/Documents/PDNet/PDNet_checker/condition_tree.h
  /home/lewis/Documents/PDNet/PDNet_checker/cpn.h
  /home/lewis/Documents/PDNet/PDNet_checker/cpn_rg.h
  /home/lewis/Documents/PDNet/PDNet_checker/criteria.cpp
+ /home/lewis/Documents/PDNet/PDNet_checker/expression_tree.h
  /home/lewis/Documents/PDNet/PDNet_checker/product.h
  /home/lewis/Documents/PDNet/PDNet_checker/y.tab.h
+CMakeFiles/PDNet_checker.dir/expression_tree.cpp.o
+ /home/lewis/Documents/PDNet/PDNet_checker/expression_tree.cpp
+ /home/lewis/Documents/PDNet/PDNet_checker/expression_tree.h
 CMakeFiles/PDNet_checker.dir/lex.y.cpp.o
  /home/lewis/Documents/PDNet/PDNet_checker/AST.h
  /home/lewis/Documents/PDNet/PDNet_checker/lex.y.cpp
@@ -93,9 +91,9 @@ CMakeFiles/PDNet_checker.dir/pdnet_parseoption.cpp.o
  /home/lewis/Documents/PDNet/PDNet_checker/BA/tinystr.h
  /home/lewis/Documents/PDNet/PDNet_checker/BA/tinyxml.h
  /home/lewis/Documents/PDNet/PDNet_checker/base.h
- /home/lewis/Documents/PDNet/PDNet_checker/condition_tree.h
  /home/lewis/Documents/PDNet/PDNet_checker/cpn.h
  /home/lewis/Documents/PDNet/PDNet_checker/cpn_rg.h
+ /home/lewis/Documents/PDNet/PDNet_checker/expression_tree.h
  /home/lewis/Documents/PDNet/PDNet_checker/pdnet_parseoption.cpp
  /home/lewis/Documents/PDNet/PDNet_checker/pdnet_parseoption.h
  /home/lewis/Documents/PDNet/PDNet_checker/product.h
@@ -112,9 +110,9 @@ CMakeFiles/PDNet_checker.dir/product.cpp.o
  /home/lewis/Documents/PDNet/PDNet_checker/BA/tinystr.h
  /home/lewis/Documents/PDNet/PDNet_checker/BA/tinyxml.h
  /home/lewis/Documents/PDNet/PDNet_checker/base.h
- /home/lewis/Documents/PDNet/PDNet_checker/condition_tree.h
  /home/lewis/Documents/PDNet/PDNet_checker/cpn.h
  /home/lewis/Documents/PDNet/PDNet_checker/cpn_rg.h
+ /home/lewis/Documents/PDNet/PDNet_checker/expression_tree.h
  /home/lewis/Documents/PDNet/PDNet_checker/product.cpp
  /home/lewis/Documents/PDNet/PDNet_checker/product.h
  /home/lewis/Documents/PDNet/PDNet_checker/y.tab.h
@@ -122,8 +120,9 @@ CMakeFiles/PDNet_checker.dir/slice.cpp.o
  /home/lewis/Documents/PDNet/PDNet_checker/AST.h
  /home/lewis/Documents/PDNet/PDNet_checker/BA/tinystr.h
  /home/lewis/Documents/PDNet/PDNet_checker/BA/tinyxml.h
- /home/lewis/Documents/PDNet/PDNet_checker/condition_tree.h
+ /home/lewis/Documents/PDNet/PDNet_checker/base.h
  /home/lewis/Documents/PDNet/PDNet_checker/cpn.h
+ /home/lewis/Documents/PDNet/PDNet_checker/expression_tree.h
  /home/lewis/Documents/PDNet/PDNet_checker/slice.cpp
  /home/lewis/Documents/PDNet/PDNet_checker/v_table.h
  /home/lewis/Documents/PDNet/PDNet_checker/y.tab.h

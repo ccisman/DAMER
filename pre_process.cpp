@@ -23,7 +23,7 @@ bool for_to_while(string s, string &oldtext, string &newtext)//true代表搜索�
     smatch result;
 
     int position;
-    int sum_num = 0, sum = 0;
+    int sum_num = 0, sum = 0,length;
     string text, res1, res2, res3;
     //string newtext, oldtext;
 
@@ -32,29 +32,35 @@ bool for_to_while(string s, string &oldtext, string &newtext)//true代表搜索�
         res1 = result[1];
         res2 = result[2];
         res3 = result[3];
+        length = result.length();
     }
     else
         return false;
     newtext = "{\n" + res1 + ';' + "\nwhile(" + res2 + ')';
-    for (unsigned int i = position; i < s.length(); i++)
+    for (unsigned int i = position + length; i < s.length(); i++)
     {
         if (s[i] == '{')
             sum_num++;
         else if (s[i] == '}')
         {
             sum_num--;
-            if (sum_num == 0)
+            if (sum_num == 0) {
+                text = text + s[i];
                 break;
+            }
         }
-        if (sum_num > 0)
+        else if(s[i] == ';' && sum_num == 0){
             text = text + s[i];
+            break;
+        }
+        text = text + s[i];
         sum++;
     }
     //cout << text << endl;
     //cout << sum;
-    text = text + res3 + ";}\n}";
+    text = "{" + text + res3 + ";}\n}";
     newtext = newtext + text;
-    oldtext = s.substr(position, sum + 1);
+    oldtext = s.substr(position, sum + 1 + length);
     return true;
 }
 
@@ -273,7 +279,7 @@ void trans_assign_all(string &s)
 
 bool trans_define(string &s)
 {
-    regex pattern("#define +(.*)? +(.*)?\n");
+    regex pattern("#define +([a-zA-Z_0-9]*)? +(.*)?\n");
     smatch result;
 
     int position;
@@ -402,9 +408,11 @@ void trans_some_function(string &s)
     string pthread_library = "#include <pthread.h>";
     string stdio_library = "#include <stdio.h>";
     string assert_library = "#include <assert.h>";
+    string stdlib_library = "#include <stdlib.h>";
     string_replace(s,  pthread_library, "");
     string_replace(s,  stdio_library, "");
     string_replace(s,  assert_library, "");
+    string_replace(s,  stdlib_library, "");
 
     string atomic_begin = "extern void __VERIFIER_atomic_begin();";
     string atomic_begin_rp = "void __VERIFIER_atomic_begin(){}";

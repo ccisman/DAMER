@@ -224,7 +224,7 @@ void TraverseTree2(gtree *p)
     if (p->type == EXPRESSION || p->type == ASSIGNMENT_EXPRESSION || p->type == UNARY_EXPRESSION || p->type == ASSIGNMENT_EXPRESSION || p->type == CONDITIONAL_EXPRESSION
         || p->type == LOGICAL_OR_EXPRESSION || p->type == LOGICAL_AND_EXPRESSION || p->type == INCLUSIVE_OR_EXPRESSION || p->type == EXCLUSIVE_OR_EXPRESSION
         || p->type == AND_EXPRESSION || p->type == EQUALITY_EXPRESSION || p->type == RELATIONAL_EXPRESSION || p->type == SHIFT_EXPRESSION || p->type == ADDITIVE_EXPRESSION
-        || p->type == MULTIPLICATIVE_EXPRESSION || p->type == CAST_EXPRESSION || (p->type == POSTFIX_EXPRESSION && !judge_call_postfix_expression(p)) || p->type == PRIMARY_EXPRESSION
+        || p->type == MULTIPLICATIVE_EXPRESSION ||  (p->type == POSTFIX_EXPRESSION && !judge_call_postfix_expression(p)) || p->type == PRIMARY_EXPRESSION
         || p->type == UNARY_OPERATOR ||  p->type == ARGUMENT_EXPRESSION_LIST || p->type == ASSIGNMENT_OPERATOR || p->type == CONSTANT_EXPRESSION)//内部变量声明place需要带有函数前缀
     {
         gtree *p1 = p->child;
@@ -235,6 +235,15 @@ void TraverseTree2(gtree *p)
             p1 = p1->next;
         }
         p->place = temp_place;
+    }
+    else if(p->type == CAST_EXPRESSION){
+        //type conversion now just simplely ignore it
+        if(p->child->type == UNARY_EXPRESSION){
+            p->place = p->child->place;
+        }
+        else{
+            p->place = p->child->next->next->next->place;
+        }
     }
     else if (p->type == SELECTION_STATEMENT)
     {
