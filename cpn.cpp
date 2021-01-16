@@ -21,6 +21,9 @@ type TID_colorset = String;
 //string tid_store_P;
 //string tid_store_type = "tid_store";
 //string oldtid_str = "oldtid";
+string alloc_store_P;
+string alloc_store_type = "alloc_store";
+ID_t init_alloc = 10000;
 
 map<string,string> map_address;//first is address(string),second is variable. address(1)——variable(1)
 
@@ -253,9 +256,7 @@ bool find_v_isglobal(string v_name,string base){
 //    exit(-1);
 //}
 
-//***************   create_connect   *************//
-//Input: petri net, related transition, expression, base deal with homonymous variable
-//Function: split the expression, and create connection between T and places splited in the expression
+
 
 string construct_arcexpstr(string value,string index,string id,string tid){
     string result;
@@ -284,6 +285,9 @@ string construct_arcexpstr(string value,string index,string id,string tid){
     return result;
 }
 
+//***************   create_connect   *************//
+//Input: petri net, related transition, expression, base deal with homonymous variable
+//Function: deal with right value. split the expression, and create connection between T and places splited in the expression
 void create_connect(CPN *petri, string T, string express, string base)
 {
     string P2;
@@ -404,6 +408,137 @@ void create_connect(CPN *petri, string T, string express, string base)
         }
     }
 }
+
+//***************   create_assignment   *************//
+//parameters explain:
+//**left_P:left value's place
+//**T:transition that connected with
+//**index:the index for CPN variable(after translating)
+//**tid_flag:tid or ""(global)
+//**exp_tmp:right value (after translating)
+//**base:base compound statement
+//**itsef: true if assign itself, false if assign pointer or arr
+//Function: deal with left value.create assignment connection and create connect(if necessary)
+void create_assignment(CPN *cpn,string left_P,string T,string index,string tid_flag,string exp_tmp,string base,bool itself){
+
+    string Exp1,Exp2,id;
+    auto iter = cpn->mapPlace.find(left_P);
+    if(iter == cpn->mapPlace.end()){
+        cerr <<"can't find place in create_assignment!"<<endl;
+        exit(-1);
+    }
+    id = cpn->place[iter->second].expression;
+
+    if(itself){
+        Exp1 = construct_arcexpstr(exp_tmp,"",id + id_suffix,tid_flag);
+        Exp2 = construct_arcexpstr(id,"",id + id_suffix,tid_flag);
+
+        cpn->Add_Arc_override(T,left_P,Exp1,false,write,false);
+        cpn->Add_Arc_override(left_P,T,Exp2,true,write,false);
+    }
+    else {
+        bool ispointer = cpn->place[iter->second].is_pointer;
+        if (!ispointer) {
+            int size;
+            size = find_v_size(id, base);
+
+            for (int i = 0; i < size; i++) {
+                if (i != 0)
+                    Exp2.append("++");
+                string tmp;
+                tmp = construct_arcexpstr(id + to_string(i), to_string(i), id + to_string(i) + id_suffix,
+                                          tid_flag);
+                Exp2.append(tmp);
+            }
+            Exp1 = Exp2;
+
+            string readcase, writecase;
+            writecase = readcase = CaseFlag + index;
+            for (int i = 0; i < size; i++) {
+                string tmp1, tmp2;
+                tmp1 = construct_arcexpstr(id + to_string(i), to_string(i), id + to_string(i) + id_suffix,
+                                           tid_flag);
+                tmp2 = construct_arcexpstr(exp_tmp, to_string(i), id + to_string(i) + id_suffix,
+                                           tid_flag);
+                readcase.append(":");
+                readcase.append(to_string(i));
+                readcase.append("=>");
+                readcase.append(tmp1);
+                writecase.append(":");
+                writecase.append(to_string(i));
+                writecase.append("=>");
+                writecase.append(tmp2);
+            }
+            readcase.append(":default;");
+            writecase.append(":default;");
+            Exp1.append("++");
+            Exp1.append(writecase);
+            Exp1.append("--");
+            Exp1.append(readcase);
+        } else {
+            Exp1 = construct_arcexpstr(id, "", id + id_suffix, tid_flag);
+            Exp2 = Exp1;
+            for (auto iter = place_size.begin(); iter != place_size.end(); iter++) {
+                auto giter = place_isglobal.find(iter->first);
+                if (giter == place_isglobal.end()) {
+                    cerr << "ERROR!place_isglobal and place_size don't match!" << endl;
+                    exit(-1);
+                }
+                string tid_flag1;
+                if (giter->second)
+                    tid_flag1 = "";
+                else
+                    tid_flag1 = tid_str;
+
+                auto piter = cpn->mapPlace.find(iter->first);
+                if (piter == cpn->mapPlace.end()) {
+                    cerr << "ERROR!can't find place!" << endl;
+                    exit(-1);
+                }
+                string Exp_tmp1, Exp_tmp2, tmp, sub_id = cpn->place[piter->second].expression;
+                string writecase, readcase;
+                readcase = writecase = CaseFlag + id + "+" + index;
+
+
+                if (iter->second > 1) {
+                    for (unsigned short j = 0; j < iter->second; j++) {
+                        writecase.append(":");
+                        writecase.append(sub_id + to_string(j) + id_suffix);
+                        writecase.append("=>");
+                        writecase.append(construct_arcexpstr(exp_tmp, to_string(j), sub_id + to_string(j) + id_suffix,
+                                                             tid_flag1));
+                        readcase.append(":");
+                        readcase.append(sub_id + to_string(j) + id_suffix);
+                        readcase.append("=>");
+                        readcase.append(construct_arcexpstr(sub_id + to_string(j), to_string(j),
+                                                            sub_id + to_string(j) + id_suffix,
+                                                            tid_flag1));
+                    }
+                    readcase.append(":default;");
+                    writecase.append(":default;");
+                    Exp_tmp1 = readcase;
+                    Exp_tmp2 = writecase;
+                } else {
+                    tmp = construct_arcexpstr(sub_id, "", sub_id + id_suffix, tid_flag1);
+                    Exp_tmp1 += tmp;
+                    writecase.append(":");
+                    writecase.append(sub_id + id_suffix);
+                    writecase.append("=>");
+                    writecase.append(construct_arcexpstr(exp_tmp, "", sub_id + id_suffix, tid_flag1));
+                    writecase.append(":");
+                    writecase.append(tmp);
+                    writecase.append(";");
+                    Exp_tmp2 = writecase;
+                }
+                cpn->Add_Arc_override(T, iter->first, Exp_tmp2, false, remain, true);
+                cpn->Add_Arc_override(iter->first, T, Exp_tmp1, true, remain, true);
+            }
+        }
+        cpn->Add_Arc_override(T, left_P, Exp1, false, write, false);
+        cpn->Add_Arc_override(left_P, T, Exp2, true, write, false);
+    }
+}
+
 void iter_extra(CPN *petri,string newP,string _P){
     vector<string> false_exit = petri->get_falseexit_T(_P);
     for (unsigned int i = 0; i < false_exit.size(); i++)
@@ -1554,26 +1689,26 @@ string uniqueexp(string exp,CPN *cpn){
     return exp;
 }
 
-void CPN::Add_Place(string id, string Type_name, int size,bool control_P,string exp,bool isglobal) {
+void CPN::Add_Place(string id, string Type_name, int size,bool control_P,string exp,bool isglobal,bool ispointer) {
     CPlace *pp = &place[placecount++];
-
-//    //tid_store_type
-//    if(Type_name == tid_store_type){
-//        pp->control_P = false;
-//        pp->id = id;
-//        pp->is_cond = false;
-//        pp->is_mutex = false;
-//        pp->expression = exp;
-//        pp->is_executed = false;
-//        Tokens *token = new Tokens;
-//        token->initiate(1,Integer,0);
-//        token->color->setColor(init_tid);
-//        pp->initMarking.tid = Integer;
-//        pp->initMarking.sid = 0;
-//        pp->initMarking.insert(token);
-//        mapPlace.insert(make_pair(id,placecount-1));
-//        return;
-//    }
+    pp->is_pointer = ispointer;
+    //alloc_store_type
+    if(Type_name == alloc_store_type){
+        pp->control_P = false;
+        pp->id = id;
+        pp->is_cond = false;
+        pp->is_mutex = false;
+        pp->expression = exp;
+        pp->is_executed = false;
+        Tokens *token = new Tokens;
+        token->initiate(1,Integer,0);
+        token->color->setColor(init_alloc);
+        pp->initMarking.tid = Integer;
+        pp->initMarking.sid = 0;
+        pp->initMarking.insert(token);
+        mapPlace.insert(make_pair(id,placecount-1));
+        return;
+    }
     if(exist_in(pthread_type,Type_name))
         ;
     else if(size > 1)
@@ -1876,7 +2011,6 @@ string CPN::Add_Variable(string id, type tid,SORTID sid) {
 
 void CPN::init() {
 
-
     sorttable.psptr = 0;
     gen_P_num = gen_T_num = 0;
     placecount = transitioncount = arccount = varcount = 0;
@@ -1887,9 +2021,9 @@ void CPN::init() {
 
     vartable = new Variable[100];
 
-//    string P = gen_P();
-//    tid_store_P = P;
-//    Add_Place(P,tid_store_type,1,false,"tid_store",true);
+    string P = gen_P();
+    alloc_store_P = P;
+    Add_Place(P,alloc_store_type,1,false,"alloc_store",true,false);
 }
 
 void CPN::initDecl() {
@@ -2006,7 +2140,7 @@ void CPN::initDecl() {
     }
 }
 
-void getinfofromdeclarator(gtree *declarator,bool &pointer_flag,int &arr_size,string id){
+void getinfofromdeclarator(gtree *declarator,bool &pointer_flag,int &arr_size,string &id){
     if(declarator->type != DECLARATOR){
         cerr << "ERROR!getinfofromdeclarator should be a declarator node!"<<endl;
         exit(-1);
@@ -2022,11 +2156,12 @@ void getinfofromdeclarator(gtree *declarator,bool &pointer_flag,int &arr_size,st
     }
     else
         direct_declarator = declarator->child;
-    if(direct_declarator->child->type == DIRECT_DECLARATOR && direct_declarator->child->next->place == "("){
+    if(direct_declarator->child && direct_declarator->child->type == DIRECT_DECLARATOR
+    && direct_declarator->child->next && direct_declarator->child->next->place == "("){
         cerr << "ERROR!We don't support function in struct_declarator for now!"<<endl;
         exit(-1);
     }
-    else if(direct_declarator->child->type == DIRECT_DECLARATOR){
+    else if(direct_declarator->child && direct_declarator->child->type == DIRECT_DECLARATOR){
         //we just support 1 dimension array for now
         //multiple dimension just need some address translation
         if(direct_declarator->child->next->next->type == CONSTANT_EXPRESSION){
@@ -2050,6 +2185,10 @@ void getinfofromdeclarator(gtree *declarator,bool &pointer_flag,int &arr_size,st
             cerr << "We don't support declarator like:int (*a) for now!"<<endl;
             exit(-1);
         }
+    }
+    else if(direct_declarator){
+        // due to cut_tree, there may just have one IDENTIFIER below DIRECT_DECLARATOR
+        id = direct_declarator->place;
     }
 }
 
@@ -2096,7 +2235,12 @@ vector<var_type*> process_struct_declaration_list(gtree *p)
                 string id;
                 getinfofromdeclarator(struct_declarator->child,pointer_flag,arr_size,id);
                 var_type *v_type;
-                v_type->init(specifier,id,pointer_flag,1,&arr_size);
+                v_type = new var_type;
+                //now we just support dimension 1 or 0
+                if(arr_size > 0)
+                    v_type->init(specifier,id,pointer_flag,1,&arr_size);
+                else
+                    v_type->init(specifier,id,pointer_flag,0,&arr_size);
                 var_list.push_back(v_type);
 //                if(struct_declarator->child->child->type == POINTER){
 //                    cout<<"error! pointer doesn't not support for now."<<endl;
@@ -2138,47 +2282,62 @@ void CPN::getDecl(gtree *tree){
             vector<string> base_sortname,base_membername;
             vector<MSI> base_sortid;
             int base_sortnum;
+            usrdefine_typename = tree->place;
             if(tree->child->next->type == REMAIN)
             {
-                usrdefine_typename = "";
+//                usrdefine_typename = "";
                 struct_declare_list = tree->child->next->next->child;
             }
             else {
-                usrdefine_typename = tree->child->next->place;
+//                usrdefine_typename = tree->child->next->place;
                 struct_declare_list = tree->child->next->next->next->child;
             }
 
             vector<var_type*> var_list = process_struct_declaration_list(struct_declare_list);
-            base_sortnum = var_list.size();
-            for(SORTID i;i<base_sortnum;i++) {
-                base_sortname.push_back(var_list[i]->get_tag());
+            var_list.size();
+            for(SORTID i;i<var_list.size();i++) {
                 if(var_list[i]->get_pointer_flag())
                     base_sortid.push_back(m_int);
                 else {
+
                     auto iter = map_build_in_type.find(var_list[i]->get_tag());
                     MSI tmp_msi;
                     if (iter == map_build_in_type.end()) {
                         auto uiter = sorttable.mapSort.find(var_list[i]->get_tag());
-                        if(uiter == sorttable.mapSort.end()){
-                            cerr << "ERROR variable type!"<<endl;
+                        if (uiter == sorttable.mapSort.end()) {
+                            cerr << "ERROR variable type when getDecl!" << endl;
                             exit(-1);
                         }
                         tmp_msi = uiter->second;
-                    }
-                    else {
+                    } else {
                         tmp_msi.tid = iter->second;
                         tmp_msi.sid = 0;
                     }
-                    base_sortid.push_back(tmp_msi);
+
+                    if (var_list[i]->get_dimension() == 0) {
+                        base_sortid.push_back(tmp_msi);
+                        base_membername.push_back(var_list[i]->get_name());
+                        base_sortname.push_back(var_list[i]->get_tag());
+                    }
+                    else {
+                        //now just support dimension 1
+                        for(int j=0;j<var_list[i]->get_size_table()[0];j++) {
+                            base_sortid.push_back(tmp_msi);
+                            base_membername.push_back(var_list[i]->get_name() + to_string(j));
+                            base_sortname.push_back(var_list[i]->get_tag());
+                        }
+                    }
                 }
-                base_membername.push_back(var_list[i]->get_name());
             }
+            base_sortnum = base_sortid.size();
+
             //base_type var
             pp_base.id = usrdefine_typename;
             pp_base.mytype = productsort;
             pp_base.sortnum = base_sortnum;
             pp_base.sortid = base_sortid;
             pp_base.membername = base_membername;
+            pp_base.sortname = base_sortname;
 
             sorttable.productsort.push_back(pp_base);
 
@@ -2194,6 +2353,7 @@ void CPN::getDecl(gtree *tree){
             pp.sortid = base_sortid;
             pp.sortid.push_back(m_int);
             pp.sortid.push_back(m_int);
+            pp.sortname = base_sortname;
             pp.sortname.push_back("id");
             pp.sortname.push_back("tid");
             pp.membername = base_membername;
@@ -2213,6 +2373,7 @@ void CPN::getDecl(gtree *tree){
             pp1.sortid.push_back(m_int);
             pp1.sortid.push_back(m_int);
             pp1.sortid.push_back(m_int);
+            pp1.sortname = base_sortname;
             pp1.sortname.push_back("id");
             pp1.sortname.push_back("index");
             pp1.sortname.push_back("tid");
@@ -2232,6 +2393,7 @@ void CPN::getDecl(gtree *tree){
             pp2.sortid = base_sortid;
             pp2.sortid.push_back(m_int);
 //            pp.sortid.push_back(m_int);
+            pp2.sortname = base_sortname;
             pp2.sortname.push_back("id");
 //            pp.sortname.push_back("tid");
             pp2.membername = base_membername;
@@ -2250,6 +2412,7 @@ void CPN::getDecl(gtree *tree){
             pp3.sortid = base_sortid;
             pp3.sortid.push_back(m_int);
             pp3.sortid.push_back(m_int);
+            pp3.sortname = base_sortname;
             pp3.sortname.push_back("id");
             pp3.sortname.push_back("index");
             pp3.membername = base_membername;
@@ -2668,7 +2831,7 @@ string translate_exp2tid(CPN *cpn,string s, string base){
         if(tmp_P != pthread_P) {
             auto iter = cpn->mapPlace.find(tmp_P);
             if (iter == cpn->mapPlace.end()) {
-                cerr << "can't find tmp_P in trans_exp2arcexp!" << endl;
+                cerr << "can't find tmp_P in trans_exp2tid!" << endl;
                 exit(-1);
             }
             id = cpn->place[iter->second].expression;
@@ -3358,7 +3521,7 @@ void CPN::process_declarator(gtree *declarator, string tag, string base, bool pa
             if (point_flag)
                 tag = "int";//ID is a type of int
 
-            Add_Place(_P, tag, array_size, false, exp, isglobal);
+            Add_Place(_P, tag, array_size, false, exp, isglobal,point_flag);
 
             if (init_flag) {
 //                Tokens *token = new Tokens;
@@ -3540,6 +3703,17 @@ void CPN::Add_returns(string p_name, string return_T, string exp) {
     }
 }
 
+//void CPN::set_ispointer(string p_name,bool ispointer) {
+//    auto iter = mapPlace.find(p_name);
+//    if(iter!=mapPlace.end())
+//        place[iter->second].is_pointer = ispointer;
+//    else
+//    {
+//        cout<<"error in set_ispointer"<<endl;
+//        exit(-1);
+//    }
+//}
+
 vector<string> CPN::get_enter_T(string p_name) {
     auto iter = mapPlace.find(p_name);
     if(iter!=mapPlace.end())
@@ -3605,6 +3779,17 @@ vector<pair<string, string>> CPN::get_returns(string p_name) {
         exit(-1);
     }
 }
+
+//bool CPN::get_ispointer(string p_name) {
+//    auto iter = mapPlace.find(p_name);
+//    if(iter!=mapPlace.end())
+//        return place[iter->second].is_pointer;
+//    else
+//    {
+//        cout<<"error in get_ispointer"<<endl;
+//        exit(-1);
+//    }
+//}
 
 vector<string> extract_paras(gtree *p)
 {
@@ -3705,7 +3890,7 @@ void CPN::visit_statement(gtree *p)
             com = com->parent;
         string base = com->place;
         statement->matched_P = control_P;
-        Add_Place(control_P,controlflag,0,true,p->place,true);
+        Add_Place(control_P,controlflag,0,true,p->place,true,false);
         string control_T1 = gen_T(),control_T2 = gen_T();
         string condition = p->child->child->next->next->place;
         Add_Transition(control_T1,condition,base);
@@ -3729,7 +3914,7 @@ void CPN::visit_statement(gtree *p)
 //        while(statement->type != STATEMENT)
 //            statement = statement->parent;
         statement->matched_P = control_P;
-        Add_Place(control_P,controlflag,0,true,p->place,true);
+        Add_Place(control_P,controlflag,0,true,p->place,true,false);
         string control_T = gen_T();
         Add_Transition(control_T,"",p->place);
         Add_Arc(control_P,control_T,"1`tid",true,control);
@@ -3759,7 +3944,7 @@ void CPN::visit_function(gtree *p){
     if (p->child->next->child->type == POINTER) {
         func = p->child->next->child->next->child->child->place;
         return_pointer_flag = true;
-        ret_tag = "int";//unsolve pointer
+        ret_tag = "*int";//unsolve pointer
     }
     else
         func = p->child->next->child->child->child->place;
@@ -3768,7 +3953,7 @@ void CPN::visit_function(gtree *p){
 
     string begin_P = gen_P();
     p->matched_P = begin_P;
-    Add_Place(begin_P,controlflag,0,true,func + begin_suffix,true);
+    Add_Place(begin_P,controlflag,0,true,func + begin_suffix,true,false);
     mapFunction.insert(make_pair(func + begin_suffix,begin_P));
     string begin_T = gen_T();
     Add_Transition(begin_T,"",func + begin_suffix);
@@ -3779,7 +3964,7 @@ void CPN::visit_function(gtree *p){
     Add_Arc(begin_P,begin_T,"1`tid",true,control);
 
     string end_P = gen_P();
-    Add_Place(end_P,controlflag,0,true,func+ end_suffix,true);
+    Add_Place(end_P,controlflag,0,true,func+ end_suffix,true,false);
     mapFunction.insert(make_pair(func + end_suffix,end_P));
 //    vector<string> correspond_P;
 //    correspond_P.push_back(end_P);
@@ -3842,7 +4027,6 @@ void handle_unary_expression(CPN *cpn,gtree *p,string T,string base,string exp){
     && p->child->child->next && p->child->child->next->place == "["){
         //array or pointer
 
-
         string index;
         bool ispointer,isglobal;
         int size;
@@ -3862,107 +4046,107 @@ void handle_unary_expression(CPN *cpn,gtree *p,string T,string base,string exp){
         else
             tid_flag = tid_str;
 
-        if(!ispointer) {
-            size = find_v_size(id, base);
-
-            for (int i = 0; i < size; i++) {
-                if (i != 0)
-                    Exp2.append("++");
-                string tmp;
-                tmp = construct_arcexpstr(id + to_string(i), to_string(i), id + to_string(i) + id_suffix,
-                                          tid_flag);
-                Exp2.append(tmp);
-            }
-            Exp1 = Exp2;
-
-            string readcase, writecase;
-            writecase = readcase = CaseFlag + index;
-            for (int i = 0; i < size; i++) {
-                string tmp1, tmp2;
-                tmp1 = construct_arcexpstr(id + to_string(i), to_string(i), id + to_string(i) + id_suffix,
-                                           tid_flag);
-                tmp2 = construct_arcexpstr(exp_tmp, to_string(i), id + to_string(i) + id_suffix,
-                                           tid_flag);
-                readcase.append(":");
-                readcase.append(to_string(i));
-                readcase.append("=>");
-                readcase.append(tmp1);
-                writecase.append(":");
-                writecase.append(to_string(i));
-                writecase.append("=>");
-                writecase.append(tmp2);
-            }
-            readcase.append(":default;");
-            writecase.append(":default;");
-            Exp1.append("++");
-            Exp1.append(writecase);
-            Exp1.append("--");
-            Exp1.append(readcase);
-        }
-        else{
-            Exp1 = construct_arcexpstr(id,"",id+id_suffix,tid_flag);
-            Exp2 = Exp1;
-            for(auto iter = place_size.begin();iter != place_size.end();iter++){
-                auto giter = place_isglobal.find(iter->first);
-                if(giter == place_isglobal.end()){
-                    cerr<<"ERROR!place_isglobal and place_size don't match!"<<endl;
-                    exit(-1);
-                }
-                string tid_flag1;
-                if(giter->second)
-                    tid_flag1 = "";
-                else
-                    tid_flag1 = tid_str;
-
-                auto piter = cpn->mapPlace.find(iter->first);
-                if(piter == cpn->mapPlace.end()){
-                    cerr<<"ERROR!can't find place!"<<endl;
-                    exit(-1);
-                }
-                string Exp_tmp1,Exp_tmp2,tmp,sub_id = cpn->place[piter->second].expression;
-                string writecase,readcase;
-                readcase = writecase = CaseFlag + id + "+" + index;
-
-
-                if(iter->second>1) {
-                    for(unsigned short j = 0;j < iter->second;j++){
-                        writecase.append(":");
-                        writecase.append(sub_id + to_string(j) + id_suffix);
-                        writecase.append("=>");
-                        writecase.append(construct_arcexpstr(exp_tmp,to_string(j),sub_id + to_string(j) + id_suffix,tid_flag1));
-                        readcase.append(":");
-                        readcase.append(sub_id + to_string(j) + id_suffix);
-                        readcase.append("=>");
-                        readcase.append(construct_arcexpstr(sub_id + to_string(j), to_string(j), sub_id + to_string(j) + id_suffix,
-                                                        tid_flag1));
-                    }
-                    readcase.append(":default;");
-                    writecase.append(":default;");
-                    Exp_tmp1 = readcase;
-                    Exp_tmp2 = writecase;
-                }
-                else{
-                    tmp = construct_arcexpstr(sub_id, "", sub_id + id_suffix, tid_flag1);
-                    Exp_tmp1 += tmp;
-                    writecase.append(":");
-                    writecase.append(sub_id + id_suffix);
-                    writecase.append("=>");
-                    writecase.append(construct_arcexpstr(exp_tmp,"",sub_id + id_suffix,tid_flag1));
-                    writecase.append(":");
-                    writecase.append(tmp);
-                    writecase.append(";");
-                    Exp_tmp2 = writecase;
-                }
-                cpn->Add_Arc_override(T,iter->first,Exp_tmp2,false,remain,true);
-                cpn->Add_Arc_override(iter->first,T,Exp_tmp1,true,remain,true);
-            }
-        }
-        cpn->Add_Arc_override(T,left_P,Exp1,false,write,false);
-        cpn->Add_Arc_override(left_P,T,Exp2,true,write,false);
+        create_assignment(cpn,left_P,T,index,tid_flag,exp_tmp,base,false);
+//        if(!ispointer) {
+//            size = find_v_size(id, base);
+//
+//            for (int i = 0; i < size; i++) {
+//                if (i != 0)
+//                    Exp2.append("++");
+//                string tmp;
+//                tmp = construct_arcexpstr(id + to_string(i), to_string(i), id + to_string(i) + id_suffix,
+//                                          tid_flag);
+//                Exp2.append(tmp);
+//            }
+//            Exp1 = Exp2;
+//
+//            string readcase, writecase;
+//            writecase = readcase = CaseFlag + index;
+//            for (int i = 0; i < size; i++) {
+//                string tmp1, tmp2;
+//                tmp1 = construct_arcexpstr(id + to_string(i), to_string(i), id + to_string(i) + id_suffix,
+//                                           tid_flag);
+//                tmp2 = construct_arcexpstr(exp_tmp, to_string(i), id + to_string(i) + id_suffix,
+//                                           tid_flag);
+//                readcase.append(":");
+//                readcase.append(to_string(i));
+//                readcase.append("=>");
+//                readcase.append(tmp1);
+//                writecase.append(":");
+//                writecase.append(to_string(i));
+//                writecase.append("=>");
+//                writecase.append(tmp2);
+//            }
+//            readcase.append(":default;");
+//            writecase.append(":default;");
+//            Exp1.append("++");
+//            Exp1.append(writecase);
+//            Exp1.append("--");
+//            Exp1.append(readcase);
+//        }
+//        else{
+//            Exp1 = construct_arcexpstr(id,"",id+id_suffix,tid_flag);
+//            Exp2 = Exp1;
+//            for(auto iter = place_size.begin();iter != place_size.end();iter++){
+//                auto giter = place_isglobal.find(iter->first);
+//                if(giter == place_isglobal.end()){
+//                    cerr<<"ERROR!place_isglobal and place_size don't match!"<<endl;
+//                    exit(-1);
+//                }
+//                string tid_flag1;
+//                if(giter->second)
+//                    tid_flag1 = "";
+//                else
+//                    tid_flag1 = tid_str;
+//
+//                auto piter = cpn->mapPlace.find(iter->first);
+//                if(piter == cpn->mapPlace.end()){
+//                    cerr<<"ERROR!can't find place!"<<endl;
+//                    exit(-1);
+//                }
+//                string Exp_tmp1,Exp_tmp2,tmp,sub_id = cpn->place[piter->second].expression;
+//                string writecase,readcase;
+//                readcase = writecase = CaseFlag + id + "+" + index;
+//
+//
+//                if(iter->second>1) {
+//                    for(unsigned short j = 0;j < iter->second;j++){
+//                        writecase.append(":");
+//                        writecase.append(sub_id + to_string(j) + id_suffix);
+//                        writecase.append("=>");
+//                        writecase.append(construct_arcexpstr(exp_tmp,to_string(j),sub_id + to_string(j) + id_suffix,tid_flag1));
+//                        readcase.append(":");
+//                        readcase.append(sub_id + to_string(j) + id_suffix);
+//                        readcase.append("=>");
+//                        readcase.append(construct_arcexpstr(sub_id + to_string(j), to_string(j), sub_id + to_string(j) + id_suffix,
+//                                                        tid_flag1));
+//                    }
+//                    readcase.append(":default;");
+//                    writecase.append(":default;");
+//                    Exp_tmp1 = readcase;
+//                    Exp_tmp2 = writecase;
+//                }
+//                else{
+//                    tmp = construct_arcexpstr(sub_id, "", sub_id + id_suffix, tid_flag1);
+//                    Exp_tmp1 += tmp;
+//                    writecase.append(":");
+//                    writecase.append(sub_id + id_suffix);
+//                    writecase.append("=>");
+//                    writecase.append(construct_arcexpstr(exp_tmp,"",sub_id + id_suffix,tid_flag1));
+//                    writecase.append(":");
+//                    writecase.append(tmp);
+//                    writecase.append(";");
+//                    Exp_tmp2 = writecase;
+//                }
+//                cpn->Add_Arc_override(T,iter->first,Exp_tmp2,false,remain,true);
+//                cpn->Add_Arc_override(iter->first,T,Exp_tmp1,true,remain,true);
+//            }
+//        }
+//        cpn->Add_Arc_override(T,left_P,Exp1,false,write,false);
+//        cpn->Add_Arc_override(left_P,T,Exp2,true,write,false);
     }
     else{
         //not array
-
 
         id = p->place;
         left_P = find_P_name(id,base);
@@ -3978,11 +4162,12 @@ void handle_unary_expression(CPN *cpn,gtree *p,string T,string base,string exp){
         else
             tid_flag = tid_str;
 
-        Exp1 = construct_arcexpstr(exp_tmp,"",id + id_suffix,tid_flag);
-        Exp2 = construct_arcexpstr(id,"",id + id_suffix,tid_flag);
-
-        cpn->Add_Arc_override(T,left_P,Exp1,false,write,false);
-        cpn->Add_Arc_override(left_P,T,Exp2,true,write,false);
+        create_assignment(cpn,left_P,T,"",tid_flag,exp_tmp,base,true);
+//        Exp1 = construct_arcexpstr(exp_tmp,"",id + id_suffix,tid_flag);
+//        Exp2 = construct_arcexpstr(id,"",id + id_suffix,tid_flag);
+//
+//        cpn->Add_Arc_override(T,left_P,Exp1,false,write,false);
+//        cpn->Add_Arc_override(left_P,T,Exp2,true,write,false);
     }
 
 
@@ -4075,10 +4260,11 @@ void CPN::handle_call(gtree *p) {
         vector<string> paras;
         paras = extract_paras(p);
         if(p->child->place == "pthread_create") {
-            string thread_v = paras[0], thread_func = paras[2];
+            string thread_v = paras[0], thread_func = paras[2],para_pass = paras[3];
             if (thread_v[0] == '&')
                 thread_v = thread_v.substr(1);
-
+            if(para_pass[0] == '&')
+                para_pass = para_pass.substr(1);
             auto iter = mapFunction.find(thread_func + begin_suffix);
             if(iter == mapFunction.end())
             {
@@ -4151,6 +4337,23 @@ void CPN::handle_call(gtree *p) {
                 }
                 Add_Arc_override(enter_T[0], iter->first, newExp, false, remain, false);
 //                Add_Arc_override(iter->first, enter_T[0], Exp, true, remain, false);
+            }
+
+            //passing paras
+            if(para_pass != "NULL") {
+
+                create_connect(this, enter_T[0], para_pass, base);
+                auto piter = mapPlace.find(func_begin_P);
+                if(piter == mapPlace.end()){
+                    cerr << "ERROR!can't find Place!"<<endl;
+                    exit(-1);
+                }
+                if(place[piter->second].para_list.size()!=1){
+                    cerr << "ERROR!pthread_create's target function should have 1 parameter!but now have:"<<place[piter->second].para_list.size()<<endl;
+                    exit(-1);
+                }
+                string exp_tmp = translate_exp2arcexp(this,para_pass,base);
+                create_assignment(this,place[piter->second].para_list[0].second,enter_T[0],"",tid_str,exp_tmp,base,true);
             }
         }
         else if(p->child->place == "pthread_join")
@@ -4284,9 +4487,9 @@ void CPN::handle_call(gtree *p) {
             T1 = gen_T();
             T2 = gen_T();
 
-            Add_Place(P1,controlflag,0,true,"signalP1",true);
-            Add_Place(P2,controlflag,0,true,"signalP2",true);
-            Add_Place(P3,controlflag,0,true,"signalP3",true);
+            Add_Place(P1,controlflag,0,true,"signalP1",true,false);
+            Add_Place(P2,controlflag,0,true,"signalP2",true,false);
+            Add_Place(P3,controlflag,0,true,"signalP3",true,false);
             Add_Transition(T1,"","signalT1");
             Add_Transition(T2,"","signalT2");
 
@@ -4325,6 +4528,25 @@ void CPN::handle_call(gtree *p) {
         if(p->child->place == "printf")
             ;
         else if(p->child->place == "malloc"){
+            string tag,tmp_size;
+            int size;
+            string para = paras[0];
+            auto pos_start = para.find("sizeof(");
+            if(pos_start == string::npos){
+                cerr << "malloc should be the standard form:malloc(sizeof(type)*num)!"<<endl;
+                exit(-1);
+            }
+            auto pos_end = para.find(")",pos_start);
+            tag = para.substr(pos_start + 7,pos_end);
+
+            auto mul_pos = para.find("*");
+            if(mul_pos<pos_start)
+                tmp_size = para.substr(0,mul_pos);
+            else
+                tmp_size = para.substr(mul_pos + 1);
+            size = atoi(tmp_size.c_str());
+            string malloc_P = gen_P();
+            Add_Place(malloc_P,tag,size,false,"malloc",true,false);
 
         }
         else if(p->child->place == "calloc"){
@@ -4346,7 +4568,7 @@ void CPN::handle_call(gtree *p) {
         string call_P = gen_P();
         string call_T = gen_T();
         p->matched_P = call_P;
-        Add_Place(call_P, controlflag, 0, true, p->child->place + call_suffix,true);
+        Add_Place(call_P, controlflag, 0, true, p->child->place + call_suffix,true,false);
         Add_Transition(call_T, "", p->child->place + call_suffix);
         Add_Arc(call_P, call_T, "1`tid", true, control);
 
@@ -4424,26 +4646,35 @@ void CPN::handle_call(gtree *p) {
 //                SORTID v_sid = sorttable.productsort[place[piter->second].initMarking.sid].sortid[0].sid;
 
 
-                string exp1,exp2;
-                exp1 = construct_arcexpstr(translate_exp2arcexp(this,v[i],base), "", para + id_suffix, tid_flag);
-                exp2 = construct_arcexpstr(para, "", para + id_suffix, tid_flag);
-                Add_Arc(call_T, begin_place->para_list[i].second, exp1, false, write);
-                Add_Arc(begin_place->para_list[i].second, call_T, exp2, true, write);
+//                string exp1,exp2;
+//                exp1 = construct_arcexpstr(translate_exp2arcexp(this,v[i],base), "", para + id_suffix, tid_flag);
+//                exp2 = construct_arcexpstr(para, "", para + id_suffix, tid_flag);
+//                Add_Arc(call_T, begin_place->para_list[i].second, exp1, false, write);
+//                Add_Arc(begin_place->para_list[i].second, call_T, exp2, true, write);
                 create_connect(this, call_T, v[i], base);
+                string exp_tmp = translate_exp2arcexp(this,v[i],base);
+                create_assignment(this,begin_place->para_list[i].second,call_T,"",tid_flag,exp_tmp,base,true);
             }
         }
+
         //construct return places
         auto iter = mapFunction.find(call_func_P_begin);
+        if(iter == mapFunction.end()){
+            cerr << "can't find call_func_P_begin!"<<endl;
+            exit(-1);
+        }
         string ret_tag = iter->second;
+        bool ret_ispointer = false;
+        if(ret_tag[0]=='*')
+            ret_ispointer = true;
         if(ret_tag!="void") {
 
-            //we don't support array return for now
 
             string return_P = gen_P();
             string return_v = p->child->place + return_suffix;
 
             // return place is a local place
-            Add_Place(return_P, ret_tag, 1, false, return_v,false);
+            Add_Place(return_P, ret_tag, 1, false, return_v,false,ret_ispointer);
 
             vector<pair<string, string>> returns = get_returns(call_func_P_begin);
             for (unsigned int i = 0; i < returns.size(); i++) {
@@ -4451,11 +4682,11 @@ void CPN::handle_call(gtree *p) {
 
                 exp_tmp = translate_exp2arcexp(this,returns[i].second,base);
 
-
-                Exp1 = construct_arcexpstr(exp_tmp,"",return_v + id_suffix,tid_flag);
-                Exp2 = construct_arcexpstr(return_v,"",return_v + id_suffix,tid_flag);
-                Add_Arc(returns[i].first, return_P, Exp1, false, write);
-                Add_Arc(return_P, returns[i].first, Exp2, true, write);
+                create_assignment(this,return_P,returns[i].first,exp_tmp,tid_flag,exp_tmp,base,true);
+//                Exp1 = construct_arcexpstr(exp_tmp,"",return_v + id_suffix,tid_flag);
+//                Exp2 = construct_arcexpstr(return_v,"",return_v + id_suffix,tid_flag);
+//                Add_Arc(returns[i].first, return_P, Exp1, false, write);
+//                Add_Arc(return_P, returns[i].first, Exp2, true, write);
             }
 
 
@@ -4466,10 +4697,12 @@ void CPN::handle_call(gtree *p) {
                 last_P = last_call->matched_P;
                 last_T = get_enter_T(last_P);
                 for (unsigned int j = 0; j < last_T.size(); j++) {
-                    string Exp;
-                    Exp = construct_arcexpstr(return_v,"",return_v + id_suffix,tid_flag);
-                    Add_Arc(last_T[j], return_P, Exp, false, data);
-                    Add_Arc(return_P, last_T[j], Exp, true, data);
+//                    string Exp;
+
+                    create_connect(this,last_T[j],return_v,base);
+//                    Exp = construct_arcexpstr(return_v,"",return_v + id_suffix,tid_flag);
+//                    Add_Arc(last_T[j], return_P, Exp, false, data);
+//                    Add_Arc(return_P, last_T[j], Exp, true, data);
 
 //                    auto piter = mapPlace.find(return_P);
 //                    Add_Variable(return_v, place[piter->second].initMarking.tid,place[piter->second].initMarking.sid);
@@ -4513,7 +4746,7 @@ void CPN::handle_call(gtree *p) {
 string CPN::Add_executed_P(vector<string> source_T,vector<string> target_T){
 
     string executed_P = gen_P();
-    Add_Place(executed_P,controlflag,0,true,executed_P_name,true);
+    Add_Place(executed_P,controlflag,0,true,executed_P_name,true,false);
     for (unsigned int i = 0; i < source_T.size(); i++)
         Add_Arc(source_T[i], executed_P, "1`tid", false, executed);
     for (unsigned int i = 0; i < target_T.size(); i++)

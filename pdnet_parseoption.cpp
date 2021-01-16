@@ -589,7 +589,7 @@ void cmdlinet::doit() {
 
 
     init_pthread_type();
-    construct_and_slice("../test/test.c",LTLF,1,false,false);
+    construct_and_slice("../test/fib_bench-1.c",LTLF,1,false,false);
 //    clock_t start,end;
 //    start = clock();
 //    testing_rg("../test/fib_bench-1.c");

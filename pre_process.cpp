@@ -279,7 +279,7 @@ void trans_assign_all(string &s)
 
 bool trans_define(string &s)
 {
-    regex pattern("#define +([a-zA-Z_0-9]*)? +(.*)?\n");
+    regex pattern("#define[ \t]+([a-zA-Z_0-9]*)?[ \t]+(.*)?\n");
     smatch result;
 
     int position;

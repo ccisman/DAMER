@@ -411,6 +411,7 @@ typedef struct CPN_Place
     bool is_mutex;
     bool is_cond;
     bool is_executed;
+    bool is_pointer;
     string expression;
     vector<string> enter;
     vector<string> exit;
@@ -527,7 +528,7 @@ public:
     void getDecl(gtree *tree);
     void initDecl();
     void init();
-    void Add_Place(string id,string Type_name,int size,bool control_P,string exp,bool isglobal);
+    void Add_Place(string id,string Type_name,int size,bool control_P,string exp,bool isglobal,bool is_pointer);
     void Add_Transition(string id,string guard,string exp);
     void Add_Arc(string source,string target,string exp,bool sourceP,Arc_Type arcType);
     void Add_Arc_override(string source,string target,string exp,bool sourceP,Arc_Type arcType,bool be_overrided);
@@ -552,6 +553,8 @@ public:
     vector<string> get_enter_T(string p_name);
     void Add_returns(string p_name,string return_T,string exp);
     vector<pair<string,string>> get_returns(string p_name);
+//    void set_ispointer(string p_name,bool ispointer);
+//    bool get_ispointer(string p_name);
 
     //***PDNet added end***//
     ~CPN();

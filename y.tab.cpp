@@ -4439,6 +4439,7 @@ int yyerror(char *s)
 }
 
 extern FILE *yyin;
+int struct_ptr = 0;
 #include<vector>
 #include"y.tab.h"
 
@@ -4504,9 +4505,11 @@ void type_add(gtree *p)
     else
     {
         if (type_specifier->child->child->next->type == IDENTIFIER)
-            origin_name =type_specifier->child->child->next->place;
-        else
-            return;
+            origin_name = type_specifier->child->child->next->place;
+        else {
+            origin_name = "struct" + to_string(struct_ptr++);
+        }
+        type_specifier->child->place = origin_name;
     }
     gtree *init_declarator;
     aka temp;

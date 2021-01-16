@@ -345,3 +345,134 @@ formula:1
 current file: ../test/test.c
 formula:1
 
+
+current file: ../test/test.c
+formula:1
+
+
+current file: ../test/test.c
+formula:1
+
+
+current file: ../test/test.c
+formula:1
+
+
+current file: ../test/test.c
+formula:1
+
+
+current file: ../test/test.c
+formula:1
+
+
+current file: ../test/test.c
+formula:1
+
+
+current file: ../test/test.c
+formula:1
+
+
+current file: ../test/test.c
+formula:1
+
+
+current file: ../test/test.c
+formula:1
+
+
+current file: ../test/test.c
+formula:1
+
+
+current file: ../test/test.c
+formula:1
+
+
+current file: ../test/test.c
+formula:1
+
+
+current file: ../test/test.c
+formula:1
+
+
+current file: ../test/test.c
+formula:1
+
+
+current file: ../test/test.c
+formula:1
+
+
+current file: ../test/test.c
+formula:1
+
+
+current file: ../test/test.c
+formula:1
+
+
+current file: ../test/test.c
+formula:1
+
+
+current file: ../test/test.c
+formula:1
+
+
+current file: ../test/test.c
+formula:1
+
+
+current file: ../test/test.c
+formula:1
+
+
+current file: ../test/test.c
+formula:1
+
+
+current file: ../test/fib_bench-1.c
+formula:1
+
+
+current file: ../test/fib_bench-1.c
+formula:1
+
+
+current file: ../test/fib_bench-1.c
+formula:1
+
+direct build time: 12.305
+model_check: 26278.096
+total time: 26290.401
+
+G(!(is-fireable{T1,}))
+
+
+slice time: 1.507
+model_check: 7237.066
+total time: 7250.878
+
+& \emph{true}
+& 82
+& 41
+& 93607
+& 12.305
+& 26278.096
+& 26290.401
+& \emph{true}
+& 46
+& 25
+& 33397
+& 1.507
+& 7237.066
+& 7250.878\\ \cline{2-12}
+
+criteria P : P3,
+
+deleted P : $P_{0}$,$P_{1}$,$P_{2}$,$P_{13}$,$P_{15}$,$P_{18}$,$P_{19}$,$P_{21}$,$P_{22}$,$P_{24}$,$P_{25}$,$P_{28}$,$P_{30}$,$P_{32}$,$P_{34}$,$P_{36}$,$P_{39}$,$P_{40}$,$P_{42}$,$P_{43}$,$P_{45}$,$P_{46}$,$P_{49}$,$P_{51}$,$P_{53}$,$P_{55}$,$P_{56}$,$P_{57}$,$P_{65}$,$P_{66}$,$P_{69}$,$P_{70}$,$P_{71}$,$P_{72}$,$P_{73}$,$P_{75}$,$P_{81}$,
+
+deleted T : $T_{0}$,$T_{6}$,$T_{10}$,$T_{11}$,$T_{13}$,$T_{15}$,$T_{17}$,$T_{21}$,$T_{22}$,$T_{24}$,$T_{26}$,$T_{34}$,$T_{35}$,$T_{38}$,$T_{39}$,$T_{40}$,
