@@ -397,6 +397,12 @@ typedef struct CPN_Small_Arc
     bool onlydot;
 } CSArc;
 
+struct Triple{
+    string first;
+    string second;
+    string third;
+};
+
 typedef struct CPN_Place
 {
     string id;
@@ -418,7 +424,7 @@ typedef struct CPN_Place
     vector<string> false_exit;
     vector<string> call_P;
     vector<string> correspond_P;
-    vector<pair<string,string>> returns;//for func begin P
+    vector<Triple> returns;//for func begin P
     vector<pair<string,string>> para_list;
     //***PDNet added end***/
 
@@ -551,8 +557,8 @@ public:
     vector<string> get_falseexit_T(string p_name);
     void set_enter_T(string p_name,vector<string> enter_T);
     vector<string> get_enter_T(string p_name);
-    void Add_returns(string p_name,string return_T,string exp);
-    vector<pair<string,string>> get_returns(string p_name);
+    void Add_returns(string p_name,string return_T,string exp,string base);
+    vector<Triple> get_returns(string p_name);
 //    void set_ispointer(string p_name,bool ispointer);
 //    bool get_ispointer(string p_name);
 

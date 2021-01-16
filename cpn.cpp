@@ -23,9 +23,11 @@ type TID_colorset = String;
 //string oldtid_str = "oldtid";
 string alloc_store_P;
 string alloc_store_type = "alloc_store";
+string malloc_str = "malloc";
+string calloc_str = "calloc";
 ID_t init_alloc = 10000;
 
-map<string,string> map_address;//first is address(string),second is variable. address(1)——variable(1)
+//map<string,string> map_address;//first is address(string),second is variable. address(1)——variable(1)
 
 map<string,unsigned short> place_size;//first is place,second is size. place(1)——address(n)
 map<string,bool> place_isglobal;//first is place,second is isglobal. isglobal and size should be together(can be improved)
@@ -1677,7 +1679,7 @@ string uniqueexp(string exp,CPN *cpn){
         found = false;
         for (unsigned int i = 0; i < cpn->placecount; i++) {
             if (cpn->place[i].expression == exp) {
-                exp = exp + "1";
+                exp = exp + "_1";
                 found = true;
                 break;
             }
@@ -1692,6 +1694,10 @@ string uniqueexp(string exp,CPN *cpn){
 void CPN::Add_Place(string id, string Type_name, int size,bool control_P,string exp,bool isglobal,bool ispointer) {
     CPlace *pp = &place[placecount++];
     pp->is_pointer = ispointer;
+
+    bool alloc_flag = false;
+    if(exp == malloc_str)
+        alloc_flag = true;
     //alloc_store_type
     if(Type_name == alloc_store_type){
         pp->control_P = false;
@@ -1788,12 +1794,12 @@ void CPN::Add_Place(string id, string Type_name, int size,bool control_P,string 
     place_size.insert(pair<string,unsigned short>(id,size));
     place_isglobal.insert(pair<string,bool>(id,isglobal));
 
-    if(size >1)
+    if(size >1 && !alloc_flag)
     {
 
         for(int i=0;i<size;i++)
         {
-            map_address.insert(pair<string,string>(to_string(id_ptr),exp + to_string(i)));
+//            map_address.insert(pair<string,string>(to_string(id_ptr),exp + to_string(i)));
             token = new Tokens;
             token->initiate(1,pp->initMarking.tid,pp->initMarking.sid);
             if(pp->initMarking.tid == productsort) {
@@ -1818,9 +1824,9 @@ void CPN::Add_Place(string id, string Type_name, int size,bool control_P,string 
             }
         }
     }
-    else if(size == 1)
+    else if(size == 1 && !alloc_flag)
     {
-        map_address.insert(pair<string,string>(to_string(id_ptr),exp));
+//        map_address.insert(pair<string,string>(to_string(id_ptr),exp));
         token = new Tokens;
         token->initiate(1,pp->initMarking.tid,pp->initMarking.sid);
 
@@ -1859,11 +1865,13 @@ void CPN::Add_Place(string id, string Type_name, int size,bool control_P,string 
             pp->initMarking.insert(token);
         }
     }
-    else
-    {
-        cout<<"invalid size!"<<endl;
+    else if(alloc_flag)
+        ;
+    else{
+        cerr << "invalid size!"<<endl;
         exit(-1);
     }
+
     mapPlace.insert(make_pair(id,placecount-1));
 }
 
@@ -2024,6 +2032,7 @@ void CPN::init() {
     string P = gen_P();
     alloc_store_P = P;
     Add_Place(P,alloc_store_type,1,false,"alloc_store",true,false);
+    //initializing in Add_Place
 }
 
 void CPN::initDecl() {
@@ -2676,12 +2685,12 @@ string translate_exp2arcexp(CPN *cpn,string s,string base){
         string pointer = tmp.substr(1);
         result = result + CaseFlag + translate_exp2arcexp(cpn,pointer,base);
 
-        for(auto iter = map_address.begin();iter!=map_address.end();iter++){
-            result.append(":");
-            result.append(iter->first);
-            result.append("=>");
-            result.append(iter->second);
-        }
+//        for(auto iter = map_address.begin();iter!=map_address.end();iter++){
+//            result.append(":");
+//            result.append(iter->first);
+//            result.append("=>");
+//            result.append(iter->second);
+//        }
         result.append(":default;");
     }
     else if(tmp[0] == '&'){
@@ -2766,15 +2775,24 @@ string translate_exp2arcexp(CPN *cpn,string s,string base){
         } else {
             string id = tmp;
             if(tmp[0] == '_' || isalpha(tmp[0])) {
-                int size = find_v_size(id, base);
-                string tmp_P = find_P_name(id,base);
-                if(tmp_P != pthread_P) {
-                    auto iter = cpn->mapPlace.find(tmp_P);
-                    if (iter == cpn->mapPlace.end()) {
-                        cerr << "can't find tmp_P in trans_exp2arcexp!" << endl;
-                        exit(-1);
+                int size;
+                if(tmp.length()>return_suffix.length() &&
+                   tmp.substr(tmp.length()-return_suffix.length()) == return_suffix) {
+                    //Here we assume that function call's related place's will not repeat;
+                    //remain improving
+                    size = 1;
+                }
+                else {
+                    size = find_v_size(id, base);
+                    string tmp_P = find_P_name(id, base);
+                    if (tmp_P != pthread_P) {
+                        auto iter = cpn->mapPlace.find(tmp_P);
+                        if (iter == cpn->mapPlace.end()) {
+                            cerr << "can't find tmp_P in trans_exp2arcexp!" << endl;
+                            exit(-1);
+                        }
+                        id = cpn->place[iter->second].expression;
                     }
-                    id = cpn->place[iter->second].expression;
                 }
                 if (size > 1)
                     result += id + to_string(0) + id_suffix;
@@ -3692,10 +3710,14 @@ void CPN::set_correspond_P(string p_name, vector<string> correspond_P) {
     }
 }
 
-void CPN::Add_returns(string p_name, string return_T, string exp) {
+void CPN::Add_returns(string p_name, string return_T, string exp,string base) {
     auto iter = mapPlace.find(p_name);
+    Triple tmp;
+    tmp.first = return_T;
+    tmp.second = exp;
+    tmp.third = base;
     if(iter!=mapPlace.end())
-        place[iter->second].returns.push_back(make_pair(return_T,exp));
+        place[iter->second].returns.push_back(tmp);
     else
     {
         cout<<"error in Add_returns"<<endl;
@@ -3769,7 +3791,7 @@ vector<string> CPN::get_correspond_P(string p_name) {
     }
 }
 
-vector<pair<string, string>> CPN::get_returns(string p_name) {
+vector<Triple> CPN::get_returns(string p_name) {
     auto iter = mapPlace.find(p_name);
     if(iter!=mapPlace.end())
         return place[iter->second].returns;
@@ -3873,6 +3895,8 @@ void CPN::visit_declaration(gtree *p)
         func = p1->place;
     else
         func = global_table_name;
+    if(p->child->type == DECLARATION_SPECIFIERS && p->child->child->type == STORAGE_CLASS_SPECIFIER && p->child->child->child->type == TYPEDEF)
+        return;
     process_declaration(p,func);
 }
 
@@ -3976,13 +4000,24 @@ void CPN::visit_function(gtree *p){
 
     //construct parameter_P
 
-    if (p->child->child->type == POINTER || p->child->next->child->type == POINTER)
-    {
-        //do not support pointer now
-    }
-    else
-    {
-        gtree *direct_declarator = p->child->next->child;
+//    if (p->child->child->type == POINTER || p->child->next->child->type == POINTER)
+//    {
+//        //do not support pointer now
+//    }
+//    else
+//    {
+
+        gtree *direct_declarator;
+        if(p->child->type == DECLARATION_SPECIFIERS && p->child->next->type == DECLARATOR
+            && p->child->next->child->type == POINTER)
+            direct_declarator = p->child->next->child->next;
+        else if(p->child->type == DECLARATION_SPECIFIERS && p->child->next->type == DECLARATOR
+        && p->child->next->child->type == DIRECT_DECLARATOR)
+            direct_declarator = p->child->next->child;
+        else{
+            cerr << "ERROR!There is something wrong with function:"<<p->place<<endl;
+            exit(-1);
+        }
         if (direct_declarator->child->next->type == REMAIN && direct_declarator->child->next->place == "(")
         {
             if (direct_declarator->child->next->next->type == PARAMETER_TYPE_LIST)
@@ -4001,7 +4036,7 @@ void CPN::visit_function(gtree *p){
             cout << "there is no '('!" << endl;
             exit(-1);
         }
-    }
+//    }
 
     //construct return_P
 //    if(ret_tag != "void" || return_pointer_flag == true)
@@ -4224,6 +4259,8 @@ void CPN::handle_expression(gtree *p) {
     gtree *expression=p,*assignment_expression,*statement=p;
     while(statement->type != STATEMENT)
         statement = statement->parent;
+    if(statement->is_processed)
+        return;
     string statement_P = statement->matched_P;
     vector<string> statement_T = get_enter_T(statement_P);
 //    while(expression->type == EXPRESSION)
@@ -4528,6 +4565,7 @@ void CPN::handle_call(gtree *p) {
         if(p->child->place == "printf")
             ;
         else if(p->child->place == "malloc"){
+            statement->is_processed = true;
             string tag,tmp_size;
             int size;
             string para = paras[0];
@@ -4537,7 +4575,7 @@ void CPN::handle_call(gtree *p) {
                 exit(-1);
             }
             auto pos_end = para.find(")",pos_start);
-            tag = para.substr(pos_start + 7,pos_end);
+            tag = para.substr(pos_start + 7,pos_end - pos_start - 7);
 
             auto mul_pos = para.find("*");
             if(mul_pos<pos_start)
@@ -4548,6 +4586,34 @@ void CPN::handle_call(gtree *p) {
             string malloc_P = gen_P();
             Add_Place(malloc_P,tag,size,false,"malloc",true,false);
 
+//            string malloc_v_P = gen_P();
+//            Add_Place(malloc_v_P,"int",1,false,"malloc_v",)
+
+            string statement_T = get_enter_T(statement_P)[0];
+//            create_assignment(this,alloc_store_P,statement_T,"","",)
+
+            //Here arcexp is solid, remain update
+            Add_Arc(alloc_store_P,statement_T,"1`allocid",true,write);
+            Add_Arc(statement_T,alloc_store_P,"1`allocid+1",false,write);
+            string Exp;
+            for(unsigned int i=0;i<size;i++) {
+                if(i!=0)
+                    Exp += "++";
+                Exp += construct_arcexpstr("0", to_string(i), "allocid", "");
+            }
+            Add_Arc(statement_T, malloc_P, Exp, false, write);
+            gtree *assignment = statement;
+            string left_id;
+            while(assignment->type != ASSIGNMENT_EXPRESSION)
+                assignment = assignment->child;
+            if(assignment->child->type == UNARY_EXPRESSION)
+                left_id = assignment->child->place;
+            else{
+                cerr << "malloc should be the standard form:malloc(sizeof(type)*num)!"<<endl;
+                exit(-1);
+            }
+            string left_P = find_P_name(left_id,base);
+            create_assignment(this,left_P,statement_T,"",tid_str,"1`allocid",base,true);
         }
         else if(p->child->place == "calloc"){
 
@@ -4676,11 +4742,11 @@ void CPN::handle_call(gtree *p) {
             // return place is a local place
             Add_Place(return_P, ret_tag, 1, false, return_v,false,ret_ispointer);
 
-            vector<pair<string, string>> returns = get_returns(call_func_P_begin);
+            vector<Triple> returns = get_returns(call_func_P_begin);
             for (unsigned int i = 0; i < returns.size(); i++) {
                 string Exp1,Exp2,exp_tmp;
 
-                exp_tmp = translate_exp2arcexp(this,returns[i].second,base);
+                exp_tmp = translate_exp2arcexp(this,returns[i].second,returns[i].third);
 
                 create_assignment(this,return_P,returns[i].first,exp_tmp,tid_flag,exp_tmp,base,true);
 //                Exp1 = construct_arcexpstr(exp_tmp,"",return_v + id_suffix,tid_flag);
@@ -4694,22 +4760,32 @@ void CPN::handle_call(gtree *p) {
             vector<string> last_T;
             gtree *last_call = p->parent;
             while (!judge_call_postfix_expression(last_call) && last_call->type != STATEMENT) {
+
+                last_call = last_call->parent;
+            }
+            if(!last_call->matched_P.empty()) {
                 last_P = last_call->matched_P;
                 last_T = get_enter_T(last_P);
                 for (unsigned int j = 0; j < last_T.size(); j++) {
-//                    string Exp;
+                    string Exp;
 
-                    create_connect(this,last_T[j],return_v,base);
-//                    Exp = construct_arcexpstr(return_v,"",return_v + id_suffix,tid_flag);
-//                    Add_Arc(last_T[j], return_P, Exp, false, data);
-//                    Add_Arc(return_P, last_T[j], Exp, true, data);
+                    //Here cannot create_connection, because create_connection will not connect return_v
+//                    create_connect(this, last_T[j], return_v, base);
+                    Exp = construct_arcexpstr(return_v,"",return_v + id_suffix,tid_flag);
+                    Add_Arc(last_T[j], return_P, Exp, false, data);
+                    Add_Arc(return_P, last_T[j], Exp, true, data);
 
 //                    auto piter = mapPlace.find(return_P);
 //                    Add_Variable(return_v, place[piter->second].initMarking.tid,place[piter->second].initMarking.sid);
 
                 }
-                last_call = last_call->parent;
             }
+            else{
+                cerr << "ERROR!can't find last_call!"<<endl;
+                exit(-1);
+            }
+
+
         }
 
         //construct enter (not return) arcs
@@ -4965,7 +5041,11 @@ void CPN::supply_jump_statement(gtree *p){
             exit(-1);
         }
         string last_func_begin = iter_begin->second;
-        Add_returns(last_func_begin,control_T,expression);
+        gtree *com = p;
+        while(com->type!=COMPOUND_STATEMENT)
+            com = com->parent;
+        string base = com->place;
+        Add_returns(last_func_begin,control_T,expression,base);
 
 //    if (expression != "") {
 //
@@ -5056,6 +5136,7 @@ void organize_call(CPN *cpn,gtree *p){
 void CPN::create_PDNet(gtree *p) {
     if(p == NULL)return;
 
+
     //inherited attribute
     if(p->type == COMPOUND_STATEMENT)
         create_v_table(p);
@@ -5071,6 +5152,7 @@ void CPN::create_PDNet(gtree *p) {
     create_PDNet(p->child);
 
     //comprehensive attribute
+
     if(p->type == COMPOUND_STATEMENT)
         supply_compound(p);
     else if(p->type == EXPRESSION)

@@ -3592,7 +3592,7 @@ yyparse()
 
             /* Line 1455 of yacc.c  */
 //#line 770 "hello.y"
-        {p = newNode("type_name", TYPE_NAME);
+        {p = newNode("type_name", type_name);
             insert(p, (yyvsp[(1) - (1)]));
             (yyval) = p; }
             break;
@@ -3601,7 +3601,7 @@ yyparse()
 
             /* Line 1455 of yacc.c  */
 //#line 773 "hello.y"
-        {p = newNode("type_name", TYPE_NAME);
+        {p = newNode("type_name", type_name);
             insert(p, (yyvsp[(1) - (2)]));
             insert(p, (yyvsp[(2) - (2)]));
             (yyval) = p;}

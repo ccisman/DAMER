@@ -120,15 +120,15 @@ Binding* bindingToken(condition_tree_node *node,MultiSet *multiset,TID_t tid){
     result = new Binding;
     result->next = NULL;
 
-//    //binding tid_store oldtid
-//    if(multiset->tid == Integer){
-//        result->next = new Binding;
-//        result->next->next = NULL;
-//        result->next->variable = oldtid_str;
-//        result->next->value = new IntegerSortValue;
-//        color_copy(Integer,0,tokens->color,result->next->value);
-//        return result;
-//    }
+    //binding alloc
+    if(multiset->tid == Integer){
+        result->next = new Binding;
+        result->next->next = NULL;
+        result->next->variable = "allocid";
+        result->next->value = new IntegerSortValue;
+        color_copy(Integer,0,tokens->color,result->next->value);
+        return result;
+    }
 
     sid = multiset->sid;
     hasindex = sorttable.productsort[sid].hasindex;

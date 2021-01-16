@@ -635,9 +635,23 @@ int trans_dynamic_init(string &s)
     }
 }
 
+void trans_annotation(string &s){
+    string an_patten = "//.*?\n";
+
+    regex pattern(an_patten);
+    smatch result;
+    string col;
+
+    while(regex_search(s,result,pattern)){
+        col = result[0];
+        auto pos = s.find(col);
+        s = s.replace(pos,col.length(),"");
+    }
+}
+
 void pre_process(string &s)
 {
-
+    trans_annotation(s);
     trans_define_all(s);
     for_to_while_all(s);
     trans_plusplus_all(s);

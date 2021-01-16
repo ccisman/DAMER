@@ -236,6 +236,14 @@ void TraverseTree2(gtree *p)
         }
         p->place = temp_place;
     }
+    else if(p->type == type_name){
+        //just support sizeof(TYPE_SPECIFIER) pattern
+        gtree *type_spe = p;
+        while(type_spe && type_spe->type!=TYPE_SPECIFIER)
+            type_spe = type_spe->child;
+        if(type_spe)
+            p->place = type_spe->child->place;
+    }
     else if(p->type == CAST_EXPRESSION){
         //type conversion now just simplely ignore it
         if(p->child->type == UNARY_EXPRESSION){

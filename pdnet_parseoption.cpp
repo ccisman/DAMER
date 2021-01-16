@@ -589,10 +589,10 @@ void cmdlinet::doit() {
 
 
     init_pthread_type();
-    construct_and_slice("../test/fib_bench-1.c",LTLF,1,false,false);
+//    construct_and_slice("../test/fib_bench-1.c",LTLF,1,false,false);
 //    clock_t start,end;
 //    start = clock();
-//    testing_rg("../test/fib_bench-1.c");
+    testing_rg("../test/test.c");
 //    end = clock();
 //    cout << (end-start)/1000.0 << endl;
 //    direct_build("../test/fib_bench-1.c",LTLV,1,true,true);

@@ -41,6 +41,7 @@ public:
     vector<pair<string,string>> para;//for compound node:para places' name
     string matched_P;//for sentence node
     string enter_P;
+    bool is_processed;
 
     gtree()
     {
