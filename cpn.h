@@ -418,6 +418,7 @@ typedef struct CPN_Place
     bool is_cond;
     bool is_executed;
     bool is_pointer;
+    unsigned short size;
     string expression;
     vector<string> enter;
     vector<string> exit;
@@ -568,6 +569,7 @@ public:
     string Add_executed_P(vector<string> source_T,vector<string> target_T);
     void copy_childNet(CPN *cpn,vector<string> places,vector<string> transitions);
     void create_PDNet(gtree *tree);
+    void Traverse_ST(gtree *tree);
 
     //visit function
     void create_v_table(gtree *p);

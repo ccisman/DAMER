@@ -13,7 +13,7 @@ using namespace std;
 string dec_type[TYPE_NUM]={"int","short","long","float","double","char","unsigned","signed","static"};
 
 //pre-process
-static string init_num = "101";
+static string init_num = "0";
 
 extern int string_replace(string &s1, const string &s2, const string &s3);
 
@@ -361,7 +361,7 @@ void trans_some_function(string &s)
     string newnondet_int =
             "int __VERIFIER_nondet_int()\n\
 		{\n\
-			nondet_num_int = nondet_num_int - 1;\n\
+			nondet_num_int = nondet_num_int + 1;\n\
 			return nondet_num_int;\n\
 		}\n";
     string nondet_short = "extern short __VERIFIER_nondet_short();";
@@ -369,22 +369,29 @@ void trans_some_function(string &s)
     string newnondet_short =
             "short __VERIFIER_nondet_short()\n\
 		{\n\
-			nondet_num_short = nondet_num_short - 1;\n\
+			nondet_num_short = nondet_num_short + 1;\n\
 			return nondet_num_short;\n\
 		}\n";
     string nondet_long = "extern long __VERIFIER_nondet_long();";
     string newnondet_long =
             "long __VERIFIER_nondet_long()\n\
 		{\n\
-			nondet_num_long = nondet_num_long - 1;\n\
+			nondet_num_long = nondet_num_long + 1;\n\
 			return nondet_num_long;\n\
 		}\n";
     string nondet_double = "extern double __VERIFIER_nondet_double();";
     string newnondet_double =
             "double __VERIFIER_nondet_double()\n\
 		{\n\
-			nondet_num_double = nondet_num_double - 1;\n\
+			nondet_num_double = nondet_num_double + 1;\n\
 			return nondet_num_double;\n\
+		}\n";
+    string nondet_uint = "unsigned int __VERIFIER_nondet_uint();";
+    string newnondet_uint =
+            "int __VERIFIER_nondet_uint()\n\
+		{\n\
+			nondet_num_uint = nondet_num_uint + 1;\n\
+			return nondet_num_uint;\n\
 		}\n";
     string_replace(s, err, newerr);
     string_replace(s, err1, newerr);
@@ -396,6 +403,7 @@ void trans_some_function(string &s)
     string_replace(s, nondet_short, newnondet_short);
     string_replace(s, nondet_short1, newnondet_short);
     string_replace(s, nondet_double, newnondet_double);
+    string_replace(s, nondet_uint, newnondet_uint);
     if (s.find("int nondet_num_int") == string::npos&&s.find(newnondet_int) != string::npos)
         s = "int nondet_num_int=" + init_num + ";\n" + s;
     if (s.find("int nondet_num_short") == string::npos && (s.find(newnondet_short) != string::npos || s.find(nondet_short1) != string::npos))
@@ -404,7 +412,8 @@ void trans_some_function(string &s)
         s = "int nondet_num_long=" + init_num + ";\n" + s;
     if (s.find("int nondet_num_double") == string::npos&&s.find(newnondet_double) != string::npos)
         s = "int nondet_num_double=" + init_num + ";\n" + s;
-
+    if (s.find("int nondet_num_uint") == string::npos&&s.find(newnondet_uint) != string::npos)
+        s = "int nondet_num_uint=" + init_num + ";\n" + s;
     string pthread_library = "#include <pthread.h>";
     string stdio_library = "#include <stdio.h>";
     string assert_library = "#include <assert.h>";
