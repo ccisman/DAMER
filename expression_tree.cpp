@@ -378,7 +378,7 @@ condition_tree_node* token_construct(string s){
     }
 }
 
-void condition_tree::construct(string s) {
+condition_tree_node* manytoken_construct(string s){
     if(s.length()==0) {
         cerr<<"Error!Empty arc expression!"<<endl;
         exit(-1);
@@ -387,10 +387,22 @@ void condition_tree::construct(string s) {
     stack<string> st;
     stack<string> st_op;
     unsigned int last=0;
-    exp = s;
-    for(unsigned int i=0;i<s.size()-2;i++){
+    bool caseflag = false;
+    bool tupleflag = false;
+    for(int i=0;i<s.size()-2;i++){
+        if(s[i] == '{')
+            tupleflag = true;
+        if(s[i] == '}')
+            tupleflag = false;
+        if(!tupleflag && s.size()>CaseFlagLength){
+            if(s.substr(i,CaseFlagLength) == CaseFlag)
+                caseflag = true;
+        }
+        if(!tupleflag && s[i] == ';')
+            caseflag = ~caseflag;
         tmp = s.substr(i,2);
-        if(judge_TokenOperator(tmp)) {
+
+        if(!caseflag && judge_TokenOperator(tmp)) {
             st.push(s.substr(last, i-last));
             st_op.push(tmp);
             last = i + 2;
@@ -399,10 +411,17 @@ void condition_tree::construct(string s) {
     st.push(s.substr(last,s.size()));
 
     condition_tree_node *lnode,*rnode,*newnode;
-    rnode = token_construct(st.top());
+
+    if(st.top().length() > CaseFlagLength && st.top().substr(0,CaseFlagLength) == CaseFlag)
+        rnode = process_case(st.top(),manytoken_construct);
+    else
+        rnode = token_construct(st.top());
     st.pop();
     while(!st.empty()) {
-        lnode = token_construct(st.top());
+        if(st.top().length() > CaseFlagLength && st.top().substr(0,CaseFlagLength) == CaseFlag)
+            lnode = process_case(st.top(),manytoken_construct);
+        else
+            lnode = token_construct(st.top());
         st.pop();
         newnode = new condition_tree_node;
         newnode->node_type = TokenOperator;
@@ -413,7 +432,13 @@ void condition_tree::construct(string s) {
         rnode = newnode;
 
     }
-    root = rnode;
+    return rnode;
+}
+
+condition_tree_node* condition_tree::construct(string s) {
+
+    exp = s;
+    root = manytoken_construct(s);
 }
 
 void deconstruct_node(condition_tree_node *node)

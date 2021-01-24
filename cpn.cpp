@@ -12,6 +12,11 @@ SORTID SortTable::psptr = 0;
 vector<V_Table *> v_tables;//variable tables
 vector<string> readpointer;
 vector<Triple> writepointer;
+vector<Triple> strcpypointer;
+vector<Triple> threadcreatearr;
+map<string,string> join_create;
+map<string,unsigned short> place_size;//first is place,second is size. place(1)——address(n)
+map<string,bool> place_isglobal;//first is place,second is isglobal. isglobal and size should be together(can be improved)
 
 int gen_P_num=0,gen_T_num=0;
 ID_t id_ptr = 100;
@@ -30,8 +35,6 @@ ID_t init_alloc = 10000;
 
 //map<string,string> map_address;//first is address(string),second is variable. address(1)——variable(1)
 
-map<string,unsigned short> place_size;//first is place,second is size. place(1)——address(n)
-map<string,bool> place_isglobal;//first is place,second is isglobal. isglobal and size should be together(can be improved)
 
 map<string,type> map_build_in_type {
         {"void",dot},
@@ -53,8 +56,8 @@ string executed_P_name = "executed_P";
 vector<string> pthread_type = {"pthread_t","pthread_mutex_t","pthread_cond_t"};
 vector<string> pthread_func_type = {"pthread_create","pthread_join","pthread_exit",
                                     "pthread_mutex_init","pthread_mutex_lock","pthread_mutex_unlock",
-                                    "pthread_cond_init","pthread_cond_signal","pthread_cond_wait"};
-vector<string> lib_func_type = {"printf","malloc","calloc"};
+                                    "pthread_cond_init","pthread_cond_signal","pthread_cond_wait","pthread_mutex_destroy"};
+vector<string> lib_func_type = {"printf","malloc","calloc","strcpy"};
 
 extern int string_replace(std::string &s1, const std::string &s2, const std::string &s3);
 vector<string> extract_paras(gtree *p);
@@ -164,9 +167,9 @@ string opposite_all(string s)
 void splitExpression(string &s, vector<string>& v)
 {
     string tmp;
-    int arr_count = 0;
-    for (unsigned int i = 0; i < s.length(); i++)
-    {
+//    int arr_count = 0;
+    bool single_quotation_flag = false,double_quotation_flag = false;
+    for (unsigned int i = 0; i < s.length(); i++) {
 //        if (s[i] == '(' || s[i] == ')')
 //            continue;
 //        if(s[i] == '[')
@@ -183,15 +186,17 @@ void splitExpression(string &s, vector<string>& v)
 //            tmp = tmp + s[i];
 
 //  Here we just extract all those variable occured in string:s. no matter where it is.
-        if(!isdigit(s[i]) && !isalpha(s[i]) && s[i]!='_')
-        {
-            if(!isdigit(s[i+1]) && !isalpha(s[i+1]) && s[i+1]!='_')
-                i++;
-            if(!exist_in(v,tmp) && !tmp.empty())
+        if(s[i]=='\'')
+            single_quotation_flag = ~single_quotation_flag;
+        else if(s[i]=='"')
+            double_quotation_flag = ~double_quotation_flag;
+        if (!isdigit(s[i]) && !isalpha(s[i]) && s[i] != '_' && !single_quotation_flag && !double_quotation_flag) {
+//            if (!isdigit(s[i + 1]) && !isalpha(s[i + 1]) && s[i + 1] != '_')
+//                i++;
+            if (!exist_in(v, tmp) && !tmp.empty())
                 v.push_back(tmp);
             tmp.clear();
-        }
-        else
+        } else
             tmp = tmp + s[i];
     }
 
@@ -318,7 +323,8 @@ void create_connect(CPN *petri, string T, string express, string base)
             if(v[i].length()>return_suffix.length() &&
             v[i].substr(v[i].length()-return_suffix.length()) == return_suffix)
                 continue;
-
+            else if(v[i] == "case")
+                continue;
             P2 = find_P_name(id,base);
             size = find_v_size(id,base);
             ispointer = find_v_ispointer(id,base);
@@ -423,6 +429,8 @@ void create_connect(CPN *petri, string T, string express, string base)
 //**itsef: true if assign itself, false if assign pointer or arr
 //Function: deal with left value.create assignment connection and create connect(if necessary)
 void create_assignment(CPN *cpn,string left_P,string T,string index,string tid_flag,string exp_tmp,bool itself){
+
+    //itself is true if assign a pointer itself or a normal variable
 
     string Exp1,Exp2,id;
     auto iter = cpn->mapPlace.find(left_P);
@@ -651,6 +659,121 @@ void create_writepointerarc(CPN *cpn,string T,string address,string exp_tmp){
     }
 }
 
+void create_strcpypointerarc(CPN *cpn,Triple triple){
+    string T = triple.first;
+    string str = triple.second;
+    string address = triple.third;
+
+    for (auto iter = place_size.begin(); iter != place_size.end(); iter++) {
+        if(iter->second < str.length())
+            continue;
+        auto giter = place_isglobal.find(iter->first);
+        if (giter == place_isglobal.end()) {
+            cerr << "ERROR!place_isglobal and place_size don't match!" << endl;
+            exit(-1);
+        }
+        string tid_flag1;
+        if (giter->second)
+            tid_flag1 = "";
+        else
+            tid_flag1 = tid_str;
+
+        auto piter = cpn->mapPlace.find(iter->first);
+        if (piter == cpn->mapPlace.end()) {
+            cerr << "ERROR!can't find place!" << endl;
+            exit(-1);
+        }
+        string Exp_tmp1, Exp_tmp2, tmp_value, sub_id = cpn->place[piter->second].expression;
+        string writecase, readcase;
+        readcase = writecase = CaseFlag + address;
+
+        if (iter->second > 1) {
+            string real_id = sub_id;
+            writecase.append(":");
+            writecase.append(sub_id + to_string(0) + id_suffix);
+            writecase.append("=>");
+            readcase = writecase;
+            for(unsigned int i=0;i<str.length();i++){
+                tmp_value.clear();
+                tmp_value.append("'");
+                tmp_value.append(1,str[i]);
+                tmp_value.append("'");
+                if(i>0){
+                    writecase += "++";
+                    readcase += "++";
+                }
+                writecase += construct_arcexpstr(tmp_value,to_string(i),real_id + to_string(i) + id_suffix,tid_flag1);;
+                readcase += construct_arcexpstr(real_id + to_string(i),to_string(i),real_id + to_string(i) + id_suffix,tid_flag1);
+            }
+
+            writecase.append(":default;");
+            readcase.append(":default;");
+
+            Exp_tmp1 = readcase;
+            Exp_tmp2 = writecase;
+        } else {
+            cerr << "ERROR!strcpy's source can not be empty!"<<endl;
+            exit(-1);
+        }
+        cpn->Add_Arc_override(T, iter->first, Exp_tmp2, false, remain, true);
+        cpn->Add_Arc_override(iter->first, T, Exp_tmp1, true, remain, true);
+    }
+}
+
+void create_threadcreate(CPN *cpn,Triple triple){
+    string T = triple.first;
+    string newtid = triple.second;
+    string third = triple.third;
+    string para,exp_tmp,init;
+//    bool init_flag = false;
+    auto pos = third.find(":");
+    if(pos == string::npos){
+        exp_tmp = "0";
+    }
+    para = third.substr(0,pos);
+    exp_tmp = third.substr(pos+1);
+    int tmp_id_ptr = 0;
+    for(auto iter = place_size.begin();iter!=place_size.end();iter++) {
+        if(iter->first == para)
+            init = exp_tmp;
+        else
+            init = "0";
+        auto giter = place_isglobal.find(iter->first);
+        if (giter == place_isglobal.end()) {
+            cerr << "ERROR!place_isglobal and place_size don't match!" << endl;
+            exit(-1);
+        }
+        string newtid_flag1;
+        if (giter->second)
+            continue;
+        else {
+//                    tid_flag1 = tid_str;
+            newtid_flag1 = newtid;
+        }
+        auto piter = cpn->mapPlace.find(iter->first);
+        if (piter == cpn->mapPlace.end()) {
+            cerr << "ERROR!can't find place!" << endl;
+            exit(-1);
+        }
+        string Exp, newExp, sub_id = cpn->place[piter->second].expression;
+        if (iter->second > 1) {
+            for (unsigned short j = 0; j < iter->second; j++) {
+                if (j != 0)
+                    newExp += "++";
+                newExp +=
+                        construct_arcexpstr(init, to_string(j),
+                                            to_string(tmp_id_ptr++),
+                                            newtid_flag1);
+            }
+        } else {
+            newExp =
+                    construct_arcexpstr(init, "", to_string(tmp_id_ptr++),
+                                        newtid_flag1);
+        }
+        cpn->Add_Arc_addition(T, iter->first, newExp, false, remain);
+    }
+}
+
 void iter_extra(CPN *petri,string newP,string _P){
     vector<string> false_exit = petri->get_falseexit_T(_P);
     for (unsigned int i = 0; i < false_exit.size(); i++)
@@ -718,17 +841,20 @@ void inside_block(CPN *petri, gtree *tree1, string T)//tree1 indicates a compoun
 //            cor_P.clear();
 //            cor_P.push_back(mutex_P);
 //            petri->set_correspond_P(_P, cor_P);
-        } else if (tr->place == "pthread_join" + return_suffix) {
-            vector<string> paras = extract_paras(tr->child->child->child->child);
-            auto iter = create_P_list.find(paras[0]);
-            if (iter == create_P_list.end()) {
-                cout << "can't find matched pthread_create" << endl;
-                exit(-1);
-            }
-            vector<string> cor_P;
-            cor_P.push_back(_P);
-            petri->set_correspond_P(iter->second, cor_P);
         }
+//        else if (tr->place == "pthread_join" + return_suffix) {
+//            gtree *postexp = tr;
+//
+//            vector<string> paras = extract_paras(tr->child);
+//            auto iter = create_P_list.find(paras[0]);
+//            if (iter == create_P_list.end()) {
+//                cout << "can't find matched pthread_create" << endl;
+//                exit(-1);
+//            }
+//            vector<string> cor_P;
+//            cor_P.push_back(_P);
+//            petri->set_correspond_P(iter->second, cor_P);
+//        }
 
         if (call_P.size() != 0) {
             //call_P[0]代表调用到的第一个函数
@@ -768,24 +894,6 @@ void inside_block(CPN *petri, gtree *tree1, string T)//tree1 indicates a compoun
             newP = petri->Add_executed_P(last,now);
             if (tr->child->type == ITERATION_STATEMENT)//while statement
                 iter_extra(petri,newP,_P);
-//        }
-//        else {
-//            string newP = gen_P();
-//
-//            petri->Add_Place(newP, "", 0, true, executed_P_name);
-//
-//            for (unsigned int i = 0; i < last.size(); i++)
-//                petri->Add_Arc(last[i], newP, "", false, executed);
-//
-//            for (unsigned int i = 0; i < now.size(); i++)
-//                petri->Add_Arc(newP, now[i], "", true, control);//it's under consideration
-//            if (tr->child->type == ITERATION_STATEMENT)//while statement
-//            {
-//                vector<string> false_exit = petri->get_falseexit_T(_P);
-//                for (unsigned int i = 0; i < false_exit.size(); i++)
-//                    petri->Add_Arc(false_exit[i], newP, "", false, executed);
-//            }
-//        }
 
 
         last = petri->get_exit_T(_P);
@@ -795,12 +903,13 @@ void inside_block(CPN *petri, gtree *tree1, string T)//tree1 indicates a compoun
             mutex_P = tr->matched_P;
             vector<string> lock_T = petri->get_enter_T(mutex_P);
             mutex_T = lock_T[0];
-        } else if (tr->place == "pthread_create" + return_suffix) {
-            //simplely process
-
-            vector<string> paras = extract_paras(tr->child->child->child->child);
-            create_P_list.insert(make_pair(paras[0].substr(1), tr->matched_P));
         }
+//        else if (tr->place == "pthread_create" + return_suffix) {
+//            //simplely process
+//
+//            vector<string> paras = extract_paras(tr->child->child->child->child);
+//            create_P_list.insert(make_pair(paras[0].substr(1), tr->matched_P));
+//        }
 
         if (tr->parent->next->type == STATEMENT)
             tr = tr->parent->next;
@@ -1789,7 +1898,11 @@ string uniqueexp(string exp,CPN *cpn){
         found = false;
         for (unsigned int i = 0; i < cpn->placecount; i++) {
             if (cpn->place[i].expression == exp) {
-                exp = exp + "_1";
+                if(exp.size() > return_suffix.size() &&
+                exp.substr(exp.size()-return_suffix.size()) == return_suffix)
+                    exp = exp.substr(0,exp.size()-return_suffix.size()) + "_1" + return_suffix;
+                else
+                    exp = exp + "_1";
                 found = true;
                 break;
             }
@@ -1873,12 +1986,14 @@ void CPN::Add_Place(string id, string Type_name, int size,bool control_P,string 
     if(exist_in(pthread_type,Type_name)) {
 
         Tokens *token = new Tokens;
-        pp->control_P = true;
-        pp->initMarking.tid = dot;
+
+        pp->control_P == true;
+        pp->initMarking.tid = Integer;
         pp->initMarking.sid = 0;
-        if(Type_name == "pthread_mutex_t")
+
+        if (Type_name == "pthread_mutex_t")
             pp->is_mutex = true;
-        else if(Type_name == "pthread_cond_t")
+        else if (Type_name == "pthread_cond_t")
             pp->is_cond = true;
 
         mapPlace.insert(make_pair(id, placecount - 1));
@@ -2026,7 +2141,8 @@ void CPN::Add_Arc(string source, string target, string exp, bool sourceP,Arc_Typ
             psnum = sorttable.productsort[sid].sortnum;
         else
             psnum = 1;
-        Add_Variable(aa->arc_exp.root,tid,sid,0,psnum-1);
+        if(sourceP)
+            Add_Variable(aa->arc_exp.root,tid,sid,0,psnum-1);
 
         aa->onlydot = false;
     }
@@ -2060,6 +2176,27 @@ void CPN::Add_Arc_override(string source, string target, string exp, bool source
                 aa->arc_exp.exp = "";
                 aa->arc_exp.root = NULL;
             }
+            aa->isp2t = sourceP;
+            aa->source_id = source;
+            aa->target_id = target;
+            return;
+        }
+    }
+    Add_Arc(source,target,exp,sourceP,arcType);
+
+}
+
+void CPN::Add_Arc_addition(string source, string target, string exp, bool sourceP,Arc_Type arcType) {
+    CArc *aa;
+    for(int i=arccount-1;i>=0;i--)
+    {
+        aa = &arc[i];
+        if(aa->source_id == source && aa->target_id == target)
+        {
+            aa->arc_exp.deconstruct();
+            aa->arc_exp.construct(exp + "++" + aa->arc_exp.exp);
+            aa->onlydot = false;
+
             aa->isp2t = sourceP;
             aa->source_id = source;
             aa->target_id = target;
@@ -2138,7 +2275,7 @@ void CPN::init() {
     transition = new CTransition[200];
     arc = new CArc[1000];
 
-    vartable = new Variable[100];
+    vartable = new Variable[1000];
 
     string P = gen_P();
     alloc_store_P = P;
@@ -2651,7 +2788,9 @@ bool is_Operator(string s)
 
 bool is_BoolOperator(string s)
 {
-    if (s == ">" || s == "<" || s == ">=" || s == "<=" || s == "==" || s == "!="||s == "&&" || s == "||")
+    if (s == ">" || s == "<" || s == ">=" || s == "<=" || s == "==" || s == "!="||s == "&&")
+        return true;
+    else if(s == "||")
         return true;
     return false;
 }
@@ -2765,6 +2904,7 @@ string translate_exp2arcexp(CPN *cpn,string s,string base){
     string tmp,result = "";
     int array_count = 0,parenthesis_count = 0;
     for(unsigned int i=0;i<s.size();i++){
+
         count = is_operator(s,i);
         if(s[i]=='[')
             array_count++;
@@ -2778,6 +2918,11 @@ string translate_exp2arcexp(CPN *cpn,string s,string base){
             result.append(s.substr(i,count));
             tmp.clear();
             i += count-1;
+        }
+        else if(s[i] == '$' || s[i] == ':'){
+            result.append(tmp);
+            result = result + s[i];
+            tmp.clear();
         }
         else
             tmp = tmp + s[i];
@@ -2919,16 +3064,22 @@ string translate_exp2arcexp(CPN *cpn,string s,string base){
                     size = 1;
                 }
                 else {
-                    size = find_v_size(id, base);
-                    string tmp_P = find_P_name(id, base);
+                    if(id == "case") {
+                        real_id = id;
+                        size = 0;
+                    }
+                    else {
+                        size = find_v_size(id, base);
+                        string tmp_P = find_P_name(id, base);
 
-                    if (tmp_P != pthread_P) {
-                        auto iter = cpn->mapPlace.find(tmp_P);
-                        if (iter == cpn->mapPlace.end()) {
-                            cerr << "can't find tmp_P in trans_exp2arcexp!" << endl;
-                            exit(-1);
+                        if (tmp_P != pthread_P) {
+                            auto iter = cpn->mapPlace.find(tmp_P);
+                            if (iter == cpn->mapPlace.end()) {
+                                cerr << "can't find tmp_P in trans_exp2arcexp!" << endl;
+                                exit(-1);
+                            }
+                            real_id = cpn->place[iter->second].expression;
                         }
-                        real_id = cpn->place[iter->second].expression;
                     }
                 }
                 if (size > 1)
@@ -3081,9 +3232,9 @@ void MultiSet::Exp2MS(CPN *cpn,condition_tree_node *tree,unsigned short down,uns
             lToken->color->getColor(cid1,sid);
             rToken->color->getColor(cid2,sid);
 
-            color_copy(sorttable.productsort[sid].sortid[down].tid,sid,cid1[down],cid[down]);
+            color_copy(sorttable.productsort[sid].sortid[down].tid,sorttable.productsort[sid].sortid[down].sid,cid1[down],cid[down]);
             for(unsigned int i=down+1;i<=up;i++)
-                color_copy(sorttable.productsort[sid].sortid[i].tid,sid,cid2[i],cid[i]);
+                color_copy(sorttable.productsort[sid].sortid[i].tid,sorttable.productsort[sid].sortid[down].sid,cid2[i],cid[i]);
 
             Tokens *tokens = new Tokens;
             tokens->color = new ProductSortValue(sid);
@@ -3110,13 +3261,20 @@ void MultiSet::Exp2MS(CPN *cpn,condition_tree_node *tree,unsigned short down,uns
 
         Integer_t result;
         cms.tokenQ->next->color->getColor(result);
-        if(result != 0)
+
+        if(result != 0) {
+            if(in_bool_op){
+                tid = lms.tid;
+                sid = lms.sid;
+            }
             PLUS(lms);
-        else
+        }
+        else {
+            if(in_bool_op){
+                tid = rms.tid;
+                sid = rms.tid;
+            }
             PLUS(rms);
-        if(in_bool_op){
-            tid = lms.tid;
-            sid = lms.sid;
         }
         cms.clear();
     }
@@ -3130,6 +3288,7 @@ void MultiSet::Exp2MS(CPN *cpn,condition_tree_node *tree,unsigned short down,uns
             tmp_tid = sorttable.productsort[sid].sortid[down].tid;
         else
             tmp_tid = tid;
+
         if(is_BoolOperator(tree->node_name) && tmp_tid == Integer){
             lms.Exp2MS(cpn,tree->left,down,up,true);
             if(tree->right)
@@ -3166,10 +3325,22 @@ void MultiSet::Exp2MS(CPN *cpn,condition_tree_node *tree,unsigned short down,uns
                     sub_cid = 0;
             }
             else{
-                cerr << "ERROR!BoolOperator error!"<<endl;
-                exit(-1);
+                Product_t cid1,cid2;
+                cid1 = new_ProductColor(sid);
+                cid2 = new_ProductColor(sid);
+
+                lms.tokenQ->next->color->getColor(cid1,sid);
+                rms.tokenQ->next->color->getColor(cid2,sid);
+
+                Integer_t ccid1,ccid2;
+                cid1[down]->getColor(ccid1);
+                cid2[down]->getColor(ccid2);
+                if (booloperate(ccid1, ccid2, tree->node_name))
+                    sub_cid = 1;
+                else
+                    sub_cid = 0;
             }
-            if(tid == productsort){
+            if(tid == productsort && !in_bool_op){
                 Product_t cid;
                 cid = new_ProductColor(sid);
                 cid[down]->setColor(sub_cid);
@@ -3327,6 +3498,14 @@ void MultiSet::Exp2MS(CPN *cpn,condition_tree_node *tree,unsigned short down,uns
                 exit(-1);
             }
         }
+        if(in_bool_op && !is_BoolOperator(tree->node_name)){
+            tid = lms.tid;
+            sid = lms.sid;
+        }
+        else if(in_bool_op){
+            tid = Integer;
+            sid = 0;
+        }
     }
     else if(tree->node_type == color){
         if(down!=up){
@@ -3334,7 +3513,7 @@ void MultiSet::Exp2MS(CPN *cpn,condition_tree_node *tree,unsigned short down,uns
             exit(-1);
         }
         if(in_bool_op){
-            if(tree->value[0]=='\"') {
+            if(tree->value[0]=='\'') {
                 String_t cid;
                 cid = tree->value;
                 Tokens *token = new Tokens;
@@ -3403,7 +3582,7 @@ void MultiSet::Exp2MS(CPN *cpn,condition_tree_node *tree,unsigned short down,uns
             } else if (tid == Integer) {
                 //Integer is more complicated ,because it includes bool type
 
-                if (tree->value[0] == '\"') {
+                if (tree->value[0] == '\'') {
                     String_t cid;
                     cid = tree->value;
                     Tokens *token = new Tokens;
@@ -3980,6 +4159,7 @@ vector<string> extract_paras(gtree *p)
         res.push_back(assignment->place);
         assignment = assignment->parent->next->next;
     }
+    return res;
 }
 
 void CPN::create_v_table(gtree *p){
@@ -4095,6 +4275,14 @@ void CPN::visit_statement(gtree *p)
         set_enter_T(control_P,enter);
         set_exit_T(control_P,exit_T);
 
+        if(judge_return(statement)){
+            auto tier = mapTransition.find(control_T);
+            if(tier == mapTransition.end()){
+                cerr << "ERROR!can't find transition!"<<endl;
+                exit(-1);
+            }
+            transition[tier->second].isreturn = true;
+        }
     }
 }
 
@@ -4476,49 +4664,12 @@ void CPN::handle_call(gtree *p) {
 //            Add_Arc(tid_store_P,enter_T[0],oldtid,true,data);
 //            Add_Arc(enter_T[0],tid_store_P,oldtid + "+" +to_string(tid_increment),false,data);
 
-            int tmp_id_ptr = 0;
-            for(auto iter = place_size.begin();iter!=place_size.end();iter++) {
+            string statement_T = get_enter_T(statement_P)[0];
+            Triple triple;
+            triple.first = statement_T;
+            triple.second = newtid;
 
-                auto giter = place_isglobal.find(iter->first);
-                if (giter == place_isglobal.end()) {
-                    cerr << "ERROR!place_isglobal and place_size don't match!" << endl;
-                    exit(-1);
-                }
-                string tid_flag1, newtid_flag1;
-                if (giter->second)
-                    continue;
-                else {
-                    tid_flag1 = tid_str;
-                    newtid_flag1 = newtid;
-                }
-                auto piter = mapPlace.find(iter->first);
-                if (piter == mapPlace.end()) {
-                    cerr << "ERROR!can't find place!" << endl;
-                    exit(-1);
-                }
-                string Exp, newExp, sub_id = place[piter->second].expression;
-                if (iter->second > 1) {
-                    for (unsigned short j = 0; j < iter->second; j++) {
-                        if (j != 0)
-                            newExp += "++";
-//                            Exp += "++";
-//                        Exp += construct_arcexpstr(sub_id + to_string(j), to_string(j),
-//                                                   sub_id + to_string(j) + id_suffix,
-//                                                   tid_flag1);
-                        newExp +=
-                                  construct_arcexpstr("0", to_string(j),
-                                                       to_string(tmp_id_ptr++),
-                                                      newtid_flag1);
-                    }
-                } else {
-//                    Exp = construct_arcexpstr(sub_id, "", sub_id + id_suffix, tid_flag1);
-                    newExp =
-                             construct_arcexpstr("0", "", to_string(tmp_id_ptr++),
-                                                 newtid_flag1);
-                }
-                Add_Arc_override(enter_T[0], iter->first, newExp, false, remain, false);
-//                Add_Arc_override(iter->first, enter_T[0], Exp, true, remain, false);
-            }
+
 
             //passing paras
             if(para_pass != "NULL") {
@@ -4534,8 +4685,22 @@ void CPN::handle_call(gtree *p) {
                     exit(-1);
                 }
                 string exp_tmp = translate_exp2arcexp(this,para_pass,base);
-                create_assignment(this,place[piter->second].para_list[0].second,enter_T[0],"",tid_str,exp_tmp,true);
+                triple.third = place[piter->second].para_list[0].second + ":" + exp_tmp;
+//                create_assignment(this,place[piter->second].para_list[0].second,enter_T[0],"",tid_str,exp_tmp,true);
             }
+
+            threadcreatearr.push_back(triple);
+
+            //cor_P
+            string thread_idexp;
+            auto pos = thread_v.find("[");
+            if(pos != string::npos)
+                thread_idexp = thread_v.substr(0,pos);
+            else
+                thread_idexp = thread_v;
+            if(join_create.find(thread_idexp) == join_create.end())
+                join_create.insert(make_pair(thread_idexp,statement_P));
+
         }
         else if(p->child->place == "pthread_join")
         {
@@ -4565,6 +4730,22 @@ void CPN::handle_call(gtree *p) {
 
             string jointid = translate_exp2tid(this,thread_v,base);
             Add_Arc(func_end_P,enter_T[0], construct_arcexpstr(jointid,"","",""), true, control);
+
+            //cor_P
+            string thread_idexp;
+            auto pos = thread_v.find("[");
+            if(pos != string::npos)
+                thread_idexp = thread_v.substr(0,pos);
+            else
+                thread_idexp = thread_v;
+            auto mapiter = join_create.find(thread_idexp);
+            if(mapiter == join_create.end()){
+                cerr << "ERROR!pthread_join doesn't have correspond create!"<<endl;
+                exit(-1);
+            }
+            vector<string> cor_P = get_correspond_P(mapiter->second);
+            cor_P.push_back(statement_P);
+            set_correspond_P(mapiter->second,cor_P);
         }
         else if(p->child->place == "pthread_exit")
         {
@@ -4589,6 +4770,15 @@ void CPN::handle_call(gtree *p) {
             string mutex_v = paras[0];
             if(mutex_v[0]=='&')
                 mutex_v = mutex_v.substr(1);
+            string Exp;
+            auto pos = mutex_v.find("[");
+            if(pos != string::npos){
+                Exp = construct_arcexpstr(mutex_v.substr(pos+1,mutex_v.length()-pos-2),"","","");
+                mutex_v = mutex_v.substr(0,pos);
+            }
+            else{
+                Exp = construct_arcexpstr("0","","","");
+            }
             gtree *com = p;
             while(com->type!=COMPOUND_STATEMENT)
                 com = com->parent;
@@ -4596,13 +4786,22 @@ void CPN::handle_call(gtree *p) {
 
             string mutex_P = find_P_name(mutex_v,base);
             vector<string> enter_T = get_enter_T(statement_P);
-            Add_Arc(enter_T[0],mutex_P,"",false,control);
+            Add_Arc(enter_T[0],mutex_P,Exp,false,control);
         }
         else if(p->child->place == "pthread_mutex_lock")
         {
             string mutex_v = paras[0];
             if(mutex_v[0]=='&')
                 mutex_v = mutex_v.substr(1);
+            string Exp;
+            auto pos = mutex_v.find("[");
+            if(pos != string::npos){
+                Exp = construct_arcexpstr(mutex_v.substr(pos+1,mutex_v.length()-pos-2),"","","");
+                mutex_v = mutex_v.substr(0,pos);
+            }
+            else{
+                Exp = construct_arcexpstr("0","","","");
+            }
             gtree *com = p;
             while(com->type!=COMPOUND_STATEMENT)
                 com = com->parent;
@@ -4610,7 +4809,7 @@ void CPN::handle_call(gtree *p) {
 
             string mutex_P = find_P_name(mutex_v,base);
             vector<string> enter_T = get_enter_T(statement_P);
-            Add_Arc(mutex_P,enter_T[0],"",true,control);
+            Add_Arc(mutex_P,enter_T[0],Exp,true,control);
 
             gtree *tr = statement->parent->next;
 
@@ -4620,6 +4819,15 @@ void CPN::handle_call(gtree *p) {
             string mutex_v = paras[0];
             if(mutex_v[0]=='&')
                 mutex_v = mutex_v.substr(1);
+            string Exp;
+            auto pos = mutex_v.find("[");
+            if(pos != string::npos){
+                Exp = construct_arcexpstr(mutex_v.substr(pos+1,mutex_v.length()-pos-2),"","","");
+                mutex_v = mutex_v.substr(0,pos);
+            }
+            else{
+                Exp = construct_arcexpstr("0","","","");
+            }
             gtree *com = p;
             while(com->type!=COMPOUND_STATEMENT)
                 com = com->parent;
@@ -4627,7 +4835,7 @@ void CPN::handle_call(gtree *p) {
 
             string mutex_P = find_P_name(mutex_v,base);
             vector<string> enter_T = get_enter_T(statement_P);
-            Add_Arc(enter_T[0],mutex_P,"",false,control);
+            Add_Arc(enter_T[0],mutex_P,Exp,false,control);
         }
         else if(p->child->place == "pthread_cond_signal")
         {
@@ -4635,13 +4843,22 @@ void CPN::handle_call(gtree *p) {
             if (cond_v[0] == '&')
                 cond_v = cond_v.substr(1);
             gtree *com = p;
+            string Exp;
+            auto pos = cond_v.find("[");
+            if(pos != string::npos){
+                Exp = construct_arcexpstr(cond_v.substr(pos+1,cond_v.length()-pos-2),"","","");
+                cond_v = cond_v.substr(0,pos);
+            }
+            else{
+                Exp = construct_arcexpstr("0","","","");
+            }
             while(com->type!=COMPOUND_STATEMENT)
                 com = com->parent;
             string base = com->place;
 
             string cond_P = find_P_name(cond_v,base);
             vector<string> enter_T = get_enter_T(statement_P);
-            Add_Arc(enter_T[0],cond_P,"",false,control);
+            Add_Arc(enter_T[0],cond_P,Exp,false,control);
         }
         else if(p->child->place == "pthread_cond_wait")
         {
@@ -4650,6 +4867,23 @@ void CPN::handle_call(gtree *p) {
                 cond_v = cond_v.substr(1);
             if(mutex_v[0] == '&')
                 mutex_v = mutex_v.substr(1);
+            string Exp_mutex,Exp_cond;
+            auto pos = cond_v.find("[");
+            if(pos != string::npos){
+                Exp_cond = construct_arcexpstr(cond_v.substr(pos+1,cond_v.length()-pos-2),"","","");
+                cond_v = cond_v.substr(0,pos);
+            }
+            else{
+                Exp_cond = construct_arcexpstr("0","","","");
+            }
+            pos = mutex_v.find("[");
+            if(pos != string::npos){
+                Exp_mutex = construct_arcexpstr(mutex_v.substr(pos+1,mutex_v.length()-pos-2),"","","");
+                mutex_v = mutex_v.substr(0,pos);
+            }
+            else{
+                Exp_mutex = construct_arcexpstr("0","","","");
+            }
             gtree *com = p;
             while(com->type!=COMPOUND_STATEMENT)
                 com = com->parent;
@@ -4677,11 +4911,11 @@ void CPN::handle_call(gtree *p) {
             //construct arcs
             Add_Arc(enter_T[0],P1,"1`tid",false,control);
             Add_Arc(enter_T[0],P3,"1`tid",false,executed);
-            Add_Arc(enter_T[0],mutex_P,"",false,control);
-            Add_Arc(cond_P,T1,"",true,control);
+            Add_Arc(enter_T[0],mutex_P,Exp_mutex,false,control);
+            Add_Arc(cond_P,T1,Exp_cond,true,control);
             Add_Arc(P1,T1,"1`tid",true,control);
             Add_Arc(T1,P2,"1`tid",false,control);
-            Add_Arc(mutex_P,T2,"",true,control);
+            Add_Arc(mutex_P,T2,Exp_mutex,true,control);
             Add_Arc(P2,T2,"1`tid",true,control);
             Add_Arc(P3,T2,"1`tid",true,control);
 
@@ -4696,6 +4930,8 @@ void CPN::handle_call(gtree *p) {
 //            cor_P.push_back(P3);
 //            set_correspond_P(statement_P,cor_P);
         }
+        else if(p->child->place == "pthread_mutex_destroy")
+            ;
     }
     else if(exist_in(lib_func_type,p->child->place)){
         // get statement_P and paras
@@ -4724,13 +4960,75 @@ void CPN::handle_call(gtree *p) {
             tag = para.substr(pos_start + 7,pos_end - pos_start - 7);
 
             auto mul_pos = para.find("*");
-            if(mul_pos<pos_start)
-                tmp_size = para.substr(0,mul_pos);
-            else
-                tmp_size = para.substr(mul_pos + 1);
-            size = atoi(tmp_size.c_str());
+            if(mul_pos == string::npos)
+                size = 1;
+            else {
+                if (mul_pos < pos_start)
+                    tmp_size = para.substr(0, mul_pos);
+                else
+                    tmp_size = para.substr(mul_pos + 1);
+                size = atoi(tmp_size.c_str());
+            }
             string malloc_P = gen_P();
             Add_Place(malloc_P,tag,size,false,"malloc",true,false);
+
+//            string malloc_v_P = gen_P();
+//            Add_Place(malloc_v_P,"int",1,false,"malloc_v",)
+
+            string statement_T = get_enter_T(statement_P)[0];
+//            create_assignment(this,alloc_store_P,statement_T,"","",)
+
+            //Here arcexp is solid, remain update
+            string allocid_str = "allocid";
+            string allocid_Exp1 = construct_arcexpstr(allocid_str,"","","");
+            string allocid_Exp2 = construct_arcexpstr(allocid_str + "+" + to_string(size),"","","");
+            Add_Arc(alloc_store_P,statement_T,allocid_Exp1,true,write);
+            Add_Arc(statement_T,alloc_store_P,allocid_Exp2,false,write);
+            string Exp;
+            if(size > 1) {
+                for (unsigned int i = 0; i < size; i++) {
+                    if (i != 0)
+                        Exp += "++";
+                    Exp += construct_arcexpstr("0", to_string(i), allocid_str + "+" + to_string(i), "");
+                }
+            }
+            else
+                Exp += construct_arcexpstr("0", "", allocid_str, "");
+            Add_Arc(statement_T, malloc_P, Exp, false, write);
+            gtree *assignment = statement;
+            string left_id;
+            while(assignment->type != ASSIGNMENT_EXPRESSION)
+                assignment = assignment->child;
+            if(assignment->child->type == UNARY_EXPRESSION)
+                left_id = assignment->child->place;
+            else{
+                cerr << "malloc should be the standard form:malloc(sizeof(type)*num)!"<<endl;
+                exit(-1);
+            }
+            string left_P = find_P_name(left_id,base);
+            bool isglobal = find_v_isglobal(left_id,base);
+            string tid_flag;
+            if(isglobal)
+                tid_flag = "";
+            else
+                tid_flag = tid_str;
+            create_assignment(this,left_P,statement_T,"",tid_flag,allocid_str,true);
+        }
+        else if(p->child->place == "calloc"){
+            string tag,tmp_size;
+            int size;
+            string para1 = paras[0],para2 = paras[1];
+            auto pos_start = para2.find("sizeof(");
+            if(pos_start == string::npos){
+                cerr << "malloc should be the standard form:malloc(sizeof(type)*num)!"<<endl;
+                exit(-1);
+            }
+            auto pos_end = para2.find(")",pos_start);
+            tag = para2.substr(pos_start + 7,pos_end - pos_start - 7);
+
+            size = atoi(para1.c_str());
+            string calloc_P = gen_P();
+            Add_Place(calloc_P,tag,size,false,"calloc",true,false);
 
 //            string malloc_v_P = gen_P();
 //            Add_Place(malloc_v_P,"int",1,false,"malloc_v",)
@@ -4750,7 +5048,7 @@ void CPN::handle_call(gtree *p) {
                     Exp += "++";
                 Exp += construct_arcexpstr("0", to_string(i), allocid_str + "+" + to_string(i), "");
             }
-            Add_Arc(statement_T, malloc_P, Exp, false, write);
+            Add_Arc(statement_T, calloc_P, Exp, false, write);
             gtree *assignment = statement;
             string left_id;
             while(assignment->type != ASSIGNMENT_EXPRESSION)
@@ -4764,8 +5062,62 @@ void CPN::handle_call(gtree *p) {
             string left_P = find_P_name(left_id,base);
             create_assignment(this,left_P,statement_T,"",tid_str,allocid_str,true);
         }
-        else if(p->child->place == "calloc"){
+        else if(p->child->place == "strcpy"){
+            string para1 = paras[0],para2 = paras[1];
+            if(para2[0] != '"' || para2[para2.size()-1] != '"'){
+                cerr << "ERROR!strcpy must match the standard form:strcpy(variable,\"str\""<<endl;
+                exit(-1);
+            }
+            para2 = para2.substr(1,para2.length()-2);
 
+            string id = para1;
+            string left_P = find_P_name(id,base);
+
+
+            string statement_T = get_enter_T(statement_P)[0];
+            string tmp_value;
+            string tid_flag;
+            bool isglobal = find_v_isglobal(id,base);
+            if(isglobal)
+                tid_flag = "";
+            else
+                tid_flag = tid_str;
+
+            bool ispointer = find_v_ispointer(id,base);
+
+            auto piter = mapPlace.find(left_P);
+            if(piter == mapPlace.end()){
+                cerr << "ERROR!can't find place!"<<endl;
+                exit(-1);
+            }
+            string real_id = place[piter->second].expression;
+            string Exp_read,Exp_write;
+
+            if(ispointer){
+                Triple triple;
+                triple.first = statement_T;
+                triple.second = para2;
+                triple.third = real_id;
+                strcpypointer.push_back(triple);
+
+                string Exp = construct_arcexpstr(real_id,"",real_id + id_suffix,tid_flag);
+                Add_Arc(statement_T,left_P,Exp,false,data);
+                Add_Arc(left_P,statement_T,Exp,true,data);
+            }
+            else{
+
+                for(unsigned int i=0;i<para2.length();i++){
+                    tmp_value = "'" + to_string(para2[i]) + "'";
+                    if(i>0){
+                        Exp_read += "++";
+                        Exp_write += "++";
+                    }
+                    Exp_write += construct_arcexpstr(tmp_value,to_string(i),real_id + id_suffix,tid_flag);;
+                    Exp_read += construct_arcexpstr(real_id,to_string(i),real_id + id_suffix,tid_flag);
+                }
+                Add_Arc(statement_T,left_P,Exp_write,false,write);
+                Add_Arc(left_P,statement_T,Exp_read,true,write);
+            }
         }
     }
     else {
@@ -4905,17 +5257,24 @@ void CPN::handle_call(gtree *p) {
             // return place is a little unique, because it may appear in one statement with two place
             // so we should identify them
             p->place = return_v;
-            gtree *tmp_pointer = p;
+            gtree *tmp_pointer = p->parent,*tmp_child;
             while(tmp_pointer->type != EXPRESSION){
-                gtree *tmp_child = tmp_pointer->child;
+                tmp_child = tmp_pointer->child;
                 string tmp_str = "";
                 while(tmp_child){
                     tmp_str.append(tmp_child->place);
                     tmp_child = tmp_child->next;
                 }
+                tmp_pointer->place = tmp_str;
                 tmp_pointer = tmp_pointer->parent;
             }
-
+            tmp_child = tmp_pointer->child;
+            string tmp_str = "";
+            while(tmp_child){
+                tmp_str.append(tmp_child->place);
+                tmp_child = tmp_child->next;
+            }
+            tmp_pointer->place = tmp_str;
 
             // connect return_P with all return statements
             vector<Triple> returns = get_returns(call_func_P_begin);
@@ -4999,8 +5358,15 @@ string CPN::Add_executed_P(vector<string> source_T,vector<string> target_T){
 
     string executed_P = gen_P();
     Add_Place(executed_P,controlflag,0,true,executed_P_name,true,false);
-    for (unsigned int i = 0; i < source_T.size(); i++)
-        Add_Arc(source_T[i], executed_P, "1`tid", false, executed);
+    for (unsigned int i = 0; i < source_T.size(); i++) {
+        auto tier = mapTransition.find(source_T[i]);
+        if(tier == mapTransition.end()){
+            cerr << "ERROR!can't find trans!"<<endl;
+            exit(-1);
+        }
+        if(!transition[tier->second].isreturn)
+            Add_Arc(source_T[i], executed_P, "1`tid", false, executed);
+    }
     for (unsigned int i = 0; i < target_T.size(); i++)
         Add_Arc(executed_P, target_T[i], "1`tid", true, control);
     return executed_P;
@@ -5307,6 +5673,33 @@ void organize_call(CPN *cpn,gtree *p){
     }
 }
 
+void CPN::visit_condition(gtree *p){
+    string logic_or_exp,exp1,exp2;
+    logic_or_exp = p->child->place;
+    exp1 = p->child->next->next->place;
+    exp2 = p->child->next->next->next->next->place;
+    p->place = CaseFlag + logic_or_exp + ":" + to_string(0) + "=>" + exp2 + ":" + exp1 + ";";
+
+    gtree *tmp_pointer = p->parent,*tmp_child;
+    while(tmp_pointer->type != EXPRESSION){
+        tmp_child = tmp_pointer->child;
+        string tmp_str = "";
+        while(tmp_child){
+            tmp_str.append(tmp_child->place);
+            tmp_child = tmp_child->next;
+        }
+        tmp_pointer->place = tmp_str;
+        tmp_pointer = tmp_pointer->parent;
+    }
+    tmp_child = tmp_pointer->child;
+    string tmp_str = "";
+    while(tmp_child){
+        tmp_str.append(tmp_child->place);
+        tmp_child = tmp_child->next;
+    }
+    tmp_pointer->place = tmp_str;
+}
+
 void CPN::Traverse_ST(gtree *p){
     if(p == NULL)return;
 
@@ -5322,8 +5715,10 @@ void CPN::Traverse_ST(gtree *p){
         visit_statement(p);
     else if(judge_call_postfix_expression(p))
         handle_call(p);
+    else if(p->type == REMAIN && p->place == "?")
+        visit_condition(p->parent);//handle(condition?exp1:exp2) , because of cuttree cannot judge condition_exp simplely
 
-    create_PDNet(p->child);
+    Traverse_ST(p->child);
 
     //comprehensive attribute
 
@@ -5340,7 +5735,7 @@ void CPN::Traverse_ST(gtree *p){
     if(judge_statement(p))
         organize_call(this,p);
 
-    create_PDNet(p->next);
+    Traverse_ST(p->next);
 }
 
 //*create PDNet by traverse ST *//
@@ -5348,14 +5743,27 @@ void CPN::Traverse_ST(gtree *p){
 void CPN::create_PDNet(gtree *p) {
     Traverse_ST(p);
 
-    for(unsigned int i=0;i<readpointer.size();i++){
-        create_readpointerarc(this,readpointer[i]);
+
+    for(unsigned int i=0;i<strcpypointer.size();i++){
+        create_strcpypointerarc(this,strcpypointer[i]);
+    }
+    for(unsigned int i=0;i<threadcreatearr.size();i++){
+        create_threadcreate(this,threadcreatearr[i]);
     }
     for(unsigned int i=0;i<writepointer.size();i++){
         create_writepointerarc(this,writepointer[i].first,writepointer[i].second,writepointer[i].third);
     }
+    //deal with writepointer first, read can be override
+    for(unsigned int i=0;i<readpointer.size();i++){
+        create_readpointerarc(this,readpointer[i]);
+    }
     readpointer.clear();
     writepointer.clear();
+    strcpypointer.clear();
+    threadcreatearr.clear();
+    join_create.clear();
+    place_size.clear();
+    place_isglobal.clear();
 }
 
 void Tokens::init_a_token(type tid, Integer_t value) {
@@ -5443,6 +5851,8 @@ void CPN::print_CPN(string filename) {
             out << arc[i].source_id << "->" << arc[i].target_id << "[color=\"blue\",label=\""<< tmp_exp<<"\"]" << endl;
         else if (arc[i].arcType == data)
             out << arc[i].source_id << "->" << arc[i].target_id << "[color=\"blue\",label=\""<< tmp_exp<<"\"]" << endl;
+//        else if (arc[i].arcType == remain)
+//            ;
         else
             out << arc[i].source_id << "->" << arc[i].target_id << "[label=\""<< tmp_exp<<"\"]" << endl;
     }

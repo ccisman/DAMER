@@ -469,7 +469,7 @@ void construct_and_slice(string check_file,LTLCategory ltltype,int num,bool gen_
 void testing_rg(string check_file){
     gtree *tree = create_tree(check_file, true);
     cut_tree(tree);
-//    if (showtree) {
+//    if (1) {
 //        intofile_tree(tree);
 //        makeGraph("tree.dot", "tree.png");
 //    }

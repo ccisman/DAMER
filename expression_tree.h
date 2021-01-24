@@ -46,7 +46,7 @@ class condition_tree
 public:
     condition_tree_node *root;
     string exp;
-    void construct(string s);
+    condition_tree_node *construct(string s);
     void deconstruct();
     condition_tree(){root = NULL;}
     void operator=(condition_tree ct);

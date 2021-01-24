@@ -41,8 +41,12 @@ void travel_tree(gtree *tree,ofstream &out,vector<pair<string,int>> &list)
     {
 
         parent_place = tree->parent->place;
+        if(parent_place[0] == '"')
+            parent_place = parent_place.substr(1,parent_place.size()-2);
         parent_no = tree->parent->num;
         child_place = tree->place;
+        if(child_place[0] == '"')
+            child_place = child_place.substr(1,child_place.size()-2);
         child_no = tree->num;
         out << "node" << to_string(parent_no) << "[label=\"" << parent_place << "\"]" << endl;
         out << "node" << to_string(child_no) << "[label=\"" << child_place << "\"]" << endl;

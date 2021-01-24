@@ -120,11 +120,11 @@ Binding* bindingToken(condition_tree_node *node,MultiSet *multiset,TID_t tid){
     result = new Binding;
     result->next = NULL;
 
-    //binding alloc
+    //binding Integer, alloc and mutex cond
     if(multiset->tid == Integer){
         result->next = new Binding;
         result->next->next = NULL;
-        result->next->variable = "allocid";
+        result->next->variable = node->left->node_name;
         result->next->value = new IntegerSortValue;
         color_copy(Integer,0,tokens->color,result->next->value);
         return result;
@@ -349,6 +349,10 @@ vector<Binding *>get_bindings(CPN *cpn,CTransition *transition,const Marking &ma
                 condition_tree_node *root = transition->producer[j].arc_exp.root;
 
                 while (root) {
+                    if(root->node_type == CaseOperator && !root->right){
+                        root = root->left;
+                        continue;
+                    }
                     if (root->node_type == Token) {
                         tmpbinding = bindingToken(root, &marking.mss[idx], tid);
                         Binding *end = tmpbinding->next;
@@ -597,7 +601,7 @@ void RG::createNode(RG_NODE *node,CPN *cpn) {
             newnode->next = NULL;
             Marking_after_fire(newnode->marking, tranQ->transition, tranQ->bindings[i], cpn);
 
-//            if(count == 200)
+//            if(count == 25)
 //                return;
             if (nodeExist(newnode))
                 delete newnode;

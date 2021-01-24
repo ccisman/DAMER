@@ -418,10 +418,12 @@ void trans_some_function(string &s)
     string stdio_library = "#include <stdio.h>";
     string assert_library = "#include <assert.h>";
     string stdlib_library = "#include <stdlib.h>";
+    string string_library ="#include <string.h>";
     string_replace(s,  pthread_library, "");
     string_replace(s,  stdio_library, "");
     string_replace(s,  assert_library, "");
     string_replace(s,  stdlib_library, "");
+    string_replace(s,  string_library, "");
 
     string atomic_begin = "extern void __VERIFIER_atomic_begin();";
     string atomic_begin_rp = "void __VERIFIER_atomic_begin(){}";
@@ -653,14 +655,26 @@ void trans_annotation(string &s){
 
     while(regex_search(s,result,pattern)){
         col = result[0];
-        auto pos = s.find(col);
+        auto pos = result.position();
         s = s.replace(pos,col.length(),"");
+    }
+}
+
+void trans_Bool2int(string &s){
+    string boolpattern = "_Bool";
+    regex pattern(boolpattern);
+    smatch result;
+
+    while(regex_search(s,result,pattern)){
+        auto pos = result.position();
+        s = s.replace(pos,boolpattern.length(),"int");
     }
 }
 
 void pre_process(string &s)
 {
     trans_annotation(s);
+    trans_Bool2int(s);
     trans_define_all(s);
     for_to_while_all(s);
     trans_plusplus_all(s);

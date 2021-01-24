@@ -459,8 +459,10 @@ typedef struct CPN_Transition
     string id;
     condition_tree guard;
     bool hasguard;
+    bool isreturn;
     vector<CSArc> producer;
     vector<CSArc> consumer;
+    CPN_Transition(){isreturn = false;}
     void operator=(CPN_Transition &trans){
         //copy except produce and consumer
         id = trans.id;
@@ -539,6 +541,7 @@ public:
     void Add_Transition(string id,string guard,string exp);
     void Add_Arc(string source,string target,string exp,bool sourceP,Arc_Type arcType);
     void Add_Arc_override(string source,string target,string exp,bool sourceP,Arc_Type arcType,bool be_overrided);
+    void Add_Arc_addition(string source,string target,string exp,bool sourceP,Arc_Type arcType);
     string Add_Variable(string id,type tid,SORTID sid);
     void Add_Variable(condition_tree_node *tree,type tid,SORTID sid,unsigned short down,unsigned short up);
     void init_Place(string id,Tokens *token,type tid,SORTID sid);
@@ -577,6 +580,7 @@ public:
     void visit_statement(gtree *p);
     void visit_function(gtree *p);
     void supply_compound(gtree *p);
+    void visit_condition(gtree *p);
     //void build_control_flow(gtree *p);
     void handle_expression(gtree *p);
     void handle_call(gtree *p);
