@@ -10,7 +10,7 @@ SortTable sorttable;
 SORTID SortTable::psptr = 0;
 
 vector<V_Table *> v_tables;//variable tables
-vector<string> readpointer;
+vector<Triple> readpointer;
 vector<Triple> writepointer;
 vector<Triple> strcpypointer;
 vector<Triple> threadcreatearr;
@@ -19,7 +19,7 @@ map<string,unsigned short> place_size;//first is place,second is size. place(1)�
 map<string,bool> place_isglobal;//first is place,second is isglobal. isglobal and size should be together(can be improved)
 
 int gen_P_num=0,gen_T_num=0;
-ID_t id_ptr = 100;
+ID_t id_ptr = 1000;
 TID_t init_tid = "\"main\"";
 TID_t pthread_P = "pthread";
 type TID_colorset = String;
@@ -32,6 +32,8 @@ string alloc_store_type = "alloc_store";
 string malloc_str = "malloc";
 string calloc_str = "calloc";
 ID_t init_alloc = 10000;
+unsigned int malloc_maxsize = 100;
+unsigned short thread_max = 20;
 
 //map<string,string> map_address;//first is address(string),second is variable. address(1)——variable(1)
 
@@ -48,7 +50,7 @@ map<string,type> map_build_in_type {
 //map<string,MSI> usrdf_type;
 string controlflag = "control";
 string arr_suffix = "_arr",var_suffix = "_var",begin_suffix = " begin",
-        id_suffix = "_id",tid_str = "tid",
+        id_suffix = "_id",tid_str = "__tid",
         end_suffix = " end",return_suffix = "_v",
         call_suffix = "()",global_suffix = "_global",
         call_statement_suffix = "_call",join_suffix = " join";
@@ -340,7 +342,10 @@ void create_connect(CPN *petri, string T, string express, string base)
 
             if(ispointer){
                 //pointer
-                readpointer.push_back(T);
+                Triple triple;
+                triple.first = T;
+                triple.second = id;
+                readpointer.push_back(triple);
 //                V = construct_arcexpstr(id,"",id+id_suffix,tid_flag);
 
 //                vector<string> reltab = find_v_reltab(id,base);
@@ -491,6 +496,8 @@ void create_assignment(CPN *cpn,string left_P,string T,string index,string tid_f
             Exp1.append("--");
             Exp1.append(readcase);
         } else {
+
+
             Exp1 = construct_arcexpstr(id, "", id + id_suffix, tid_flag);
             Exp2 = Exp1;
             Triple triple;
@@ -555,52 +562,62 @@ void create_assignment(CPN *cpn,string left_P,string T,string index,string tid_f
 //            }
         }
         Arc_Type arcType;
-        if(ispointer)
-            arcType = data;
-        else
+//        if(ispointer)
+//            arcType = data;
+//        else
             arcType = write;
         cpn->Add_Arc_override(T, left_P, Exp1, false, arcType, false);
         cpn->Add_Arc_override(left_P, T, Exp2, true, arcType, false);
     }
 }
 
-void create_readpointerarc(CPN *cpn,string T) {
+void create_readpointerarc(CPN *cpn,Triple triple) {
+    string T = triple.first;
+    string real_id = triple.second;
+    for (auto iter = place_size.begin(); iter != place_size.end(); iter++) {
 
-        for(auto iter = place_size.begin();iter!=place_size.end();iter++){
-
-            auto giter = place_isglobal.find(iter->first);
-            if(giter == place_isglobal.end()){
-                cerr<<"ERROR!place_isglobal and place_size don't match!"<<endl;
-                exit(-1);
-            }
-            string tid_flag1;
-            if(giter->second)
-                tid_flag1 = "";
-            else
-                tid_flag1 = tid_str;
-
-            auto piter = cpn->mapPlace.find(iter->first);
-            if(piter == cpn->mapPlace.end()){
-                cerr<<"ERROR!can't find place!"<<endl;
-                exit(-1);
-            }
-            string Exp ,sub_id = cpn->place[piter->second].expression;
-            if(iter->second>1) {
-                for (unsigned short j = 0; j < iter->second; j++) {
-                    if(j!=0)
-                        Exp += "++";
-                    Exp += construct_arcexpstr(sub_id + to_string(j), to_string(j), sub_id + to_string(j) + id_suffix,
-                                               tid_flag1);
-                }
-            }
-            else
-                Exp = construct_arcexpstr(sub_id, "", sub_id + id_suffix, tid_flag1);
-            cpn->Add_Arc_override(T,iter->first,Exp,false,remain,true);
-            cpn->Add_Arc_override(iter->first,T,Exp,true,remain,true);
+        auto giter = place_isglobal.find(iter->first);
+        if (giter == place_isglobal.end()) {
+            cerr << "ERROR!place_isglobal and place_size don't match!" << endl;
+            exit(-1);
         }
+        string tid_flag1;
+        if (giter->second)
+            tid_flag1 = "";
+        else
+            tid_flag1 = tid_str;
+
+        auto piter = cpn->mapPlace.find(iter->first);
+        if (piter == cpn->mapPlace.end()) {
+            cerr << "ERROR!can't find place!" << endl;
+            exit(-1);
+        }
+        string Exp, sub_id = cpn->place[piter->second].expression;
+        Exp += CaseFlag + real_id + "!=0:1=>";
+        if (iter->second > 1) {
+            for (unsigned short j = 0; j < iter->second; j++) {
+                if (j != 0)
+                    Exp += "++";
+                Exp += construct_arcexpstr(sub_id + to_string(j), to_string(j), sub_id + to_string(j) + id_suffix,
+                                           tid_flag1);
+            }
+        } else
+            Exp += construct_arcexpstr(sub_id, "", sub_id + id_suffix, tid_flag1);
+        Exp += ":default;";
+        cpn->Add_Arc_override(T, iter->first, Exp, false, remain, true);
+        cpn->Add_Arc_override(iter->first, T, Exp, true, remain, true);
+    }
 }
 
 void create_writepointerarc(CPN *cpn,string T,string address,string exp_tmp){
+    //mark transition for slicing
+
+    auto titer = cpn->mapTransition.find(T);
+    if(titer == cpn->mapTransition.end()){
+        cerr<< "ERROR!can't find transition!"<<endl;
+        exit(-1);
+    }
+    cpn->transition[titer->second].is_writepointer = true;
 
     for (auto iter = place_size.begin(); iter != place_size.end(); iter++) {
         auto giter = place_isglobal.find(iter->first);
@@ -715,8 +732,8 @@ void create_strcpypointerarc(CPN *cpn,Triple triple){
             cerr << "ERROR!strcpy's source can not be empty!"<<endl;
             exit(-1);
         }
-        cpn->Add_Arc_override(T, iter->first, Exp_tmp2, false, remain, true);
-        cpn->Add_Arc_override(iter->first, T, Exp_tmp1, true, remain, true);
+        cpn->Add_Arc_override(T, iter->first, Exp_tmp2, false, remain, false);
+        cpn->Add_Arc_override(iter->first, T, Exp_tmp1, true, remain, false);
     }
 }
 
@@ -732,7 +749,7 @@ void create_threadcreate(CPN *cpn,Triple triple){
     }
     para = third.substr(0,pos);
     exp_tmp = third.substr(pos+1);
-    int tmp_id_ptr = 0;
+    int tmp_id_ptr = 2000;
     for(auto iter = place_size.begin();iter!=place_size.end();iter++) {
         if(iter->first == para)
             init = exp_tmp;
@@ -777,7 +794,7 @@ void create_threadcreate(CPN *cpn,Triple triple){
 void iter_extra(CPN *petri,string newP,string _P){
     vector<string> false_exit = petri->get_falseexit_T(_P);
     for (unsigned int i = 0; i < false_exit.size(); i++)
-        petri->Add_Arc(false_exit[i], newP, "1`tid", false, executed);
+        petri->Add_Arc(false_exit[i], newP, construct_arcexpstr(tid_str,"","",""), false, executed);
 }
 void inside_block(CPN *petri, gtree *tree1, string T)//tree1 indicates a compound_statement node
 {
@@ -860,15 +877,15 @@ void inside_block(CPN *petri, gtree *tree1, string T)//tree1 indicates a compoun
             //call_P[0]代表调用到的第一个函数
 //            for (unsigned int i = 0; i < call_P.size(); i++) {
                 if (mutex_flag == false)
-                    petri->Add_Arc(T, call_P[0], "1`tid", false, control);
+                    petri->Add_Arc(T, call_P[0], construct_arcexpstr(tid_str,"","",""), false, control);
                 else
-                    petri->Add_Arc(mutex_T, call_P[0], "1`tid", false, control);
+                    petri->Add_Arc(mutex_T, call_P[0], construct_arcexpstr(tid_str,"","",""), false, control);
 //            }
         } else {
             if (mutex_flag == false)
-                petri->Add_Arc(T, _P, "1`tid", false, control);
+                petri->Add_Arc(T, _P, construct_arcexpstr(tid_str,"","",""), false, control);
             else
-                petri->Add_Arc(mutex_T, _P, "1`tid", false, control);
+                petri->Add_Arc(mutex_T, _P, construct_arcexpstr(tid_str,"","",""), false, control);
         }
         //int flag = petri.get_call_flag(_P);
 
@@ -1348,6 +1365,8 @@ void MultiSet::clear() {
 
 void MultiSet::MINUS(MultiSet &ms) {
     Tokens *t1 = tokenQ->next,*t2=ms.tokenQ->next,*last = tokenQ;
+    if(!t2)
+        return;
     if(tid == productsort)
     {
         while(t2)
@@ -1920,7 +1939,7 @@ void CPN::Add_Place(string id, string Type_name, int size,bool control_P,string 
     pp->size = size;
 
     bool alloc_flag = false;
-    if(exp == malloc_str)
+    if(exp == malloc_str || exp == calloc_str)
         alloc_flag = true;
     //alloc_store_type
     if(Type_name == alloc_store_type){
@@ -1987,7 +2006,7 @@ void CPN::Add_Place(string id, string Type_name, int size,bool control_P,string 
 
         Tokens *token = new Tokens;
 
-        pp->control_P == true;
+        pp->control_P = true;
         pp->initMarking.tid = Integer;
         pp->initMarking.sid = 0;
 
@@ -2114,9 +2133,28 @@ void CPN::Add_Transition(string id, string guard, string base) {
     mapTransition.insert(make_pair(id,transitioncount-1));
 }
 
+void CPN::Set_Guard(string id,string guard,string base){
+    auto titer = mapTransition.find(id);
+    if(titer == mapTransition.end()){
+        cerr << "ERROR!CAN'T FIND T!"<<endl;
+        exit(-1);
+    }
+    CTransition *tt = &transition[titer->second];
+    tt->id = id;
+    tt->guard.deconstruct();
+    if(guard != "") {
+        guard = "1`" + translate_exp2arcexp(this,guard,base);
+        tt->guard.construct(guard);
+        tt->hasguard = true;
+    }
+    else
+        tt->hasguard = false;
+}
+
 void CPN::Add_Arc(string source, string target, string exp, bool sourceP,Arc_Type arcType) {
     CArc *aa = &arc[arccount++];
     aa->arcType = arcType;
+
     if(exp != "") {
         //aa->arc_exp.deconstruct();
         aa->arc_exp.construct(exp);
@@ -2277,6 +2315,9 @@ void CPN::init() {
 
     vartable = new Variable[1000];
 
+}
+
+void CPN::init_alloc_func(){
     string P = gen_P();
     alloc_store_P = P;
     Add_Place(P,alloc_store_type,1,false,"alloc_store",true,false);
@@ -3347,6 +3388,14 @@ void MultiSet::Exp2MS(CPN *cpn,condition_tree_node *tree,unsigned short down,uns
                 Tokens *token = new Tokens;
                 token->color = new ProductSortValue(sid);
                 token->color->setColor(cid, sid);
+                if(in_bool_op && !is_BoolOperator(tree->node_name)){
+                    tid = lms.tid;
+                    sid = lms.sid;
+                }
+                else if(in_bool_op){
+                    tid = Integer;
+                    sid = 0;
+                }
                 insert(token);
                 delete[] cid;
             }
@@ -3356,6 +3405,14 @@ void MultiSet::Exp2MS(CPN *cpn,condition_tree_node *tree,unsigned short down,uns
                 Tokens *token = new Tokens;
                 token->color = new IntegerSortValue;
                 token->color->setColor(cid);
+                if(in_bool_op && !is_BoolOperator(tree->node_name)){
+                    tid = lms.tid;
+                    sid = lms.sid;
+                }
+                else if(in_bool_op){
+                    tid = Integer;
+                    sid = 0;
+                }
                 insert(token);
             }
 
@@ -3365,58 +3422,114 @@ void MultiSet::Exp2MS(CPN *cpn,condition_tree_node *tree,unsigned short down,uns
             exit(-1);
         }
         else {
-            if (tid == productsort) {
-                lms.Exp2MS(cpn, tree->left, down, up,in_bool_op);
-                if (tree->right)
-                    rms.Exp2MS(cpn, tree->right, down, up,in_bool_op);
-                Product_t cid1, cid2, cid;
+            if(in_bool_op){
+                lms.Exp2MS(cpn,tree->left,down,up,in_bool_op);
+                if(tree->right)
+                    rms.Exp2MS(cpn,tree->right,down,up,in_bool_op);
+                if(lms.tid == Integer){
+                    Integer_t cid1, cid2, cid;
+                    Tokens *ltoken = lms.tokenQ->next, *rtoken;
+                    if (tree->right)
+                        rtoken = rms.tokenQ->next;
+
+                    ltoken->color->getColor(cid1);
+                    if (tree->right)
+                        rtoken->color->getColor(cid2);
+
+                    if (is_Operator(tree->node_name))
+                        cid = operate(cid1, cid2, tree->node_name);
+                    Tokens *token = new Tokens;
+                    token->color = new IntegerSortValue;
+                    token->color->setColor(cid);
+                    if(in_bool_op && !is_BoolOperator(tree->node_name)){
+                        tid = lms.tid;
+                        sid = lms.sid;
+                    }
+                    else if(in_bool_op){
+                        tid = Integer;
+                        sid = 0;
+                    }
+                    insert(token);
+                }
+                else if(lms.tid == Real){
+                    Real_t cid1, cid2, cid;
+                    Tokens *ltoken = lms.tokenQ->next, *rtoken;
+                    if (tree->right)
+                        rtoken = rms.tokenQ->next;
+
+                    ltoken->color->getColor(cid1);
+                    if (tree->right)
+                        rtoken->color->getColor(cid2);
+
+                    if (is_Operator(tree->node_name))
+                        cid = operate(cid1, cid2, tree->node_name);
+                    Tokens *token = new Tokens;
+                    token->color = new RealSortValue;
+                    token->color->setColor(cid);
+                    if(in_bool_op && !is_BoolOperator(tree->node_name)){
+                        tid = lms.tid;
+                        sid = lms.sid;
+                    }
+                    else if(in_bool_op){
+                        tid = Integer;
+                        sid = 0;
+                    }
+                    insert(token);
+                }
+            }
+            else {
+                if (tid == productsort) {
+                    lms.Exp2MS(cpn, tree->left, down, up, in_bool_op);
+                    if (tree->right)
+                        rms.Exp2MS(cpn, tree->right, down, up, in_bool_op);
+                    Product_t cid1, cid2, cid;
 //            int psnum = sorttable.productsort[sid].sortnum;
-                cid1 = new_ProductColor(sid);
-                if (tree->right)
-                    cid2 = new_ProductColor(sid);
-                cid = new_ProductColor(sid);
-
-                Tokens *ltoken = lms.tokenQ->next, *rtoken;
-                if (tree->right)
-                    rtoken = rms.tokenQ->next;
-
-                ltoken->color->getColor(cid1, sid);
-                if (tree->right)
-                    rtoken->color->getColor(cid2, sid);
-
-                type t = sorttable.productsort[sid].sortid[down].tid;
-                if (t == Integer) {
-                    Integer_t sub_col1, sub_col2, sub_col;
-                    cid1[down]->getColor(sub_col1);
+                    cid1 = new_ProductColor(sid);
                     if (tree->right)
-                        cid2[down]->getColor(sub_col2);
-                    if (is_Operator(tree->node_name))
-                        sub_col = operate(sub_col1, sub_col2, tree->node_name);
+                        cid2 = new_ProductColor(sid);
+                    cid = new_ProductColor(sid);
+
+                    Tokens *ltoken = lms.tokenQ->next, *rtoken;
+                    if (tree->right)
+                        rtoken = rms.tokenQ->next;
+
+                    ltoken->color->getColor(cid1, sid);
+                    if (tree->right)
+                        rtoken->color->getColor(cid2, sid);
+
+                    type t = sorttable.productsort[sid].sortid[down].tid;
+                    if (t == Integer) {
+                        Integer_t sub_col1, sub_col2, sub_col;
+                        cid1[down]->getColor(sub_col1);
+                        if (tree->right)
+                            cid2[down]->getColor(sub_col2);
+                        if (is_Operator(tree->node_name))
+                            sub_col = operate(sub_col1, sub_col2, tree->node_name);
 //                else if(is_BoolOperator(tree->node_name)) {
 //                    if (booloperate(sub_col1, sub_col2, tree->node_name))
 //                        sub_col = 1;
 //                    else
 //                        sub_col = 0;
 //                }
-                    cid[down]->setColor(sub_col);
-                } else if (t == Real) {
-                    Real_t sub_col1, sub_col2, sub_col;
-                    cid1[down]->getColor(sub_col1);
-                    if (tree->right)
-                        cid2[down]->getColor(sub_col2);
-                    if (is_Operator(tree->node_name))
-                        sub_col = operate(sub_col1, sub_col2, tree->node_name);
+                        cid[down]->setColor(sub_col);
+                    } else if (t == Real) {
+                        Real_t sub_col1, sub_col2, sub_col;
+                        cid1[down]->getColor(sub_col1);
+                        if (tree->right)
+                            cid2[down]->getColor(sub_col2);
+                        if (is_Operator(tree->node_name))
+                            sub_col = operate(sub_col1, sub_col2, tree->node_name);
 //                else if(is_BoolOperator(tree->node_name)) {
 //                    if (booloperate(sub_col1, sub_col2, tree->node_name))
 //                        sub_col = 1;
 //                    else
 //                        sub_col = 0;
 //                }
-                    cid[down]->setColor(sub_col);
-                } else if (t == String) {
+                        cid[down]->setColor(sub_col);
+                    } else if (t == String) {
 //                if(is_Operator(tree->node_name)) {
-                    cerr << "ERROR!String can not operate!" << endl;
-                    exit(-1);
+                        cerr << "ERROR!String can not operate!" << endl;
+                        exit(-1);
 //                }
 //                else if(is_BoolOperator(tree->node_name)){
 //                    String_t sub_col1,sub_col2;
@@ -3429,83 +3542,77 @@ void MultiSet::Exp2MS(CPN *cpn,condition_tree_node *tree,unsigned short down,uns
 //                    else
 //                        sub_col = 0;
 //                }
+                    }
+                    Tokens *token = new Tokens;
+                    token->color = new ProductSortValue(sid);
+                    token->color->setColor(cid, sid);
+                    insert(token);
+
+                    delete[] cid1;
+                    if (tree->right)
+                        delete[] cid2;
+                    delete[] cid;
+                } else if (tid == Integer) {
+                    lms.Exp2MS(cpn, tree->left, down, up, in_bool_op);
+                    if (tree->right)
+                        rms.Exp2MS(cpn, tree->right, down, up, in_bool_op);
+
+                    Integer_t cid1, cid2, cid;
+                    Tokens *ltoken = lms.tokenQ->next, *rtoken;
+                    if (tree->right)
+                        rtoken = rms.tokenQ->next;
+
+                    ltoken->color->getColor(cid1);
+                    if (tree->right)
+                        rtoken->color->getColor(cid2);
+
+                    if (is_Operator(tree->node_name))
+                        cid = operate(cid1, cid2, tree->node_name);
+//            else if(is_BoolOperator(tree->node_name)) {
+//                if (booloperate(cid1, cid2, tree->node_name))
+//                    cid = 1;
+//                else
+//                    cid = 0;
+//            }
+                    Tokens *token = new Tokens;
+                    token->color = new IntegerSortValue;
+                    token->color->setColor(cid);
+                    insert(token);
+                } else if (tid == Real) {
+                    lms.Exp2MS(cpn, tree->left, down, up, in_bool_op);
+                    if (tree->right)
+                        rms.Exp2MS(cpn, tree->right, down, up, in_bool_op);
+                    Real_t cid1, cid2, cid;
+                    Tokens *ltoken = lms.tokenQ->next, *rtoken;
+                    if (tree->right)
+                        rtoken = rms.tokenQ->next;
+
+                    ltoken->color->getColor(cid1);
+                    if (tree->right)
+                        rtoken->color->getColor(cid2);
+
+                    if (is_Operator(tree->node_name))
+                        cid = operate(cid1, cid2, tree->node_name);
+//            else if(is_BoolOperator(tree->node_name)) {
+//                if (booloperate(cid1, cid2, tree->node_name))
+//                    cid = 1;
+//                else
+//                    cid = 0;
+//            }
+                    Tokens *token = new Tokens;
+                    token->color = new RealSortValue;
+                    token->color->setColor(cid);
+                    insert(token);
+                } else if (tid == String) {
+                    cerr << "ERROR!String can not operate!" << endl;
+                    exit(-1);
+                } else {
+                    cerr << "TYPE ERROR!" << endl;
+                    exit(-1);
                 }
-                Tokens *token = new Tokens;
-                token->color = new ProductSortValue(sid);
-                token->color->setColor(cid, sid);
-                insert(token);
-
-                delete[] cid1;
-                if (tree->right)
-                    delete[] cid2;
-                delete[] cid;
-            } else if (tid == Integer) {
-                lms.Exp2MS(cpn, tree->left, down, up,in_bool_op);
-                if (tree->right)
-                    rms.Exp2MS(cpn, tree->right, down, up,in_bool_op);
-
-                Integer_t cid1, cid2, cid;
-                Tokens *ltoken = lms.tokenQ->next, *rtoken;
-                if (tree->right)
-                    rtoken = rms.tokenQ->next;
-
-                ltoken->color->getColor(cid1);
-                if (tree->right)
-                    rtoken->color->getColor(cid2);
-
-                if (is_Operator(tree->node_name))
-                    cid = operate(cid1, cid2, tree->node_name);
-//            else if(is_BoolOperator(tree->node_name)) {
-//                if (booloperate(cid1, cid2, tree->node_name))
-//                    cid = 1;
-//                else
-//                    cid = 0;
-//            }
-                Tokens *token = new Tokens;
-                token->color = new IntegerSortValue;
-                token->color->setColor(cid);
-                insert(token);
-            } else if (tid == Real) {
-                lms.Exp2MS(cpn, tree->left, down, up,in_bool_op);
-                if (tree->right)
-                    rms.Exp2MS(cpn, tree->right, down, up,in_bool_op);
-                Real_t cid1, cid2, cid;
-                Tokens *ltoken = lms.tokenQ->next, *rtoken;
-                if (tree->right)
-                    rtoken = rms.tokenQ->next;
-
-                ltoken->color->getColor(cid1);
-                if (tree->right)
-                    rtoken->color->getColor(cid2);
-
-                if (is_Operator(tree->node_name))
-                    cid = operate(cid1, cid2, tree->node_name);
-//            else if(is_BoolOperator(tree->node_name)) {
-//                if (booloperate(cid1, cid2, tree->node_name))
-//                    cid = 1;
-//                else
-//                    cid = 0;
-//            }
-                Tokens *token = new Tokens;
-                token->color = new RealSortValue;
-                token->color->setColor(cid);
-                insert(token);
-            } else if (tid == String) {
-                cerr << "ERROR!String can not operate!" << endl;
-                exit(-1);
-            } else {
-                cerr << "TYPE ERROR!" << endl;
-                exit(-1);
             }
         }
-        if(in_bool_op && !is_BoolOperator(tree->node_name)){
-            tid = lms.tid;
-            sid = lms.sid;
-        }
-        else if(in_bool_op){
-            tid = Integer;
-            sid = 0;
-        }
+
     }
     else if(tree->node_type == color){
         if(down!=up){
@@ -3519,9 +3626,10 @@ void MultiSet::Exp2MS(CPN *cpn,condition_tree_node *tree,unsigned short down,uns
                 Tokens *token = new Tokens;
                 token->color = new StringSortValue;
                 token->color->setColor(cid);
-                insert(token);
                 tid = String;
                 sid = 0;
+                insert(token);
+
             }
             else if(tree->value.find('.')==string::npos) {
                 Integer_t cid;
@@ -3529,9 +3637,10 @@ void MultiSet::Exp2MS(CPN *cpn,condition_tree_node *tree,unsigned short down,uns
                 Tokens *token = new Tokens;
                 token->color = new IntegerSortValue;
                 token->color->setColor(cid);
-                insert(token);
                 tid = Integer;
                 sid = 0;
+                insert(token);
+
             }
             else {
                 Real_t cid;
@@ -3539,9 +3648,10 @@ void MultiSet::Exp2MS(CPN *cpn,condition_tree_node *tree,unsigned short down,uns
                 Tokens *token = new Tokens;
                 token->color = new RealSortValue;
                 token->color->setColor(cid);
-                insert(token);
                 tid = Real;
                 sid = 0;
+                insert(token);
+
             }
         }
         else {
@@ -3645,9 +3755,10 @@ void MultiSet::Exp2MS(CPN *cpn,condition_tree_node *tree,unsigned short down,uns
                 Tokens *token = new Tokens;
                 token->color = new StringSortValue;
                 token->color->setColor(cid);
-                insert(token);
                 tid = String;
                 sid = 0;
+                insert(token);
+
             }
             else if(v->tid == Integer) {
                 Integer_t cid;
@@ -3655,9 +3766,10 @@ void MultiSet::Exp2MS(CPN *cpn,condition_tree_node *tree,unsigned short down,uns
                 Tokens *token = new Tokens;
                 token->color = new IntegerSortValue;
                 token->color->setColor(cid);
-                insert(token);
                 tid = Integer;
                 sid = 0;
+                insert(token);
+
             }
             else {
                 Real_t cid;
@@ -3665,9 +3777,10 @@ void MultiSet::Exp2MS(CPN *cpn,condition_tree_node *tree,unsigned short down,uns
                 Tokens *token = new Tokens;
                 token->color = new RealSortValue;
                 token->color->setColor(cid);
-                insert(token);
                 tid = Real;
                 sid = 0;
+                insert(token);
+
             }
         }
         else {
@@ -3853,8 +3966,10 @@ void CPN::process_declarator(gtree *declarator, string tag, string base, bool pa
             isglobal = false;
 
         string _P;
-        if (tag != "pthread_t") {
+        if (tag != "pthread_t" || point_flag) {
             //Add variable place
+            if(tag == "pthread_t")
+                array_size = thread_max;
             if (array_flag && para)
                 point_flag = true;
 
@@ -4240,12 +4355,12 @@ void CPN::visit_statement(gtree *p)
         statement->matched_P = control_P;
         Add_Place(control_P,controlflag,0,true,p->place,true,false);
         string control_T1 = gen_T(),control_T2 = gen_T();
-        string condition = p->child->child->next->next->place;
-        Add_Transition(control_T1,condition,base);
-        Add_Arc(control_P,control_T1,"1`tid",true,control);
-        string condition_op = opposite_all(condition);
-        Add_Transition(control_T2,condition_op,base);
-        Add_Arc(control_P,control_T2,"1`tid",true,control);
+
+        //guard is added in backward traverse
+        Add_Transition(control_T1,"",base);
+        Add_Transition(control_T2,"",base);
+        Add_Arc(control_P,control_T1,construct_arcexpstr(tid_str,"","",""),true,control);
+        Add_Arc(control_P,control_T2,construct_arcexpstr(tid_str,"","",""),true,control);
 
         //set enter,enter_P
         vector<string> enter,enter_P;
@@ -4265,7 +4380,7 @@ void CPN::visit_statement(gtree *p)
         Add_Place(control_P,controlflag,0,true,p->place,true,false);
         string control_T = gen_T();
         Add_Transition(control_T,"",p->place);
-        Add_Arc(control_P,control_T,"1`tid",true,control);
+        Add_Arc(control_P,control_T,construct_arcexpstr(tid_str,"","",""),true,control);
 
         //set exit,enter
         vector<string> enter,exit_T;
@@ -4317,7 +4432,7 @@ void CPN::visit_function(gtree *p){
     enter.push_back(begin_T);
     set_enter_T(begin_P,enter);
 
-    Add_Arc(begin_P,begin_T,"1`tid",true,control);
+    Add_Arc(begin_P,begin_T,construct_arcexpstr(tid_str,"","",""),true,control);
 
     string end_P = gen_P();
     Add_Place(end_P,controlflag,0,true,func+ end_suffix,true,false);
@@ -4763,7 +4878,7 @@ void CPN::handle_call(gtree *p) {
             }
             string last_func_end = iter1->second;
             vector<string> enter_T = get_enter_T(statement_P);
-            Add_Arc(enter_T[0], last_func_end, "1`tid", false,executed);
+            Add_Arc(enter_T[0], last_func_end, construct_arcexpstr(tid_str,"","",""), false,executed);
         }
         else if(p->child->place == "pthread_mutex_init")
         {
@@ -4909,15 +5024,15 @@ void CPN::handle_call(gtree *p) {
             Add_Transition(T2,"","signalT2");
 
             //construct arcs
-            Add_Arc(enter_T[0],P1,"1`tid",false,control);
-            Add_Arc(enter_T[0],P3,"1`tid",false,executed);
+            Add_Arc(enter_T[0],P1,construct_arcexpstr(tid_str,"","",""),false,control);
+            Add_Arc(enter_T[0],P3,construct_arcexpstr(tid_str,"","",""),false,executed);
             Add_Arc(enter_T[0],mutex_P,Exp_mutex,false,control);
             Add_Arc(cond_P,T1,Exp_cond,true,control);
-            Add_Arc(P1,T1,"1`tid",true,control);
-            Add_Arc(T1,P2,"1`tid",false,control);
+            Add_Arc(P1,T1,construct_arcexpstr(tid_str,"","",""),true,control);
+            Add_Arc(T1,P2,construct_arcexpstr(tid_str,"","",""),false,control);
             Add_Arc(mutex_P,T2,Exp_mutex,true,control);
-            Add_Arc(P2,T2,"1`tid",true,control);
-            Add_Arc(P3,T2,"1`tid",true,control);
+            Add_Arc(P2,T2,construct_arcexpstr(tid_str,"","",""),true,control);
+            Add_Arc(P3,T2,construct_arcexpstr(tid_str,"","",""),true,control);
 
             //set exit
             vector<string> exit_T;
@@ -4959,6 +5074,8 @@ void CPN::handle_call(gtree *p) {
             auto pos_end = para.find(")",pos_start);
             tag = para.substr(pos_start + 7,pos_end - pos_start - 7);
 
+            if(tag == "pthread_t")
+                return;
             auto mul_pos = para.find("*");
             if(mul_pos == string::npos)
                 size = 1;
@@ -4967,7 +5084,10 @@ void CPN::handle_call(gtree *p) {
                     tmp_size = para.substr(0, mul_pos);
                 else
                     tmp_size = para.substr(mul_pos + 1);
-                size = atoi(tmp_size.c_str());
+                if(isdigit(tmp_size[0]))
+                    size = atoi(tmp_size.c_str());
+                else
+                    size = malloc_maxsize;
             }
             string malloc_P = gen_P();
             Add_Place(malloc_P,tag,size,false,"malloc",true,false);
@@ -4994,7 +5114,7 @@ void CPN::handle_call(gtree *p) {
             }
             else
                 Exp += construct_arcexpstr("0", "", allocid_str, "");
-            Add_Arc(statement_T, malloc_P, Exp, false, write);
+            Add_Arc(statement_T, malloc_P, Exp, false, allocwrite);
             gtree *assignment = statement;
             string left_id;
             while(assignment->type != ASSIGNMENT_EXPRESSION)
@@ -5020,12 +5140,13 @@ void CPN::handle_call(gtree *p) {
             string para1 = paras[0],para2 = paras[1];
             auto pos_start = para2.find("sizeof(");
             if(pos_start == string::npos){
-                cerr << "malloc should be the standard form:malloc(sizeof(type)*num)!"<<endl;
+                cerr << "calloc should be the standard form:calloc(num,sizeof(type))!"<<endl;
                 exit(-1);
             }
             auto pos_end = para2.find(")",pos_start);
             tag = para2.substr(pos_start + 7,pos_end - pos_start - 7);
-
+            if(tag == "pthread_t")
+                return;
             size = atoi(para1.c_str());
             string calloc_P = gen_P();
             Add_Place(calloc_P,tag,size,false,"calloc",true,false);
@@ -5043,12 +5164,16 @@ void CPN::handle_call(gtree *p) {
             Add_Arc(alloc_store_P,statement_T,allocid_Exp1,true,write);
             Add_Arc(statement_T,alloc_store_P,allocid_Exp2,false,write);
             string Exp;
-            for(unsigned int i=0;i<size;i++) {
-                if(i!=0)
-                    Exp += "++";
-                Exp += construct_arcexpstr("0", to_string(i), allocid_str + "+" + to_string(i), "");
+            if(size > 1) {
+                for (unsigned int i = 0; i < size; i++) {
+                    if (i != 0)
+                        Exp += "++";
+                    Exp += construct_arcexpstr("0", to_string(i), allocid_str + "+" + to_string(i), "");
+                }
             }
-            Add_Arc(statement_T, calloc_P, Exp, false, write);
+            else
+                Exp += construct_arcexpstr("0", "", allocid_str, "");
+            Add_Arc(statement_T, calloc_P, Exp, false, allocwrite);
             gtree *assignment = statement;
             string left_id;
             while(assignment->type != ASSIGNMENT_EXPRESSION)
@@ -5056,11 +5181,17 @@ void CPN::handle_call(gtree *p) {
             if(assignment->child->type == UNARY_EXPRESSION)
                 left_id = assignment->child->place;
             else{
-                cerr << "malloc should be the standard form:malloc(sizeof(type)*num)!"<<endl;
+                cerr << "calloc should be the standard form:calloc(num,sizeof(type))!"<<endl;
                 exit(-1);
             }
             string left_P = find_P_name(left_id,base);
-            create_assignment(this,left_P,statement_T,"",tid_str,allocid_str,true);
+            bool isglobal = find_v_isglobal(left_id,base);
+            string tid_flag;
+            if(isglobal)
+                tid_flag = "";
+            else
+                tid_flag = tid_str;
+            create_assignment(this,left_P,statement_T,"",tid_flag,allocid_str,true);
         }
         else if(p->child->place == "strcpy"){
             string para1 = paras[0],para2 = paras[1];
@@ -5101,8 +5232,8 @@ void CPN::handle_call(gtree *p) {
                 strcpypointer.push_back(triple);
 
                 string Exp = construct_arcexpstr(real_id,"",real_id + id_suffix,tid_flag);
-                Add_Arc(statement_T,left_P,Exp,false,data);
-                Add_Arc(left_P,statement_T,Exp,true,data);
+                Add_Arc(statement_T,left_P,Exp,false,write);
+                Add_Arc(left_P,statement_T,Exp,true,write);
             }
             else{
 
@@ -5137,7 +5268,7 @@ void CPN::handle_call(gtree *p) {
         p->matched_P = call_P;
         Add_Place(call_P, controlflag, 0, true, p->child->place + call_suffix,true,false);
         Add_Transition(call_T, "", p->child->place + call_suffix);
-        Add_Arc(call_P, call_T, "1`tid", true, control);
+        Add_Arc(call_P, call_T, construct_arcexpstr(tid_str,"","",""), true, control);
 
         vector<string> enter;
         enter.push_back(call_T);
@@ -5167,6 +5298,7 @@ void CPN::handle_call(gtree *p) {
             exit(-1);
         }
         call_func_P_begin = iter_begin->second;
+
 
         //passing parameter
         gtree *temp_tree = p->child->next->next;
@@ -5258,7 +5390,11 @@ void CPN::handle_call(gtree *p) {
             // so we should identify them
             p->place = return_v;
             gtree *tmp_pointer = p->parent,*tmp_child;
-            while(tmp_pointer->type != EXPRESSION){
+
+            while(tmp_pointer->type != EXPRESSION_STATEMENT
+            && tmp_pointer->type != ITERATION_STATEMENT
+            && tmp_pointer->type != SELECTION_STATEMENT
+            && tmp_pointer->type != JUMP_STATEMENT){
                 tmp_child = tmp_pointer->child;
                 string tmp_str = "";
                 while(tmp_child){
@@ -5268,13 +5404,14 @@ void CPN::handle_call(gtree *p) {
                 tmp_pointer->place = tmp_str;
                 tmp_pointer = tmp_pointer->parent;
             }
-            tmp_child = tmp_pointer->child;
-            string tmp_str = "";
-            while(tmp_child){
-                tmp_str.append(tmp_child->place);
-                tmp_child = tmp_child->next;
-            }
-            tmp_pointer->place = tmp_str;
+//            tmp_child = tmp_pointer->child;
+//            string tmp_str = "";
+//            while(tmp_child){
+//                tmp_str.append(tmp_child->place);
+//                tmp_child = tmp_child->next;
+//            }
+//            tmp_pointer->place = tmp_str;
+
 
             // connect return_P with all return statements
             vector<Triple> returns = get_returns(call_func_P_begin);
@@ -5333,7 +5470,7 @@ void CPN::handle_call(gtree *p) {
 //            exit(-1);
 //        }
 //        string called_begin_P = iter_begin->second;
-        Add_Arc(call_T, call_func_P_begin, "1`tid", false, call_enter);
+        Add_Arc(call_T, call_func_P_begin, construct_arcexpstr(tid_str,"","",""), false, call_enter);
 //        auto iter1 = mapFunction.find(called_identifier + end_suffix);
 //        if(iter1 == mapFunction.end())
 //        {
@@ -5365,10 +5502,10 @@ string CPN::Add_executed_P(vector<string> source_T,vector<string> target_T){
             exit(-1);
         }
         if(!transition[tier->second].isreturn)
-            Add_Arc(source_T[i], executed_P, "1`tid", false, executed);
+            Add_Arc(source_T[i], executed_P, construct_arcexpstr(tid_str,"","",""), false, executed);
     }
     for (unsigned int i = 0; i < target_T.size(); i++)
-        Add_Arc(executed_P, target_T[i], "1`tid", true, control);
+        Add_Arc(executed_P, target_T[i], construct_arcexpstr(tid_str,"","",""), true, control);
     return executed_P;
 }
 
@@ -5378,6 +5515,17 @@ void CPN::handle_iter_sel(gtree *p) {
     string control_P = statement->matched_P;
     string control_T1 = get_enter_T(control_P)[0];
     string control_T2 = get_enter_T(control_P)[1];
+
+    //set guard , must be set in backward traverse, because the expression might change(in case of return_v)
+
+    gtree *com = p;
+    while(com->type != COMPOUND_STATEMENT)
+        com = com->parent;
+    string base = com->place;
+    string condition = p->child->next->next->place;
+    Set_Guard(control_T1,condition,base);
+    string condition_op = opposite_all(condition);
+    Set_Guard(control_T2,condition_op,base);
 
     //set exit
     vector<string> exit_T, falseexit;
@@ -5418,13 +5566,19 @@ void CPN::handle_iter_sel(gtree *p) {
     string child_P1,child_P2;
 
     child_P1 = statement1->matched_P;
-    Add_Arc(control_T1,child_P1,"1`tid",false,control);
+    vector<string> call_P1 = get_call_P(child_P1);
+    if(!call_P1.empty())
+        child_P1 = call_P1[0];
     vector<string> temp;
     temp.push_back(control_T1);
+    Add_Arc(control_T1,child_P1,construct_arcexpstr(tid_str,"","",""),false,control);
     Add_executed_P(temp,get_enter_T(child_P1));
     if(statement2) {
         child_P2 = statement2->matched_P;
-        Add_Arc(control_T2,child_P2,"1`tid",false,control);
+        vector<string> call_P2 = get_call_P(child_P2);
+        if(!call_P2.empty())
+            child_P2 = call_P2[0];
+        Add_Arc(control_T2,child_P2,construct_arcexpstr(tid_str,"","",""),false,control);
         temp.clear();
         temp.push_back(control_T2);
         Add_executed_P(temp,get_enter_T(child_P2));
@@ -5436,10 +5590,10 @@ void CPN::handle_iter_sel(gtree *p) {
         //false_exit
         for(unsigned int i=0;i<falseexit.size();i++)
         {
-            Add_Arc(falseexit[i],control_P,"1`tid",false,executed);
+            Add_Arc(falseexit[i],control_P,construct_arcexpstr(tid_str,"","",""),false,executed);
             string enter_P = statement->enter_P;//just consider call one time now
             if(enter_P != "")
-                Add_Arc(falseexit[i],enter_P,"1`tid",false,executed);
+                Add_Arc(falseexit[i],enter_P,construct_arcexpstr(tid_str,"","",""),false,executed);
         }
     }
 }
@@ -5487,7 +5641,7 @@ void CPN::supply_func(gtree *p) {
         vector<string> enter_T = get_enter_T(iter1->second);
         auto iter2 = mapFunction.find(identifier + end_suffix);
 
-        Add_Arc(enter_T[0], iter2->second, "1`tid", false, executed);
+        Add_Arc(enter_T[0], iter2->second, construct_arcexpstr(tid_str,"","",""), false, executed);
         return;
     }
     gtree *statement = statement_list;
@@ -5533,16 +5687,21 @@ void CPN::supply_func(gtree *p) {
 
 
         for (unsigned int i = 0; i < v.size(); i++)
-        {
+            Add_Arc_override(v[i], func_end, construct_arcexpstr(tid_str,"","",""), false,call_exit,false);
+    }
 
-            Add_Arc_override(v[i], func_end, "1`tid", false,call_exit,false);
-//                if (func_v != "")
-//                {
-//                    petri.Add_Arc(v[i], func_v, "0", false);
-//                    petri.Add_Arc(func_v, v[i], "write", true);//_v库所弧全部为写弧
-//                }
-        }
+    // func_T to para
+    string Exp;
+    Exp = "NULL";
 
+    auto piter = mapPlace.find(begin_P);
+    if(piter == mapPlace.end()){
+        cerr << "ERROR!can't find begin_P!"<<endl;
+        exit(-1);
+    }
+    for(unsigned int i=0;i<place[piter->second].para_list.size();i++) {
+        Add_Arc(begin_T, place[piter->second].para_list[i].second, Exp, false, write);
+        Add_Arc(place[piter->second].para_list[i].second,begin_T,  Exp, true, write);
     }
 }
 
@@ -5575,7 +5734,7 @@ void CPN::supply_jump_statement(gtree *p){
             exit(-1);
         }
         string last_func_end = iter_end->second;
-        Add_Arc(control_T, last_func_end, "1`tid", false, call_exit);
+        Add_Arc(control_T, last_func_end, construct_arcexpstr(tid_str,"","",""), false, call_exit);
 
         auto iter_begin = mapFunction.find(identifier + begin_suffix);
         if (iter_begin == mapFunction.end()) {
@@ -5589,6 +5748,7 @@ void CPN::supply_jump_statement(gtree *p){
         string base = com->place;
         Add_returns(last_func_begin,control_T,expression,base);
 
+        create_connect(this, control_T, expression, base);
 //    if (expression != "") {
 //
 //        auto iter2 = mapFunction.find(identifier + return_suffix);
@@ -5646,7 +5806,7 @@ void organize_call(CPN *cpn,gtree *p){
         next_P = call_P[i+1];
         last_T = cpn->get_enter_T(last_P)[0];
         next_T = cpn->get_enter_T(next_P)[0];
-        cpn->Add_Arc(last_T,next_P,"1`tid",false,call_connect);
+        cpn->Add_Arc(last_T,next_P,construct_arcexpstr(tid_str,"","",""),false,call_connect);
 
         auto iter = cpn->mapPlace.find(last_P);
         string call_exp = cpn->place[iter->second].expression;
@@ -5654,12 +5814,12 @@ void organize_call(CPN *cpn,gtree *p){
         string end_exp = call_exp;
         auto iter_end = cpn->mapFunction.find(end_exp);
         last_end_P = iter_end->second;
-        cpn->Add_Arc(last_end_P,next_T,"1`tid",true,control);
+        cpn->Add_Arc(last_end_P,next_T,construct_arcexpstr(tid_str,"","",""),true,control);
     }
     last_P = call_P[i];
     next_P = statement_P;
     last_T = cpn->get_enter_T(last_P)[0];
-    cpn->Add_Arc(last_T,next_P,"1`tid",false,call_connect);
+    cpn->Add_Arc(last_T,next_P,construct_arcexpstr(tid_str,"","",""),false,call_connect);
     for(unsigned int j=0;j<statement_T.size();j++)
     {
         next_T = statement_T[j];
@@ -5669,7 +5829,7 @@ void organize_call(CPN *cpn,gtree *p){
         string end_exp = call_exp;
         auto iter_end = cpn->mapFunction.find(end_exp);
         last_end_P = iter_end->second;
-        cpn->Add_Arc(last_end_P,next_T,"1`tid",true,control);
+        cpn->Add_Arc(last_end_P,next_T,construct_arcexpstr(tid_str,"","",""),true,control);
     }
 }
 
@@ -5764,6 +5924,11 @@ void CPN::create_PDNet(gtree *p) {
     join_create.clear();
     place_size.clear();
     place_isglobal.clear();
+
+    SortTable::psptr = 0;
+    gen_P_num=0;
+    gen_T_num=0;
+    id_ptr = 1000;
 }
 
 void Tokens::init_a_token(type tid, Integer_t value) {
@@ -5851,8 +6016,8 @@ void CPN::print_CPN(string filename) {
             out << arc[i].source_id << "->" << arc[i].target_id << "[color=\"blue\",label=\""<< tmp_exp<<"\"]" << endl;
         else if (arc[i].arcType == data)
             out << arc[i].source_id << "->" << arc[i].target_id << "[color=\"blue\",label=\""<< tmp_exp<<"\"]" << endl;
-//        else if (arc[i].arcType == remain)
-//            ;
+        else if (arc[i].arcType == remain)
+            ;
         else
             out << arc[i].source_id << "->" << arc[i].target_id << "[label=\""<< tmp_exp<<"\"]" << endl;
     }
@@ -6056,16 +6221,16 @@ void CPN::delete_compound(gtree *p) {
         delete_arc(this,pre_exe_P,statement_T);
         for(unsigned int i=0;i<after_P.size();i++) {
             delete_arc(this, statement_T, after_P[i]);
-            Add_Arc(father_T,after_P[i],"1`tid",false,control);
+            Add_Arc(father_T,after_P[i],construct_arcexpstr(tid_str,"","",""),false,control);
         }
         vector<string> first_after_T = get_enter_T(after_P[0]);
         for(unsigned int i=0;i<first_after_T.size();i++)
-            Add_Arc(pre_exe_P,first_after_T[i],"1`tid",true,control);
+            Add_Arc(pre_exe_P,first_after_T[i],construct_arcexpstr(tid_str,"","",""),true,control);
 
         if(iter_flag == true){
             vector<string> last_T = get_enter_T(after_P[after_P.size()-1]);
             for(unsigned int i=0;i<last_T.size();i++)
-                Add_Arc(last_T[i],pre_exe_P,"1`tid",false,executed);
+                Add_Arc(last_T[i],pre_exe_P,construct_arcexpstr(tid_str,"","",""),false,executed);
         }
     }
     delete_compound(p->child);
@@ -6107,6 +6272,34 @@ void CPN::Add_Variable(condition_tree_node *tree, type tid, SORTID sid, unsigned
         tree->node_name = tree->value = Add_Variable(tree->node_name,sub_tid,sub_sid);
     }
 
+}
+
+void CPN::setmaintoken() {
+    auto iter = mapFunction.find("main" + begin_suffix);
+    if(iter == mapFunction.end())
+    {
+        cout<<"can't find main func"<<endl;
+        exit(-1);
+    }
+    string main_P = iter->second;
+    auto iter2 = mapPlace.find(main_P);
+    if(iter2 == mapPlace.end())
+    {
+        cout<<"can't find main place"<<endl;
+        exit(-1);
+    }
+    if(place[iter2->second].initMarking.tokenQ->next == NULL) {
+        Tokens *token = new Tokens;
+        if(TID_colorset == String)
+            token->color = new StringSortValue;
+        else if(TID_colorset == Integer)
+            token->color = new IntegerSortValue;
+        else if(TID_colorset == Real)
+            token->color = new RealSortValue;
+        token->color->setColor(init_tid);
+        token->tokencount = 1;
+        place[iter2->second].initMarking.insert(token);
+    }
 }
 
 NUM_t MultiSet::tokennum() {

@@ -119,15 +119,21 @@ Binding* bindingToken(condition_tree_node *node,MultiSet *multiset,TID_t tid){
 
     result = new Binding;
     result->next = NULL;
-
-    //binding Integer, alloc and mutex cond
-    if(multiset->tid == Integer){
-        result->next = new Binding;
-        result->next->next = NULL;
-        result->next->variable = node->left->node_name;
-        result->next->value = new IntegerSortValue;
-        color_copy(Integer,0,tokens->color,result->next->value);
+    if(!tokens)
         return result;
+
+    //binding Integer, for alloc and mutex cond
+    if(multiset->tid == Integer){
+        if(node->left->node_name[0] == '_' || isalpha(node->left->node_name[0])) {
+            result->next = new Binding;
+            result->next->next = NULL;
+            result->next->variable = node->left->node_name;
+            result->next->value = new IntegerSortValue;
+            color_copy(Integer, 0, tokens->color, result->next->value);
+            return result;
+        }
+        else
+            return result;
     }
 
     sid = multiset->sid;
@@ -327,8 +333,17 @@ vector<Binding *>get_bindings(CPN *cpn,CTransition *transition,const Marking &ma
                     exit(-1);
                 }
             }
-            else if(cpn->place[idx].initMarking.tid == dot){
+            else if(cpn->place[idx].initMarking.tid == Integer){
+                //mutex cond
                 Tokens *token = marking.mss[idx].tokenQ->next;
+                Integer_t cid_arc = atoi(root->left->node_name.c_str());
+                while(token){
+                    Integer_t cid_place;
+                    token->color->getColor(cid_place);
+                    if(cid_arc == cid_place)
+                        break;
+                    token = token->next;
+                }
                 if(!token)
                     return bindings;//empty return
             }
@@ -347,29 +362,33 @@ vector<Binding *>get_bindings(CPN *cpn,CTransition *transition,const Marking &ma
             index_t idx = transition->producer[j].idx;
             if (!cpn->place[idx].control_P) {
                 condition_tree_node *root = transition->producer[j].arc_exp.root;
-
                 while (root) {
                     if(root->node_type == CaseOperator && !root->right){
                         root = root->left;
                         continue;
                     }
                     if (root->node_type == Token) {
+
                         tmpbinding = bindingToken(root, &marking.mss[idx], tid);
-                        Binding *end = tmpbinding->next;
-                        while (end->next)
-                            end = end->next;
-                        end->next = binding->next;
-                        binding->next = tmpbinding->next;
-                        delete tmpbinding;
+                        if(tmpbinding->next) {
+                            Binding *end = tmpbinding->next;
+                            while (end->next)
+                                end = end->next;
+                            end->next = binding->next;
+                            binding->next = tmpbinding->next;
+                            delete tmpbinding;
+                        }
                     }
                     if (root->left->node_type == Token) {
                         tmpbinding = bindingToken(root->left, &marking.mss[idx], tid);
-                        Binding *end = tmpbinding->next;
-                        while (end->next)
-                            end = end->next;
-                        end->next = binding->next;
-                        binding->next = tmpbinding->next;
-                        delete tmpbinding;
+                        if(tmpbinding->next) {
+                            Binding *end = tmpbinding->next;
+                            while (end->next)
+                                end = end->next;
+                            end->next = binding->next;
+                            binding->next = tmpbinding->next;
+                            delete tmpbinding;
+                        }
                     }
                     root = root->right;
                 }
@@ -405,6 +424,7 @@ bool is_Fireable(CTransition *transition,CPN *cpn,vector<Binding *>&bindings,con
 
     //2.judge guard
     if (transition->hasguard) {
+
         for (auto iter = bindings.begin(); iter != bindings.end();) {
             Integer_t res;
             MultiSet ms;
@@ -501,35 +521,7 @@ bool RG_NODE::fireable(string transname) {
 
 void RG::init(CPN *cpn) {
 
-    auto iter = cpn->mapFunction.find("main" + begin_suffix);
-    if(iter == cpn->mapFunction.end())
-    {
-        cout<<"can't find main func"<<endl;
-        exit(-1);
-    }
-    string main_P = iter->second;
-    auto iter2 = cpn->mapPlace.find(main_P);
-    if(iter2 == cpn->mapPlace.end())
-    {
-        cout<<"can't find main place"<<endl;
-        exit(-1);
-    }
-    if(cpn->place[iter2->second].initMarking.tokenQ->next == NULL) {
-        Tokens *token = new Tokens;
-        if(TID_colorset == String)
-            token->color = new StringSortValue;
-        else if(TID_colorset == Integer)
-            token->color = new IntegerSortValue;
-        else if(TID_colorset == Real)
-            token->color = new RealSortValue;
-        token->color->setColor(init_tid);
-        token->tokencount = 1;
-        cpn->place[iter2->second].initMarking.insert(token);
-    }
-//    else{
-//        cerr << "ERROR!main shouldn't have init_token!"<<endl;
-//        exit(-1);
-//    }
+
     init_node = new RG_NODE;
     init_node->marking.init_marking(cpn->place,cpn->placecount);
     rgnodetable = new RG_NODE*[CPNRGTABLE_SIZE]();
@@ -601,7 +593,7 @@ void RG::createNode(RG_NODE *node,CPN *cpn) {
             newnode->next = NULL;
             Marking_after_fire(newnode->marking, tranQ->transition, tranQ->bindings[i], cpn);
 
-//            if(count == 25)
+//            if(count == 100)
 //                return;
             if (nodeExist(newnode))
                 delete newnode;

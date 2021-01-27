@@ -438,7 +438,10 @@ condition_tree_node* manytoken_construct(string s){
 condition_tree_node* condition_tree::construct(string s) {
 
     exp = s;
-    root = manytoken_construct(s);
+    if(s == "NULL")
+        root = NULL;
+    else
+        root = manytoken_construct(s);
 }
 
 void deconstruct_node(condition_tree_node *node)

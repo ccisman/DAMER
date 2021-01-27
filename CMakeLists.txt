@@ -4,7 +4,7 @@ project(PDNet_checker)
 
 set(CMAKE_CXX_STANDARD 14)
 set(LINK_DIR /usr/local/lib)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -O0")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -Ofast")
 link_directories(${LINK_DIR})
 link_libraries(tcmalloc)
 

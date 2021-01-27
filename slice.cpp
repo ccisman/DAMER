@@ -7,7 +7,7 @@
 #include "v_table.h"
 
 extern vector<V_Table *> v_tables;
-extern string end_suffix,return_suffix,begin_suffix,join_suffix;
+extern string end_suffix,return_suffix,begin_suffix,join_suffix,tid_str;
 
 
 void GetLTLC(CPN *cpn, TiXmlElement *p, vector<string> &criteria)
@@ -249,10 +249,13 @@ vector<CTransition *> find_previous_define(CTransition  *trans,index_t var_index
         {
             if(searched[i]->producer[j].idx == var_index && searched[i]->producer[j].arcType == write)
             {
-                res.push_back(searched[i]);
+                if(!exist_in(res,searched[i]))
+                    res.push_back(searched[i]);
                 find_flag = true;
                 break;
             }
+            else if(searched[i]->is_writepointer)//redundant dependence for writepointer
+                res.push_back(searched[i]);
         }
         if(find_flag == true)
             continue;
@@ -376,6 +379,13 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
                 if(tran->producer[k].arcType == control)
                     if(!exist_in(P,cpn->place[tran->producer[k].idx].id))
                         P.push_back(cpn->place[tran->producer[k].idx].id);
+            }
+
+            // for alloc
+            for(unsigned int k=0;k<tran->consumer.size();k++){
+                if(tran->consumer[k].arcType == allocwrite)
+                    if(!exist_in(P,cpn->place[tran->consumer[k].idx].id))
+                        P.push_back(cpn->place[tran->consumer[k].idx].id);
             }
         }
         vector<string> cor_P = cpn->get_correspond_P(P[i]);
@@ -513,6 +523,12 @@ void two_phrase_slicing(CPN *cpn, vector<string> place, vector<string> &final_P,
                 if(tran->producer[k].arcType == control)
                     if(!exist_in(P,cpn->place[tran->producer[k].idx].id))
                         P.push_back(cpn->place[tran->producer[k].idx].id);
+            }
+            // for alloc
+            for(unsigned int k=0;k<tran->consumer.size();k++){
+                if(tran->consumer[k].arcType == allocwrite)
+                    if(!exist_in(P,cpn->place[tran->consumer[k].idx].id))
+                        P.push_back(cpn->place[tran->consumer[k].idx].id);
             }
         }
         vector<string> cor_P = cpn->get_correspond_P(P[i]);
@@ -714,7 +730,7 @@ void post_process(CPN *cpn,CPN *cpn_slice,vector<string> transitions)
             else
                 trans_vec = find_previous_T(cpn_slice->place[i].id,cpn,transitions,true);
             for(unsigned int j=0;j<trans_vec.size();j++) {
-                cpn_slice->Add_Arc(trans_vec[j]->id, cpn_slice->place[i].id, "1`tid", false, executed);
+                cpn_slice->Add_Arc(trans_vec[j]->id, cpn_slice->place[i].id, construct_arcexpstr(tid_str,"","",""), false, executed);
                 CSArc csArc1,csArc2;
                 csArc1.arcType = cpn_slice->arc[cpn_slice->arccount-1].arcType;
                 csArc1.arc_exp = cpn_slice->arc[cpn_slice->arccount-1].arc_exp;

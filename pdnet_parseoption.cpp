@@ -348,9 +348,12 @@ void construct_and_slice(string check_file,LTLCategory ltltype,int num,bool gen_
 
     //2.construct program's CPN
     cpnet->init();
+    cpnet->init_alloc_func();
     cpnet->initDecl();
     cpnet->getDecl(tree);
     cpnet->create_PDNet(tree);
+    cpnet->setmaintoken();
+
     string filename_prefix;
     if(gen_picture) {
         filename_prefix = "directbuild";
@@ -360,6 +363,11 @@ void construct_and_slice(string check_file,LTLCategory ltltype,int num,bool gen_
     }
     cpnet->delete_compound(tree);
     cpnet->set_producer_consumer();
+
+//    RG rg;
+//    rg.init(cpnet);
+//    rg.GENERATE(cpnet);
+//    rg.print_RG("rg1.txt",cpnet);
 
     cout<<"original PDNet:\n";
 //    out<<"  placenum: "<<cpnet->placecount<<endl;
@@ -394,10 +402,12 @@ void construct_and_slice(string check_file,LTLCategory ltltype,int num,bool gen_
 
     //5.slicing CPN
     two_phrase_slicing(cpnet,criteria,final_P,final_T);
+    final_P.push_back("P0");
     Bubble_sort(final_T);
     Bubble_sort(final_P);
 
     CPN *cpnet_slice = new CPN;
+
     cpnet_slice->copy_childNet(cpnet,final_P,final_T);
 
     //6.post_process
@@ -421,6 +431,10 @@ void construct_and_slice(string check_file,LTLCategory ltltype,int num,bool gen_
     slice_T_num = cpnet_slice->transitioncount;
 
     clock_t slice_end = clock();
+//    RG rg2;
+//    rg2.init(cpnet_slice);
+//    rg2.GENERATE(cpnet_slice);
+//    rg2.print_RG("rg2.txt",cpnet_slice);
 
     //7.verify sliced CPN's property
     CHECKLTL(cpnet_slice,ltltype,num,slice_rgnode_num,slice_res);
@@ -464,6 +478,7 @@ void construct_and_slice(string check_file,LTLCategory ltltype,int num,bool gen_
     out.close();
     release_v_table();
     delete cpnet;
+//    delete cpnet_slice;
 }
 
 void testing_rg(string check_file){
@@ -480,6 +495,7 @@ void testing_rg(string check_file){
 
     //2.construct program's CPN
     cpnet->init();
+    cpnet->init_alloc_func();
     cpnet->initDecl();
     cpnet->getDecl(tree);
     cpnet->create_PDNet(tree);
@@ -498,6 +514,7 @@ void testing_rg(string check_file){
 //        makeGraph(filename_prefix + ".dot", filename_prefix + ".png");
 //    }
     cpnet->set_producer_consumer();
+    cpnet->setmaintoken();
 
     RG rg;
     rg.init(cpnet);
@@ -589,10 +606,14 @@ void cmdlinet::doit() {
 
 
     init_pthread_type();
-//    construct_and_slice("../test/fib_bench-1.c",LTLF,1,false,false);
+    vector<string> files;
+    GetFileNames("../test/",files);
+//    for(unsigned int i=0;i<files.size();i++)
+    string file = "triangular-longer-2.c";
+        construct_and_slice("../test/" + file,LTLF,1,false,false);
 //    clock_t start,end;
 //    start = clock();
-    testing_rg("../test/test.c");
+//    testing_rg("../test/bigshot_s.c");
 //    end = clock();
 //    cout << (end-start)/1000.0 << endl;
 //    direct_build("../test/fib_bench-1.c",LTLV,1,true,true);

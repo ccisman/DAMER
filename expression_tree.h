@@ -12,7 +12,7 @@
 #define CaseFlagLength 5
 using namespace std;
 
-enum CTN_type{TokenOperator,Token,Tuple,CaseOperator,Operator,color,variable,uninitial};
+enum CTN_type{TokenOperator,Token,Tuple,CaseOperator,Operator,color,variable,null,uninitial};
 
 //**  'value' stands for different thing for different node          **//
 //**  1.For 'color' and 'variable', it stands for expression value   **//

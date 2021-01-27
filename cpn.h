@@ -50,7 +50,7 @@ extern SortTable sorttable;
 extern CPN *cpnet;
 
 enum type{dot,finiteintrange,productsort,usersort,Integer,Real,String};
-enum Arc_Type{executed,control,call_enter,call_exit,data,write,call_connect,remain};//data is equal to read
+enum Arc_Type{executed,control,call_enter,call_exit,data,write,call_connect,allocwrite,remain};//data is equal to read
 
 
 /*========================Sort==========================*/
@@ -163,12 +163,12 @@ public:
 //    void getColor(COLORID &cid){};
     virtual void setColor(Product_t cid,SORTID sid);
     virtual void getColor(Product_t cid,SORTID sid);
-    virtual void setColor(Integer_t cid){};
-    virtual void setColor(Real_t cid){};
-    virtual void setColor(String_t cid){};
-    virtual void getColor(Integer_t &cid){};
-    virtual void getColor(Real_t &cid){};
-    virtual void getColor(String_t &cid){};
+    virtual void setColor(Integer_t cid){cerr<<"ERROR!wrong color match!";exit(-3);};
+    virtual void setColor(Real_t cid){cerr<<"ERROR!wrong color match!";exit(-3);};
+    virtual void setColor(String_t cid){cerr<<"ERROR!wrong color match!";exit(-3);};
+    virtual void getColor(Integer_t &cid){cerr<<"ERROR!wrong color match!";exit(-3);};
+    virtual void getColor(Real_t &cid){cerr<<"ERROR!wrong color match!";exit(-3);};
+    virtual void getColor(String_t &cid){cerr<<"ERROR!wrong color match!";exit(-3);};
 };
 
 /*===================UserSortValue=================*/
@@ -230,14 +230,14 @@ public:
     IntegerSortValue(){}
 //    virtual void setColor(COLORID cid){};
 //    virtual void getColor(COLORID &cid){};
-    virtual void setColor(Product_t cid,SORTID sid){};
-    virtual void getColor(Product_t cid,SORTID sid){};
+    virtual void setColor(Product_t cid,SORTID sid){cerr<<"ERROR!wrong color match!";exit(-3);};
+    virtual void getColor(Product_t cid,SORTID sid){cerr<<"ERROR!wrong color match!";exit(-3);};
     virtual void setColor(Integer_t cid){value = cid;};
-    virtual void setColor(Real_t cid){};
-    virtual void setColor(String_t cid){};
+    virtual void setColor(Real_t cid){cerr<<"ERROR!wrong color match!";exit(-3);};
+    virtual void setColor(String_t cid){cerr<<"ERROR!wrong color match!";exit(-3);};
     virtual void getColor(Integer_t &cid){cid = value;};
-    virtual void getColor(Real_t &cid){};
-    virtual void getColor(String_t &cid){};
+    virtual void getColor(Real_t &cid){cerr<<"ERROR!wrong color match!";exit(-3);};
+    virtual void getColor(String_t &cid){cerr<<"ERROR!wrong color match!";exit(-3);};
 };
 
 /*==================Real SortValue==================*/
@@ -249,14 +249,14 @@ public:
     RealSortValue(){}
 //    virtual void setColor(COLORID cid){};
 //    virtual void getColor(COLORID &cid){};
-    virtual void setColor(Product_t cid,SORTID sid){};
-    virtual void getColor(Product_t cid,SORTID sid){};
-    virtual void setColor(Integer_t cid){};
+    virtual void setColor(Product_t cid,SORTID sid){cerr<<"ERROR!wrong color match!";exit(-3);};
+    virtual void getColor(Product_t cid,SORTID sid){cerr<<"ERROR!wrong color match!";exit(-3);};
+    virtual void setColor(Integer_t cid){cerr<<"ERROR!wrong color match!";exit(-3);};
     virtual void setColor(Real_t cid){value = cid;};
-    virtual void setColor(String_t cid){};
-    virtual void getColor(Integer_t &cid){};
+    virtual void setColor(String_t cid){cerr<<"ERROR!wrong color match!";exit(-3);};
+    virtual void getColor(Integer_t &cid){cerr<<"ERROR!wrong color match!";exit(-3);};
     virtual void getColor(Real_t &cid){cid = value;};
-    virtual void getColor(String_t &cid){};
+    virtual void getColor(String_t &cid){cerr<<"ERROR!wrong color match!";exit(-3);};
 };
 
 /*==================String SortValue==================*/
@@ -268,13 +268,13 @@ public:
     StringSortValue(){}
 //    virtual void setColor(COLORID cid){};
 //    virtual void getColor(COLORID &cid){};
-    virtual void setColor(Product_t cid,SORTID sid){};
-    virtual void getColor(Product_t cid,SORTID sid){};
-    virtual void setColor(Integer_t cid){};
-    virtual void setColor(Real_t cid){};
+    virtual void setColor(Product_t cid,SORTID sid){cerr<<"ERROR!wrong color match!";exit(-3);};
+    virtual void getColor(Product_t cid,SORTID sid){cerr<<"ERROR!wrong color match!";exit(-3);};
+    virtual void setColor(Integer_t cid){cerr<<"ERROR!wrong color match!";exit(-3);};
+    virtual void setColor(Real_t cid){cerr<<"ERROR!wrong color match!";exit(-3);};
     virtual void setColor(String_t cid){value = cid;};
-    virtual void getColor(Integer_t &cid){};
-    virtual void getColor(Real_t &cid){};
+    virtual void getColor(Integer_t &cid){cerr<<"ERROR!wrong color match!";exit(-3);};
+    virtual void getColor(Real_t &cid){cerr<<"ERROR!wrong color match!";exit(-3);};
     virtual void getColor(String_t &cid){cid = value;};
     ~StringSortValue(){};
 };
@@ -418,6 +418,7 @@ typedef struct CPN_Place
     bool is_cond;
     bool is_executed;
     bool is_pointer;
+
     unsigned short size;
     string expression;
     vector<string> enter;
@@ -426,7 +427,7 @@ typedef struct CPN_Place
     vector<string> call_P;
     vector<string> correspond_P;
     vector<Triple> returns;//for func begin P
-    vector<pair<string,string>> para_list;
+    vector<pair<string,string>> para_list;//first is identifier, second is place name
     //***PDNet added end***/
 
     CPN_Place(){expression="";}
@@ -460,9 +461,10 @@ typedef struct CPN_Transition
     condition_tree guard;
     bool hasguard;
     bool isreturn;
+    bool is_writepointer;
     vector<CSArc> producer;
     vector<CSArc> consumer;
-    CPN_Transition(){isreturn = false;}
+    CPN_Transition(){isreturn = false;is_writepointer=false;hasguard=false;}
     void operator=(CPN_Transition &trans){
         //copy except produce and consumer
         id = trans.id;
@@ -537,8 +539,11 @@ public:
     void getDecl(gtree *tree);
     void initDecl();
     void init();
+    void init_alloc_func();
+    void setmaintoken();
     void Add_Place(string id,string Type_name,int size,bool control_P,string exp,bool isglobal,bool is_pointer);
     void Add_Transition(string id,string guard,string exp);
+    void Set_Guard(string id,string guard,string exp);
     void Add_Arc(string source,string target,string exp,bool sourceP,Arc_Type arcType);
     void Add_Arc_override(string source,string target,string exp,bool sourceP,Arc_Type arcType,bool be_overrided);
     void Add_Arc_addition(string source,string target,string exp,bool sourceP,Arc_Type arcType);
@@ -631,4 +636,5 @@ extern Product_t new_ProductColor(SORTID sid);
 extern string translate_exp2arcexp(CPN *cpn,string s,string base);
 extern void color_copy(type tid,SORTID sid,SortValue *src,SortValue *des);
 extern type TID_colorset;
+extern string construct_arcexpstr(string value,string index,string id,string tid);
 #endif //PDNET_CHECKER_CPN_H
