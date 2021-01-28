@@ -677,8 +677,8 @@ void pre_process(string &s)
     trans_Bool2int(s);
     trans_define_all(s);
     for_to_while_all(s);
-    trans_plusplus_all(s);
-    trans_subsub_all(s);
+//    trans_plusplus_all(s);
+//    trans_subsub_all(s);
     trans_some_function(s);
     trans_assign_all(s);
     trans_switch_all(s);

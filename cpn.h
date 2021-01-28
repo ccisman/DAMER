@@ -72,6 +72,7 @@ public:
     bool hastid;
     bool hasindex;
     ProductSort(){hastid=hasindex=false;}
+
 };
 
 //UserSort is a user declared enumerable sort
@@ -360,6 +361,9 @@ public:
 
 public:
     SortTable(){hasdot = false;}
+    int get_memberid(SORTID sid,string member){for(unsigned int i=0;i<sorttable.productsort[sid].membername.size();i++)
+            if(member == sorttable.productsort[sid].membername[i])
+                return i;}
     //first string is the sortname,the second MSI is this sort's information;
     map<string,MSI> mapSort;
 //    map<string,MCI> mapColor;

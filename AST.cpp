@@ -231,14 +231,21 @@ void TraverseTree2(gtree *p)
         || p->type == MULTIPLICATIVE_EXPRESSION ||  (p->type == POSTFIX_EXPRESSION && !judge_call_postfix_expression(p)) || p->type == PRIMARY_EXPRESSION
         || p->type == UNARY_OPERATOR ||  p->type == ARGUMENT_EXPRESSION_LIST || p->type == ASSIGNMENT_OPERATOR || p->type == CONSTANT_EXPRESSION)//内部变量声明place需要带有函数前缀
     {
-        gtree *p1 = p->child;
-        string temp_place = "";
-        while (p1)
-        {
-            temp_place += p1->place;
-            p1 = p1->next;
+        if(p->child->next && (p->child->next->type == INC_OP || p->child->next->type == DEC_OP))
+            p->place = p->child->place;
+        else if(p->child->type == INC_OP)
+            p->place = p->child->next->place + "+1";
+        else if(p->child->type == DEC_OP)
+            p->place = p->child->next->place + "-1";
+        else {
+            gtree *p1 = p->child;
+            string temp_place = "";
+            while (p1) {
+                temp_place += p1->place;
+                p1 = p1->next;
+            }
+            p->place = temp_place;
         }
-        p->place = temp_place;
     }
     else if(p->type == type_name){
         //just support sizeof(TYPE_SPECIFIER) pattern

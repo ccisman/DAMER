@@ -609,7 +609,7 @@ void cmdlinet::doit() {
     vector<string> files;
     GetFileNames("../test/",files);
 //    for(unsigned int i=0;i<files.size();i++)
-    string file = "triangular-longer-2.c";
+    string file = "stack-2.c";
         construct_and_slice("../test/" + file,LTLF,1,false,false);
 //    clock_t start,end;
 //    start = clock();

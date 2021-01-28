@@ -411,8 +411,8 @@ void create_connect(CPN *petri, string T, string express, string base)
 
 //            petri->Add_Variable(V,petri->place[piter->second].initMarking.tid,petri->place[piter->second].initMarking.sid);
 
-            petri->Add_Arc_override(P2,T,V,true,data,false);
-            petri->Add_Arc_override(T,P2,V,false,data,false);
+            petri->Add_Arc_override(P2,T,V,true,data,true);
+            petri->Add_Arc_override(T,P2,V,false,data,true);
 //            sourceP = true;
 //            petri.Add_Arc(P2, T, V, sourceP);//_v库所
 //            sourceP = false;
@@ -5833,6 +5833,69 @@ void organize_call(CPN *cpn,gtree *p){
     }
 }
 
+
+
+void handle_INC_DEC_OP(CPN *cpn,int nodetype,bool isfollow,gtree *p){
+    gtree *com = p;
+    while(com->type != COMPOUND_STATEMENT)
+        com = com->parent;
+    string base = com->place;
+    gtree *identifier;
+    if(isfollow)
+        identifier = p->child;
+    else
+        identifier = p->child->next;
+    while(identifier->child)
+        identifier = identifier->child;
+    if(identifier->place == "("){
+        cerr << "INC_DEC can not deal with (exp)++ now!"<<endl;
+        exit(-1);
+    }
+
+    gtree *statement = p;
+    while(statement->type != STATEMENT)
+        statement = statement->parent;
+
+    string statement_P = statement->matched_P;
+    string statement_T = cpn->get_enter_T(statement_P)[0];
+
+    string id = identifier->place;
+    string var_P = find_P_name(id,base);
+    auto piter = cpn->mapPlace.find(var_P);
+    if(piter == cpn->mapPlace.end()){
+        cerr << "ERROR!can't find place in handle_INC_DEC_OP!"<<endl;
+        exit(-1);
+    }
+    string real_id = cpn->place[piter->second].expression;
+    string Exp_r,Exp_w,tid_flag;
+    bool isglobal = find_v_isglobal(id,base);
+    if(isglobal)
+        tid_flag = "";
+    else
+        tid_flag = tid_str;
+
+    SORTID sid = cpn->place[piter->second].initMarking.sid;
+    if(identifier->parent->next->type == PTR_OP){
+        string member = identifier->parent->next->next->place;
+        int memberid = sorttable.get_memberid(sid,member);
+
+    }
+    else if(identifier->parent->next->type == INC_OP || identifier->parent->next->type == DEC_OP
+    || identifier->parent->parent->child->type == INC_OP || identifier->parent->parent->child->type == DEC_OP){
+        Exp_r = construct_arcexpstr(real_id,"",real_id + id_suffix,tid_flag);
+        if(nodetype == INC_OP)
+            Exp_w = construct_arcexpstr(real_id + "+1","",real_id + id_suffix,tid_flag);
+        else
+            Exp_w = construct_arcexpstr(real_id + "-1","",real_id + id_suffix,tid_flag);
+        cpn->Add_Arc(statement_T,var_P,Exp_w,false,write);
+        cpn->Add_Arc(var_P,statement_T,Exp_r,true,write);
+    }
+    else{
+        cerr << "we just support basic '++' '--' for now, please change '++‘ ’--‘ in your code."<<endl;
+        exit(-1);
+    }
+}
+
 void CPN::visit_condition(gtree *p){
     string logic_or_exp,exp1,exp2;
     logic_or_exp = p->child->place;
@@ -5892,6 +5955,13 @@ void CPN::Traverse_ST(gtree *p){
         supply_func(p);
     else if(judge_jump_statement(p))//equal to jump_statement,the same level with SELECTION\ITERATION statement above
         supply_jump_statement(p);
+    else if(p->child
+    && p->child->next && (p->child->next->type == INC_OP || p->child->next->type == DEC_OP))
+        handle_INC_DEC_OP(this,p->child->next->type,true,p);
+    else if(p->child
+            && (p->child->type == INC_OP || p->child->type == DEC_OP))
+        handle_INC_DEC_OP(this,p->child->type,false,p);
+
     if(judge_statement(p))
         organize_call(this,p);
 
