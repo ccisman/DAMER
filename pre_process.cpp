@@ -358,6 +358,7 @@ void trans_some_function(string &s)
 		}\n";
 
     string nondet_int = "extern int __VERIFIER_nondet_int();";
+    string nondet_int1 = "extern int __VERIFIER_nondet_int(void);";
     string newnondet_int =
             "int __VERIFIER_nondet_int()\n\
 		{\n\
@@ -400,13 +401,14 @@ void trans_some_function(string &s)
     string_replace(s, "ERROR:", "");
     string_replace(s, assum, newassum);
     string_replace(s, nondet_int, newnondet_int);
+    string_replace(s, nondet_int1, newnondet_int);
     string_replace(s, nondet_short, newnondet_short);
     string_replace(s, nondet_short1, newnondet_short);
     string_replace(s, nondet_double, newnondet_double);
     string_replace(s, nondet_uint, newnondet_uint);
-    if (s.find("int nondet_num_int") == string::npos&&s.find(newnondet_int) != string::npos)
+    if (s.find("int nondet_num_int") == string::npos && s.find(newnondet_int) != string::npos )
         s = "int nondet_num_int=" + init_num + ";\n" + s;
-    if (s.find("int nondet_num_short") == string::npos && (s.find(newnondet_short) != string::npos || s.find(nondet_short1) != string::npos))
+    if (s.find("int nondet_num_short") == string::npos && s.find(newnondet_short) != string::npos)
         s = "int nondet_num_short=" + init_num + ";\n" + s;
     if (s.find("int nondet_num_long") == string::npos&&s.find(newnondet_long) != string::npos)
         s = "int nondet_num_long=" + init_num + ";\n" + s;
@@ -439,6 +441,9 @@ void trans_some_function(string &s)
     string atomic_end_call = "__VERIFIER_atomic_end();";
     string_replace(s,  atomic_begin_call, "");
     string_replace(s,  atomic_end_call, "");
+
+    string gotoerror = "goto ERROR;";
+    string_replace(s,gotoerror,"reach_error();");
 
 }
 
@@ -671,8 +676,18 @@ void trans_Bool2int(string &s){
     }
 }
 
+void Add_NULL(string &s){
+    regex pattern("[^a-zA-Z_]NULL[^a-zA-Z_]");
+    smatch result;
+    if(regex_search(s,result,pattern)){
+        s = "#define NULL 0\n" + s;
+    }
+
+}
+
 void pre_process(string &s)
 {
+    Add_NULL(s);
     trans_annotation(s);
     trans_Bool2int(s);
     trans_define_all(s);

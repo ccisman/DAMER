@@ -9,14 +9,14 @@
                     <conjunction>        
                         <lesseq>
                             <token-value>
-                                <place>P9</place>
+                                <place>P10</place>
                             </token-value>
                             <int-constant>1</int-constant>
                         </lesseq>
                         <lesseq>
                             <int-constant>-1</int-constant>
                             <token-value>
-                                <place>P9</place>
+                                <place>P10</place>
                             </token-value>
                         </lesseq>
                     </conjunction> 
@@ -40,7 +40,7 @@
                             <equality>
                                 <int-constant>1</int-constant>
                                 <token-value>
-                                    <place>P9</place>
+                                    <place>P10</place>
                                 </token-value>
                             </equality>
                         </negation>
@@ -59,7 +59,7 @@
                         <equality>
                             <int-constant>1</int-constant>
                             <token-value>
-                                <place>P9</place>
+                                <place>P10</place>
                             </token-value>
                         </equality>
                         <finally>
@@ -67,14 +67,14 @@
                                 <equality>
                                     <int-constant>0</int-constant>
                                     <token-value>
-                                        <place>P9</place>
+                                        <place>P10</place>
                                     </token-value>
                                 </equality>
                                 <finally>
                                     <equality>
                                         <int-constant>1</int-constant>
                                         <token-value>
-                                            <place>P9</place>
+                                            <place>P10</place>
                                         </token-value>
                                     </equality>
                                 </finally>

@@ -533,6 +533,10 @@ void RG::init(CPN *cpn) {
 void Marking_after_fire(Marking &marking,CTransition *transition,Binding *binding,CPN *cpn)
 {
     BindingVariable(binding,cpn);
+    if(transition->id == "T25"){
+        int a;
+        a = a+1;
+    }
     //1.producer
     for(unsigned int i=0;i<transition->producer.size();i++) {
         MultiSet ms;
@@ -593,7 +597,7 @@ void RG::createNode(RG_NODE *node,CPN *cpn) {
             newnode->next = NULL;
             Marking_after_fire(newnode->marking, tranQ->transition, tranQ->bindings[i], cpn);
 
-//            if(count == 100)
+//            if(count == 10000)
 //                return;
             if (nodeExist(newnode))
                 delete newnode;

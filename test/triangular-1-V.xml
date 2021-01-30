@@ -9,13 +9,13 @@
                     <disjunction>
                         <equality>
                             <token-value>
-                                <place>P49</place>
+                                <place>P52</place>
                             </token-value>
                             <int-constant>1</int-constant>
                         </equality>
                         <equality>
                             <token-value>
-                                <place>P50</place>
+                                <place>P53</place>
                             </token-value>
                             <int-constant>1</int-constant>
                         </equality>
@@ -34,7 +34,7 @@
                         <negation>
                             <equality>
                                 <token-value>
-                                    <place>P9</place>
+                                    <place>P10</place>
                                 </token-value>
                                 <int-constant>4</int-constant>
                             </equality>
@@ -42,7 +42,7 @@
                         <negation>
                             <equality>
                                 <token-value>
-                                    <place>P9</place>
+                                    <place>P10</place>
                                 </token-value>
                                 <int-constant>6</int-constant>
                             </equality>
@@ -50,7 +50,7 @@
                         <negation>
                             <equality>
                                 <token-value>
-                                    <place>P9</place>
+                                    <place>P10</place>
                                 </token-value>
                                 <int-constant>8</int-constant>
                             </equality>
@@ -58,7 +58,7 @@
                         <negation>
                             <equality>
                                 <token-value>
-                                    <place>P9</place>
+                                    <place>P10</place>
                                 </token-value>
                                 <int-constant>10</int-constant>
                             </equality>
@@ -66,7 +66,7 @@
                         <negation>
                             <equality>
                                 <token-value>
-                                    <place>P9</place>
+                                    <place>P10</place>
                                 </token-value>
                                 <int-constant>12</int-constant>
                             </equality>
@@ -74,7 +74,7 @@
                         <negation>
                             <equality>
                                 <token-value>
-                                    <place>P9</place>
+                                    <place>P10</place>
                                 </token-value>
                                 <int-constant>14</int-constant>
                             </equality>
@@ -94,7 +94,7 @@
                         <negation>
                             <equality>
                                 <token-value>
-                                    <place>P10</place>
+                                    <place>P11</place>
                                 </token-value>
                                 <int-constant>5</int-constant>
                             </equality>
@@ -102,7 +102,7 @@
                         <negation>
                             <equality>
                                 <token-value>
-                                    <place>P10</place>
+                                    <place>P11</place>
                                 </token-value>
                                 <int-constant>7</int-constant>
                             </equality>
@@ -110,7 +110,7 @@
                         <negation>
                             <equality>
                                 <token-value>
-                                    <place>P10</place>
+                                    <place>P11</place>
                                 </token-value>
                                 <int-constant>9</int-constant>
                             </equality>
@@ -118,7 +118,7 @@
                         <negation>
                             <equality>
                                 <token-value>
-                                    <place>P10</place>
+                                    <place>P11</place>
                                 </token-value>
                                 <int-constant>11</int-constant>
                             </equality>
@@ -126,7 +126,7 @@
                         <negation>
                             <equality>
                                 <token-value>
-                                    <place>P10</place>
+                                    <place>P11</place>
                                 </token-value>
                                 <int-constant>13</int-constant>
                             </equality>
@@ -134,7 +134,7 @@
                         <negation>
                             <equality>
                                 <token-value>
-                                    <place>P10</place>
+                                    <place>P11</place>
                                 </token-value>
                                 <int-constant>15</int-constant>
                             </equality>

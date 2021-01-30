@@ -189,12 +189,17 @@ condition_tree_node* process_case(string s,condition_tree_node* func(string s1))
     }
     condition = s.substr(CaseFlagLength,pos-CaseFlagLength);//extract variable
 
-    for(unsigned int i=pos+1;i<s.size();i++){
-        if(s[i]==':') {
+    casecount = 0;
+    for(int i=pos+1;i<s.size();i++){
+        if(s.substr(i,CaseFlagLength) == CaseFlag)
+            casecount++;
+        if(s[i]==';')
+            casecount--;
+        if(casecount == 0 && s[i]==':') {
             st.push(tmp);
             tmp.clear();
         }
-        else if(s[i]==';'){
+        else if(casecount == -1 && s[i]==';'){
             dft = tmp;
             tmp.clear();
             break;
@@ -251,7 +256,7 @@ condition_tree_node* color_construct(string s){
     s = s + "#";
     Stack_o.push("#");
 
-    bool caseflag = false;
+    int caseflag = false;
     unsigned short casecount=0;
     for(unsigned int i=0;i<s.size();i++) {
         if(s.substr(i,CaseFlagLength)== CaseFlag) {
@@ -387,7 +392,7 @@ condition_tree_node* manytoken_construct(string s){
     stack<string> st;
     stack<string> st_op;
     unsigned int last=0;
-    bool caseflag = false;
+    int casecount = 0;
     bool tupleflag = false;
     for(int i=0;i<s.size()-2;i++){
         if(s[i] == '{')
@@ -396,13 +401,13 @@ condition_tree_node* manytoken_construct(string s){
             tupleflag = false;
         if(!tupleflag && s.size()>CaseFlagLength){
             if(s.substr(i,CaseFlagLength) == CaseFlag)
-                caseflag = true;
+                casecount++;
         }
         if(!tupleflag && s[i] == ';')
-            caseflag = ~caseflag;
+            casecount--;
         tmp = s.substr(i,2);
 
-        if(!caseflag && judge_TokenOperator(tmp)) {
+        if(casecount == 0 && judge_TokenOperator(tmp)) {
             st.push(s.substr(last, i-last));
             st_op.push(tmp);
             last = i + 2;

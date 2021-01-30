@@ -20,6 +20,7 @@ std::map<std::string,optcount_t> opt_table = {
         {"-showcpn",0},
         {"-time",0},
         {"-fnum",1},
+        {"-ltlv",0},
 //        {"-noout",0},
         {"-directbuild",0},
         {"-slice",0},
@@ -488,38 +489,38 @@ void testing_rg(string check_file){
 //        intofile_tree(tree);
 //        makeGraph("tree.dot", "tree.png");
 //    }
-    CPN *cpnet = new CPN;
+    CPN *cpn = new CPN;
 
     v_tables.clear();
     init_v_table();
 
     //2.construct program's CPN
-    cpnet->init();
-    cpnet->init_alloc_func();
-    cpnet->initDecl();
-    cpnet->getDecl(tree);
-    cpnet->create_PDNet(tree);
+    cpn->init();
+    cpn->init_alloc_func();
+    cpn->initDecl();
+    cpn->getDecl(tree);
+    cpn->create_PDNet(tree);
     string filename_prefix;
-    if(1) {
-        filename_prefix = "directbuild";
-        cpnet->print_CPN(filename_prefix + ".txt");
-        readGraph(filename_prefix + ".txt", filename_prefix + ".dot");
-        makeGraph(filename_prefix + ".dot", filename_prefix + ".png");
-    }
-    cpnet->delete_compound(tree);
+//    if(1) {
+//        filename_prefix = "directbuild";
+//        cpn->print_CPN(filename_prefix + ".txt");
+//        readGraph(filename_prefix + ".txt", filename_prefix + ".dot");
+//        makeGraph(filename_prefix + ".dot", filename_prefix + ".png");
+//    }
+    cpn->delete_compound(tree);
 //    if(1) {
 //        filename_prefix = "after";
 //        cpnet->print_CPN(filename_prefix + ".txt");
 //        readGraph(filename_prefix + ".txt", filename_prefix + ".dot");
 //        makeGraph(filename_prefix + ".dot", filename_prefix + ".png");
 //    }
-    cpnet->set_producer_consumer();
-    cpnet->setmaintoken();
+    cpn->set_producer_consumer();
+    cpn->setmaintoken();
 
     RG rg;
-    rg.init(cpnet);
-    rg.GENERATE(cpnet);
-    rg.print_RG("rg.txt",cpnet);
+    rg.init(cpn);
+    rg.GENERATE(cpn);
+    rg.print_RG("rg.txt",cpn);
 }
 
 bool cmdlinet::parse(int argc, char **argv) {
@@ -570,102 +571,42 @@ optcount_t cmdlinet::opt_exist(std::string optstring) {
 }
 
 void cmdlinet::doit() {
-//    if(opt_exist("-help")){
-//        help();
-//        return;
-//    }
-//    LTLCategory ltltype = LTLV;
-//    bool showtree=false,showcpn=false,showtime=false;
-//    unsigned short fnum = 1;
-//    if(opt_exist("-showtree")){
-//        showtree = true;
-//    }
-//    if(opt_exist("-showcpn")){
-//        showcpn = true;
-//    }
-//    if(opt_exist("-fnum")){
-//        option_t option;
-//        option = get_option("-fnum");
-//        fnum = atoi(option.value[0].c_str());
-//        if(fnum == 0){
-//            std::cerr<<"You should input a correct formula num, the minimum formula num is 1"<<std::endl;
-//            exit(-1);
-//        }
-//    }
-//    init_pthread_type();
-//    if(opt_exist("-directbuild")){
-//        direct_build(filename,ltltype,fnum,showcpn,showtree);
-//    }
-//    else if(opt_exist("-slice")){
-//        only_slice(filename,ltltype,fnum,showcpn,showtree);
-//    }
-//    else if(opt_exist("-compare")){
-//        construct_and_slice(filename,ltltype,fnum,showcpn,showtree);
-//    }
-
-
-
+    if(opt_exist("-help")){
+        help();
+        return;
+    }
+    LTLCategory ltltype = LTLF;
+    bool showtree=false,showcpn=false,showtime=false;
+    unsigned short fnum = 1;
+    if(opt_exist("-showtree")){
+        showtree = true;
+    }
+    if(opt_exist("-showcpn")){
+        showcpn = true;
+    }
+    if(opt_exist("-fnum")){
+        option_t option;
+        option = get_option("-fnum");
+        fnum = atoi(option.value[0].c_str());
+        if(fnum == 0){
+            std::cerr<<"You should input a correct formula num, the minimum formula num is 1"<<std::endl;
+            exit(-1);
+        }
+    }
+    if(opt_exist("-ltlv")){
+        ltltype = LTLV;
+    }
     init_pthread_type();
-    vector<string> files;
-    GetFileNames("../test/",files);
-//    for(unsigned int i=0;i<files.size();i++)
-    string file = "stack-2.c";
-        construct_and_slice("../test/" + file,LTLF,1,false,false);
-//    clock_t start,end;
-//    start = clock();
-//    testing_rg("../test/bigshot_s.c");
-//    end = clock();
-//    cout << (end-start)/1000.0 << endl;
-//    direct_build("../test/fib_bench-1.c",LTLV,1,true,true);
+    if(opt_exist("-directbuild")){
+        direct_build(filename,ltltype,fnum,showcpn,showtree);
+    }
+    else if(opt_exist("-slice")){
+        only_slice(filename,ltltype,fnum,showcpn,showtree);
+    }
+    else if(opt_exist("-compare")){
+        construct_and_slice(filename,ltltype,fnum,showcpn,showtree);
+    }
 
-//    cout<<s<<endl;
-
-
-
-
-    CPN *cpnet;
-    cpnet = new CPN;
-
-//    init_v_table();
-//    cpnet->init();
-//    cpnet->initDecl();
-//    cpnet->Add_Variable("x",Integer,0);
-//
-//    auto iter = cpnet->mapVariable.find("x");
-//    cpnet->vartable[iter->second].value->setColor(1);
-
-    string s="1`{x,x_id+100,case@tid:\"MAIN\"=>\"t1\":\"t1\"=>\"t2\":\"default\";}++1`{x,x_id.x_tid}";
-    string s1="{-1+2*3,100+x_id,2}";
-    string s2="1`\"1.234\"==\"1.23\"";
-    condition_tree *tree = new condition_tree;
-    tree->construct(s2);
-    MultiSet ms;
-
-    auto iter1 = sorttable.mapSort.find("int_var");
-
-    ms.tid = Integer;//iter1->second.tid;
-    ms.sid = 0;//iter1->second.sid;
-    ms.Exp2MS(cpnet,tree->root,0,0,false);
-//    condition_tree *tree = new condition_tree;
-//    tree->construct(s2);
-//    MultiSet ms;
-//
-//    auto iter1 = sorttable.mapSort.find("int_var");
-//
-//    ms.tid = iter1->second.tid;
-//    ms.sid = iter1->second.sid;
-//    ms.Exp2MS(cpnet,tree->root,0,2);
-//
-//    init_v_table();
-//    v_tables[0]->insert("x","P1",3,false);
-//    string result = translate_exp2arcexp(cpnet,"x[a+b]","global");
-//
-//    cpnet->Add_Place("P1","float",1,false,"x",false);
-//    cpnet->init_Place("P1","1.2+2.3+3.4");
-
-
-
-    int a=1;
 }
 
 void cmdlinet::help() {
@@ -681,6 +622,7 @@ void cmdlinet::help() {
               " -showtree             generate picture for program's syntax tree\n"
               " -showcpn              generate picture for builded cpn\n"
               " -fnum [num]           indicate which formula to use (default:1)\n"
+              " -ltlv                 indicate to check the LTLV property in *-V.xml(default:LTLF)\n"
               "\n"
               "Conpulsory commands:\n"
               "    must and only have one of the following options\n"

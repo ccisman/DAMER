@@ -16,7 +16,7 @@
                             <negation>
                                 <equality>
                                     <token-value>
-                                        <place>P11</place>
+                                        <place>P12</place>
                                     </token-value>
                                     <int-constant>16</int-constant>
                                 </equality>
@@ -24,7 +24,7 @@
                             <negation>
                                 <equality>
                                     <token-value>
-                                        <place>P12</place>
+                                        <place>P13</place>
                                     </token-value>
                                     <int-constant>5</int-constant>
                                 </equality>
@@ -45,14 +45,14 @@
                         <negation>
                             <equality>
                                 <token-value>
-                                    <place>P11</place>
+                                    <place>P12</place>
                                 </token-value>
                                 <int-constant>16</int-constant>
                             </equality>
                         </negation>
                         <equality>
                             <token-value>
-                                <place>P12</place>
+                                <place>P13</place>
                             </token-value>
                             <int-constant>5</int-constant>
                         </equality>
@@ -71,14 +71,14 @@
                         <negation>
                             <equality>
                                 <token-value>
-                                    <place>P12</place>
+                                    <place>P13</place>
                                 </token-value>
                                 <int-constant>5</int-constant>
                             </equality>
                         </negation>
                         <equality>
                             <token-value>
-                                <place>P11</place>
+                                <place>P12</place>
                             </token-value>
                             <int-constant>16</int-constant>
                         </equality>

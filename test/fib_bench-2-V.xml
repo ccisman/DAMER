@@ -14,13 +14,13 @@
                         </negation>
                         <equality>
                             <token-value>
-                                <place>P9</place>
+                                <place>P10</place>
                             </token-value>
                             <int-constant>144</int-constant>
                         </equality>
                         <equality>
                             <token-value>
-                                <place>P10</place>
+                                <place>P11</place>
                             </token-value>
                             <int-constant>144</int-constant>
                         </equality>
@@ -39,14 +39,14 @@
                         <negation>
                             <equality>
                                 <token-value>
-                                    <place>P9</place>
+                                    <place>P10</place>
                                 </token-value>
                                 <int-constant>2</int-constant>
                             </equality>
                         </negation>
                         <equality>
                             <token-value>
-                                <place>P10</place>
+                                <place>P11</place>
                             </token-value>
                             <int-constant>3</int-constant>
                         </equality>
@@ -64,13 +64,13 @@
                     <disjunction>        
                         <equality>
                             <token-value>
-                                <place>P9</place>
+                                <place>P10</place>
                             </token-value>
                             <int-constant>144</int-constant>
                         </equality>
                         <equality>
                             <token-value>
-                                <place>P10</place>
+                                <place>P11</place>
                             </token-value>
                             <int-constant>144</int-constant>
                         </equality>

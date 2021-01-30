@@ -47,7 +47,7 @@ extern SortTable sorttable;
 //extern NUM_t placecount;
 //extern NUM_t transitioncount;
 //extern NUM_t varcount;
-extern CPN *cpnet;
+//extern CPN *cpnet;
 
 enum type{dot,finiteintrange,productsort,usersort,Integer,Real,String};
 enum Arc_Type{executed,control,call_enter,call_exit,data,write,call_connect,allocwrite,remain};//data is equal to read
@@ -67,7 +67,7 @@ public:
     string id;
     SORTNUM_t sortnum;
     vector<string> sortname;
-    vector<string> membername;//used for 'struct,union' in program
+    vector<pair<string,int>> membername;//used for 'struct,union' in program
     vector<mapsort_info> sortid;
     bool hastid;
     bool hasindex;
@@ -361,9 +361,17 @@ public:
 
 public:
     SortTable(){hasdot = false;}
-    int get_memberid(SORTID sid,string member){for(unsigned int i=0;i<sorttable.productsort[sid].membername.size();i++)
-            if(member == sorttable.productsort[sid].membername[i])
-                return i;}
+    int get_memberid(SORTID sid,string member) {
+        int pos = 0;
+        for (unsigned int i = 0; i < sorttable.productsort[sid].membername.size(); i++)
+            if (member == sorttable.productsort[sid].membername[i].first)
+                return i;
+    }
+    int get_membersize(SORTID sid,string member){
+        for (unsigned int i = 0; i < sorttable.productsort[sid].membername.size(); i++)
+            if (member == sorttable.productsort[sid].membername[i].first)
+                return sorttable.productsort[sid].membername[i].second;
+    }
     //first string is the sortname,the second MSI is this sort's information;
     map<string,MSI> mapSort;
 //    map<string,MCI> mapColor;
@@ -405,6 +413,9 @@ struct Triple{
     string first;
     string second;
     string third;
+    string fourth;
+    string fifth;
+    bool flag;
 };
 
 typedef struct CPN_Place
@@ -422,6 +433,8 @@ typedef struct CPN_Place
     bool is_cond;
     bool is_executed;
     bool is_pointer;
+    bool is_global;
+    bool is_structure;
 
     unsigned short size;
     string expression;
@@ -434,7 +447,7 @@ typedef struct CPN_Place
     vector<pair<string,string>> para_list;//first is identifier, second is place name
     //***PDNet added end***/
 
-    CPN_Place(){expression="";}
+    CPN_Place(){expression="";control_P=is_mutex=is_cond=is_executed=is_pointer=is_global=is_structure=false;}
     void operator=(CPN_Place &plc){
         //copy except producer and consumer
         id = plc.id;
@@ -640,5 +653,5 @@ extern Product_t new_ProductColor(SORTID sid);
 extern string translate_exp2arcexp(CPN *cpn,string s,string base);
 extern void color_copy(type tid,SORTID sid,SortValue *src,SortValue *des);
 extern type TID_colorset;
-extern string construct_arcexpstr(string value,string index,string id,string tid);
+extern string construct_normaltoken(string value,string index,string id,string tid);
 #endif //PDNET_CHECKER_CPN_H

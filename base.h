@@ -14,7 +14,7 @@ extern vector<string> pthread_type;
 extern vector<string> pthread_func_type;
 
 template <class T>
-bool exist_in(vector<T> vec,T element)
+bool exist_in(vector<T> &vec,T element)
 {
     for(unsigned int i=0;i<vec.size();i++)
         if(element == vec[i])

@@ -730,7 +730,7 @@ void post_process(CPN *cpn,CPN *cpn_slice,vector<string> transitions)
             else
                 trans_vec = find_previous_T(cpn_slice->place[i].id,cpn,transitions,true);
             for(unsigned int j=0;j<trans_vec.size();j++) {
-                cpn_slice->Add_Arc(trans_vec[j]->id, cpn_slice->place[i].id, construct_arcexpstr(tid_str,"","",""), false, executed);
+                cpn_slice->Add_Arc(trans_vec[j]->id, cpn_slice->place[i].id, construct_normaltoken(tid_str,"","",""), false, executed);
                 CSArc csArc1,csArc2;
                 csArc1.arcType = cpn_slice->arc[cpn_slice->arccount-1].arcType;
                 csArc1.arc_exp = cpn_slice->arc[cpn_slice->arccount-1].arc_exp;

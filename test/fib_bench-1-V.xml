@@ -10,13 +10,13 @@
                         <conjunction>
                             <equality>
                                 <token-value>
-                                    <place>P13</place>
+                                    <place>P15</place>
                                 </token-value>
                                 <int-constant>5</int-constant>
                             </equality>
                             <equality>
                                 <token-value>
-                                    <place>P32</place>
+                                    <place>P35</place>
                                 </token-value>
                                 <int-constant>5</int-constant>
                             </equality>
@@ -43,14 +43,14 @@
                         <negation>
                             <equality>
                                 <token-value>
-                                    <place>P9</place>
+                                    <place>P10</place>
                                 </token-value>
                                 <int-constant>144</int-constant>
                             </equality>
                         </negation>
                         <equality>
                             <token-value>
-                                <place>P10</place>
+                                <place>P11</place>
                             </token-value>
                             <int-constant>89</int-constant>
                         </equality>
@@ -68,13 +68,13 @@
                     <disjunction>
                         <equality>
                             <token-value>
-                                <place>P9</place>
+                                <place>P10</place>
                             </token-value>
                             <int-constant>2</int-constant>
                         </equality>
                         <equality>
                             <token-value>
-                                <place>P10</place>
+                                <place>P11</place>
                             </token-value>
                             <int-constant>2</int-constant>
                         </equality>

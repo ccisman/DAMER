@@ -302,6 +302,7 @@ void TraverseTree2(gtree *p)
         else if(p->child->type == STRUCT_OR_UNION_SPECIFIER) {
             if (p->child->child->next->type == IDENTIFIER)
                 type = p->child->child->next->place;
+
         }
         if(type != "")
             while(p1->type == DECLARATION_SPECIFIERS) {

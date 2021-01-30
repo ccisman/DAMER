@@ -721,6 +721,63 @@ void CPN_Product_Automata::FetchColor(string s, RG_NODE *state, bucket &color) {
                 tt->color->getColor(color.scolor);
                 break;
             }
+            case productsort:{
+                Tokens *tt = state->marking.mss[iter->second].tokenQ->next;
+                if (tt == NULL) {
+                    cerr << "Empty variable place (without tokens)" << endl;
+                    exit(0);
+                }
+                while(tt) {
+                    Product_t cid;
+                    cid = new_ProductColor(pp.initMarking.sid);
+                    tt->color->getColor(cid, pp.initMarking.sid);
+                    switch (sorttable.productsort[pp.initMarking.sid].sortid[0].tid) {
+                        case Integer: {
+                            Integer_t subcid;
+                            cid[0]->getColor(subcid);
+                            if(subcid != 0){
+                                cid[0]->getColor(color.icolor);
+                                return;
+                            }
+                            break;
+                        }
+                        case Real: {
+                            Real_t subcid;
+                            cid[0]->getColor(subcid);
+                            if(subcid != 0){
+                                cid[0]->getColor(color.rcolor);
+                                return;
+                            }
+                            break;
+                        }
+                        case String: {
+                            String_t subcid;
+                            cid[0]->getColor(subcid);
+                            if(subcid != ""){
+                                cid[0]->getColor(color.scolor);
+                                return;
+                            }
+                            break;
+                        }
+                    }
+                    tt = tt->next;
+                }
+                switch (sorttable.productsort[pp.initMarking.sid].sortid[0].tid){
+                    case Integer:{
+                        color.icolor = 0;
+                        break;
+                    }
+                    case Real:{
+                        color.rcolor = 0;
+                        break;
+                    }
+                    case String:{
+                        color.scolor = "";
+                        break;
+                    }
+                }
+                break;
+            }
         }
     }
     else if(s[0] == 'i') {
