@@ -99,11 +99,11 @@ $ echo "/usr/local/lib" > /etc/ld.so.conf
 
 To run DAMER, use the following command-line from this directory:
 
-$ cmake-build-debug/PDNet_checker [-showtree] [-showcpn] [-fnum 1] (-compare|-directbuild|-slice) (filename)
+$ cmake-build-debug/PDNet_checker [-showtree] [-ltlv] [-showcpn] [-fnum 1] (-compare|-directbuild|-slice) (filename)
 
 for example:
 
-$ cmake-build-debug/PDNet_checker -fnum 1 -compare test/fib_bench-1.c
+$ cmake-build-debug/PDNet_checker -fnum 1 -compare test/stack-1.c
 
 More command can be seen with:
 
