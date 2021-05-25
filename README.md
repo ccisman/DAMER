@@ -12,6 +12,10 @@ The c program must satisfy ANSI-C grammar.
 - tcmalloc
 - Graphviz
 
+##Tips
+- If you run debug and meet bad::alloc problem,
+- you can set the compile optimization level to -O0 to fixed it.
+
 ## installation 
 ### install Graphviz.
 
